@@ -46,12 +46,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     });
   }
 
+  var verifyDrag = false;
+  var left = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
@@ -81,3 +81,33 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     );
   }
 }
+
+/*
+
+ child: GestureDetector(
+            onHorizontalDragStart: (DragStartDetails details) {
+              print(details.localPosition.dy);
+              if (details.localPosition.dy >= 250) verifyDrag = true;
+            },
+            onHorizontalDragUpdate: (DragUpdateDetails details) {
+              if (verifyDrag) {
+                if (details.primaryDelta >= 3 && _selectedIndex != 0) {
+                  left = true;
+                } else if (details.primaryDelta <= -3 && _selectedIndex != 3) {
+                  left = false;
+                }
+              }
+            },
+            onHorizontalDragEnd: (DragEndDetails details) {
+              if (left == true && _selectedIndex != 0) {
+                _selectedIndex--;
+                _onItemTapped(_selectedIndex);
+              } else if (left == false && _selectedIndex != 3) {
+                _selectedIndex++;
+                _onItemTapped(_selectedIndex);
+              }
+              verifyDrag = false;
+            },
+            child: _widgetOptions.elementAt(_selectedIndex)),
+
+            */
