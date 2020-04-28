@@ -6,10 +6,8 @@ class MainReceita extends StatefulWidget {
 
 class _MainReceitalState extends State<MainReceita> {
   static List onSomeEvent() {
-    List list = List.generate(5, (i) {
-      return "Item ${i + 1}";
-    });
-    return list;
+    List<String> litems = ["1", "2", "3", "4", "5"];
+    return litems;
   }
 
   @override
@@ -20,7 +18,13 @@ class _MainReceitalState extends State<MainReceita> {
               onTap: () {
                 onSomeEvent();
               },
-              child: Text("Instacook")),
+              child: Text(
+                "Instacook",
+                style: TextStyle(
+                    fontFamily: "CreamCake",
+                    fontSize: 40,
+                    fontWeight: FontWeight.w200),
+              )),
           actions: <Widget>[
             // action button
             IconButton(
@@ -43,17 +47,20 @@ class _MainReceitalState extends State<MainReceita> {
             // overflow menu
           ],
         ),
-        body: Center(child: SwipeList(items: onSomeEvent())));
+        body: Center(
+            child: SwipeList(
+          litems: onSomeEvent(),
+        )));
   }
 }
 
 class SwipeList extends StatefulWidget {
   SwipeList({
     Key key,
-    this.items,
+    this.litems,
   }) : super(key: key);
 
-  final List items;
+  final List litems;
   @override
   State<StatefulWidget> createState() {
     return ListItemWidget();
@@ -66,13 +73,17 @@ class ListItemWidget extends State<SwipeList> {
     return Container(
         child: ListView.builder(
       padding: const EdgeInsets.all(20),
+      itemCount: widget.litems.length,
       itemBuilder: (context, index) {
         return Card(
             margin: EdgeInsets.only(bottom: 30.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.0),
+            ),
             color: Colors.blue,
             elevation: 10,
             child: Container(
-              height: 250.0,
+              height: 300.0,
             ));
       },
     ));
