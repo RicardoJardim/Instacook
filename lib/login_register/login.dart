@@ -200,45 +200,43 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async => false,
-        child: Scaffold(
-            body: SingleChildScrollView(
-                child: Container(
-          height: MediaQuery.of(context).size.height,
-          child: Stack(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top: 50),
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    _title(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _emailPasswordWidget(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _submitButton(),
-                    _divider(),
-                    _googleButton(),
-                  ],
+    return Scaffold(
+        body: SingleChildScrollView(
+            child: Container(
+      height: MediaQuery.of(context).size.height,
+      child: Stack(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: 50),
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _title(),
+                SizedBox(
+                  height: 20,
                 ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: _createAccountLabel(),
-              ),
-              Positioned(
-                  top: -MediaQuery.of(context).size.height * .16,
-                  right: -MediaQuery.of(context).size.width * .45,
-                  child: BezierContainer())
-            ],
+                _emailPasswordWidget(),
+                SizedBox(
+                  height: 20,
+                ),
+                _submitButton(),
+                _divider(),
+                _googleButton(),
+              ],
+            ),
           ),
-        ))));
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: _createAccountLabel(),
+          ),
+          Positioned(
+              top: -MediaQuery.of(context).size.height * .16,
+              right: -MediaQuery.of(context).size.width * .45,
+              child: BezierContainer())
+        ],
+      ),
+    )));
   }
 }
