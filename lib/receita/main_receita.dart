@@ -21,11 +21,11 @@ class _MainReceitalState extends State<MainReceita> {
   }
 
   static List<String> litems = onSomeEvent();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: GestureDetector(
               onTap: () {
                 globalKey.currentState.goUp();
