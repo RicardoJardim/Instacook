@@ -7,6 +7,7 @@ class MainCompras extends StatefulWidget {
 class _MainCompraslState extends State<MainCompras> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text("Compras")));
+    return Scaffold(
+        backgroundColor: Colors.red, body: Center(child: Text("Compras")));
   }
 }

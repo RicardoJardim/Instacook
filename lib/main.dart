@@ -55,32 +55,46 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
-      bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.local_dining),
-              title: Text('Receitas'),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bookmark),
-              title: Text('Guardado'),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              title: Text('Compras'),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              title: Text('Perfil'),
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          selectedIconTheme: IconThemeData(size: 30),
-          onTap: _onItemTapped,
-          showUnselectedLabels: true,
-          unselectedItemColor: Colors.grey),
+      bottomNavigationBar: ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(25.0),
+          topRight: Radius.circular(25.0),
+        ),
+        child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.local_dining,
+                ),
+                title: Text('Receitas'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.bookmark,
+                ),
+                title: Text('Guardado'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.event_available,
+                ),
+                title: Text('Compras'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.person,
+                ),
+                title: Text('Perfil'),
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.amber[800],
+            selectedIconTheme: IconThemeData(size: 30),
+            onTap: _onItemTapped,
+            showUnselectedLabels: true,
+            unselectedItemColor: Colors.grey),
+      ),
     );
   }
 }

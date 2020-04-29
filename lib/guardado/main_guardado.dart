@@ -156,8 +156,10 @@ class GridItemWidget extends State<GridList> {
         shrinkWrap: true,
         primary: false,
         itemCount: widget.litems.length,
-        gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.9,
+        ),
         itemBuilder: (context, index) {
           return Padding(
             padding: EdgeInsets.all(8.0),

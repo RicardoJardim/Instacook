@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
 
+GlobalKey<ListItemWidget> globalKey = GlobalKey();
+
 class MainReceita extends StatefulWidget {
   _MainReceitalState createState() => _MainReceitalState();
 }
 
 class _MainReceitalState extends State<MainReceita> {
   static List onSomeEvent() {
-    List<String> litems = ["1", "2", "3", "4", "5"];
+    litems = ["1", "2", "3", "4", "5"];
     return litems;
   }
+
+  static List event() {
+    List<String> items = [];
+    for (var item in litems) {
+      items.add(item + "1");
+    }
+    return items;
+  }
+
+  static List<String> litems = onSomeEvent();
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +28,10 @@ class _MainReceitalState extends State<MainReceita> {
         appBar: AppBar(
           title: GestureDetector(
               onTap: () {
-                onSomeEvent();
+                globalKey.currentState.goUp();
+                setState(() {
+                  litems = event();
+                });
               },
               child: Text(
                 "Instacook",
@@ -49,7 +64,8 @@ class _MainReceitalState extends State<MainReceita> {
         ),
         body: Center(
             child: SwipeList(
-          litems: onSomeEvent(),
+          key: globalKey,
+          litems: litems,
         )));
   }
 }
@@ -68,24 +84,39 @@ class SwipeList extends StatefulWidget {
 }
 
 class ListItemWidget extends State<SwipeList> {
+  ScrollController _scrollController = new ScrollController();
+
+  void goUp() {
+    _scrollController.animateTo(
+      0.0,
+      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: widget.litems.length,
-      itemBuilder: (context, index) {
-        return Card(
-            margin: EdgeInsets.only(bottom: 30.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25.0),
-            ),
-            color: Colors.blue,
-            elevation: 10,
-            child: Container(
-              height: 300.0,
-            ));
-      },
-    ));
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.all(20),
+        itemCount: widget.litems.length,
+        itemBuilder: (context, index) {
+          return Card(
+              margin: EdgeInsets.only(bottom: 30.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25.0),
+              ),
+              color: Colors.blue,
+              elevation: 10,
+              child: Container(
+                height: 300.0,
+                child: Center(
+                  child: Text(widget.litems[index]),
+                ),
+              ));
+        },
+      ),
+    );
   }
 }
