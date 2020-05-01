@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
 import '../perfil/main_perfil.dart';
-import '../receita/main.dart';
+import '../feed/main.dart';
 import '../compras/main_compras.dart';
 import '../guardado/main.dart';
 

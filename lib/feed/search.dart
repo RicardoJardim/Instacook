@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import '../router.dart';
 
 GlobalKey<ListItemWidget> globalKey = GlobalKey();
 
-class MainReceita extends StatefulWidget {
-  MainReceita({
+class Search extends StatefulWidget {
+  Search({
     Key key,
+    this.onPop,
     this.onPush,
   }) : super(key: key);
 
-  final ValueChanged<BuildContext> onPush;
-  _MainReceitalState createState() => _MainReceitalState();
+  final ValueChanged<BuildContext> onPop;
+  final ValueChanged<Map<String, dynamic>> onPush;
+
+  _SearchState createState() => _SearchState();
 }
 
-class _MainReceitalState extends State<MainReceita> {
+class _SearchState extends State<Search> {
   static List onSomeEvent() {
     litems = ["1", "2", "3", "4", "5"];
     return litems;
@@ -31,7 +35,6 @@ class _MainReceitalState extends State<MainReceita> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
           title: GestureDetector(
               onTap: () {
                 globalKey.currentState.goUp();
@@ -40,7 +43,7 @@ class _MainReceitalState extends State<MainReceita> {
                 });
               },
               child: Text(
-                "Instacook",
+                "SEARCH",
                 style: TextStyle(
                     fontFamily: "CreamCake",
                     fontSize: 40,
@@ -54,16 +57,22 @@ class _MainReceitalState extends State<MainReceita> {
                   color: Colors.black,
                   size: 30,
                 ),
-                onPressed: () => widget.onPush(context)),
+                onPressed: () => widget.onPop(context)),
+
             // action button
             IconButton(
-              icon: Icon(
-                Icons.add_circle_outline,
-                color: Colors.amber[800],
-                size: 30,
-              ),
-              onPressed: () {},
-            ),
+                icon: Icon(
+                  Icons.add_circle_outline,
+                  color: Colors.amber[800],
+                  size: 30,
+                ),
+                onPressed: () {
+                  Map<String, dynamic> data = new Map<String, dynamic>();
+                  data["route"] = TabRouterFeed.details;
+
+                  widget.onPush(data);
+                }),
+
             // overflow menu
           ],
         ),

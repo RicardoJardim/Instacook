@@ -135,6 +135,7 @@ class _LoginPageState extends State<LoginPage> {
           color: Colors.blue[600],
           onPressed: () {
             /* Navigator.pushNamed(context, Routes.mainapp); */
+            Navigator.pushNamed(context, Routes.mainapp);
           },
           textColor: Colors.white,
           child: Stack(

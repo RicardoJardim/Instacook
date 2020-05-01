@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
+import '../router.dart';
 
 GlobalKey<ListItemWidget> globalKey = GlobalKey();
 
-class Search extends StatefulWidget {
-  Search({
+class MainReceita extends StatefulWidget {
+  MainReceita({
     Key key,
-    this.onPop,
     this.onPush,
   }) : super(key: key);
 
-  final ValueChanged<BuildContext> onPop;
-  final ValueChanged<BuildContext> onPush;
-
-  _SearchState createState() => _SearchState();
+  final ValueChanged<Map<String, dynamic>> onPush;
+  _MainReceitalState createState() => _MainReceitalState();
 }
 
-class _SearchState extends State<Search> {
+class _MainReceitalState extends State<MainReceita> {
   static List onSomeEvent() {
     litems = ["1", "2", "3", "4", "5"];
     return litems;
@@ -34,6 +32,7 @@ class _SearchState extends State<Search> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: GestureDetector(
               onTap: () {
                 globalKey.currentState.goUp();
@@ -42,7 +41,7 @@ class _SearchState extends State<Search> {
                 });
               },
               child: Text(
-                "SEARCH",
+                "Instacook",
                 style: TextStyle(
                     fontFamily: "CreamCake",
                     fontSize: 40,
@@ -56,17 +55,21 @@ class _SearchState extends State<Search> {
                   color: Colors.black,
                   size: 30,
                 ),
-                onPressed: () => widget.onPop(context)),
+                onPressed: () {
+                  Map<String, dynamic> data = new Map<String, dynamic>();
+                  data["route"] = TabRouterFeed.search;
 
+                  widget.onPush(data);
+                }),
             // action button
             IconButton(
-                icon: Icon(
-                  Icons.add_circle_outline,
-                  color: Colors.amber[800],
-                  size: 30,
-                ),
-                onPressed: () => widget.onPush(context)),
-
+              icon: Icon(
+                Icons.add_circle_outline,
+                color: Colors.amber[800],
+                size: 30,
+              ),
+              onPressed: () {},
+            ),
             // overflow menu
           ],
         ),

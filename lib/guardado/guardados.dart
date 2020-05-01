@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../router.dart';
 
 class MainGuardado extends StatefulWidget {
   MainGuardado({
@@ -6,7 +7,7 @@ class MainGuardado extends StatefulWidget {
     this.onPush,
   }) : super(key: key);
 
-  final ValueChanged<String> onPush;
+  final ValueChanged<Map<String, dynamic>> onPush;
 
   _MainGuardadoState createState() => _MainGuardadoState();
 }
@@ -100,7 +101,7 @@ class SwipeList extends StatefulWidget {
 
   final List litems;
 
-  final ValueChanged<String> onPush;
+  final ValueChanged<Map<String, dynamic>> onPush;
   @override
   State<StatefulWidget> createState() {
     return ListItemWidget();
@@ -108,6 +109,8 @@ class SwipeList extends StatefulWidget {
 }
 
 class ListItemWidget extends State<SwipeList> {
+  Map<String, dynamic> data = ({"route": TabRouterSaved.saved});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -127,8 +130,9 @@ class ListItemWidget extends State<SwipeList> {
                 child: InkWell(
                     enableFeedback: true,
                     onTap: () {
-                      print(widget.litems[index]);
-                      widget.onPush(widget.litems[index]);
+                      data["title"] = widget.litems[index];
+                      print(data);
+                      widget.onPush(data);
                     },
                     borderRadius: BorderRadius.circular(200),
                     child: Center(
