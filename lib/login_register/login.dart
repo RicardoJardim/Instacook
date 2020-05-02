@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
         height: 60,
         width: double.infinity,
         child: RaisedButton(
-          elevation: 10,
+          elevation: 7,
           splashColor: Colors.amber,
           padding: const EdgeInsets.symmetric(vertical: 15),
           shape: RoundedRectangleBorder(
@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
         width: double.infinity,
         height: 60,
         child: RaisedButton(
-          elevation: 10,
+          elevation: 7,
           splashColor: Colors.blue,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(7.0),

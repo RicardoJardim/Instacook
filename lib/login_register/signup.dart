@@ -75,7 +75,7 @@ class _SignUpPageState extends State<SignUpPage> {
         height: 60,
         width: double.infinity,
         child: RaisedButton(
-          elevation: 10,
+          elevation: 7,
           splashColor: Colors.amber,
           padding: const EdgeInsets.symmetric(vertical: 15),
           shape: RoundedRectangleBorder(
