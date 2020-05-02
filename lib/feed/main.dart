@@ -3,6 +3,7 @@ import 'package:instacook/feed/search_detail.dart';
 import 'feed.dart';
 import 'search.dart';
 import 'search_detail.dart';
+import 'people.dart';
 import '../router.dart';
 
 class TabNavigatorFeed extends StatelessWidget {
@@ -36,6 +37,11 @@ class TabNavigatorFeed extends StatelessWidget {
           ),
       TabRouterFeed.details: (context) => Details(
             onPop: (context) => _pop(context),
+            colletionName: data["title"],
+          ),
+      TabRouterFeed.people: (context) => People(
+            onPop: (context) => _pop(context),
+            colletionName: data["title"],
           ),
     };
   }

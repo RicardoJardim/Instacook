@@ -122,8 +122,16 @@ class ListItemWidget extends State<SwipeList> {
               elevation: 10,
               child: Container(
                 height: 300.0,
-                child: Center(
-                  child: Text(widget.litems[index]),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(25),
+                  onTap: () {
+                    /* Map<String, dynamic> data = new Map<String, dynamic>();
+
+                        data["route"] = TabRouterFeed.people;
+                        data["title"] = widget.litems[index];
+                        widget.onPush(data); */
+                  },
+                  child: Center(child: Text(widget.litems[index])),
                 ),
               ));
         },

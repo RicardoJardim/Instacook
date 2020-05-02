@@ -19,7 +19,7 @@ class _MainGuardadoState extends State<MainGuardado> {
   }
 
   static List onSomeEvent2() {
-    List<String> litems = ["1", "2", "3", "4", "5"];
+    List<String> litems = ["1", "2", "3", "4"];
     return litems;
   }
 
@@ -160,47 +160,51 @@ class GridList extends StatefulWidget {
 }
 
 class GridItemWidget extends State<GridList> {
-  var first = false;
-
-  double itemHeight(int index) {
-    if (!first) {
-      if (index % 2 == 0) {
-        return 8.0;
-      } else {
-        first = true;
-        return 50.0;
-      }
-    } else {
-      return 8.0;
-    }
-  }
   //double itemHeight = 8.0;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-        shrinkWrap: true,
-        primary: false,
-        itemCount: widget.litems.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.9,
-        ),
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Card(
-                margin: EdgeInsets.only(bottom: 0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-                color: Colors.blue,
-                elevation: 10,
-                child: Container(
-                  height: 200.0,
-                  child: Center(child: Text(widget.litems[index])),
-                )),
-          );
-        });
+    if (widget.litems.length != 0) {
+      return GridView.builder(
+          shrinkWrap: true,
+          primary: false,
+          itemCount: widget.litems.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.9,
+          ),
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Card(
+                  margin: EdgeInsets.only(bottom: 0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
+                  color: Colors.blue,
+                  elevation: 10,
+                  child: Container(
+                    height: 200.0,
+                    child: InkWell(
+                        borderRadius: BorderRadius.circular(25),
+                        onTap: () {
+                          /* Map<String, dynamic> data = new Map<String, dynamic>();
+
+                        data["route"] = TabRouterFeed.people;
+                        data["title"] = widget.litems[index];
+                        widget.onPush(data); */
+                        },
+                        child: Center(child: Text(widget.litems[index]))),
+                  )),
+            );
+          });
+    } else {
+      return Center(
+          heightFactor: 15,
+          child: Text(
+            "Não tem neste momento receitas guardadas",
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+          ));
+    }
   }
 }

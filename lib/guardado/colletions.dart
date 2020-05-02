@@ -95,46 +95,6 @@ class _ColletionsState extends State<Colletions> {
             )));
   }
 }
-
-//ESCOLHER LIVRO DE RECEITAS
-class SwipeList extends StatefulWidget {
-  SwipeList({
-    Key key,
-    this.litems,
-  }) : super(key: key);
-
-  final List litems;
-  @override
-  State<StatefulWidget> createState() {
-    return ListItemWidget();
-  }
-}
-
-class ListItemWidget extends State<SwipeList> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        height: 100.0,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: widget.litems.length,
-          shrinkWrap: false,
-          itemBuilder: (context, index) {
-            return Container(
-                width: 100,
-                margin: EdgeInsets.only(right: 10.0, left: 10),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Center(
-                  child: Text(widget.litems[index]),
-                ));
-          },
-        ));
-  }
-}
-
 //GRID VIEW
 
 //ESCOLHER LIVRO DE RECEITAS

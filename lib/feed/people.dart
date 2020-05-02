@@ -1,81 +1,58 @@
 import 'package:flutter/material.dart';
-import '../router.dart';
 
-class MainPerfil extends StatefulWidget {
-  _MainPerfilState createState() => _MainPerfilState();
+class People extends StatefulWidget {
+  People({
+    Key key,
+    this.onPop,
+    this.colletionName,
+  }) : super(key: key);
+
+  final ValueChanged<BuildContext> onPop;
+  final String colletionName;
+  _PeopleState createState() => _PeopleState();
 }
 
-class _MainPerfilState extends State<MainPerfil> {
+class _PeopleState extends State<People> {
   static int seguidores = 44;
   static int aseguir = 28;
-  static bool pro = false;
+  static bool pro = true;
   static String name = "Diana C. Faria";
   static String photo = 'https://picsum.photos/250?image=9';
+  static bool subcribed = false;
+
   static List onSomeEvent() {
     List<String> litems = ["1", "2", "3", "4", "5"];
     return litems;
   }
 
+  final List litems = onSomeEvent();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-          elevation: 0.0,
-        ),
-        endDrawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              Container(
-                  height: 100.0,
-                  child: DrawerHeader(
-                    child: Text("$name",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w500)),
-                    decoration: BoxDecoration(
-                      color: Colors.amber[800],
-                    ),
-                  )),
-              ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Editar Perfil',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w500)),
-                    Icon(Icons.settings),
-                  ],
-                ),
-                subtitle: Text('Edita aqui o seu perfil'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Logout',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w500)),
-                      Icon(Icons.forward),
-                    ]),
-                subtitle: Text('Terminar a sua sessão'),
-                onTap: () {
-                  Navigator.popUntil(
-                      context, (r) => r.settings.name == Routes.login);
-                },
-              ),
-            ],
-          ),
-        ),
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: InkWell(
+                        borderRadius: BorderRadius.circular(100),
+                        onTap: () {
+                          widget.onPop(context);
+                        },
+                        child: Container(
+                          child: Icon(
+                            Icons.keyboard_arrow_left,
+                            color: Colors.black,
+                            size: 50,
+                          ),
+                        )),
+                  ),
+                ),
                 Container(
                   margin: EdgeInsets.only(top: 2),
                   child: Center(
@@ -124,19 +101,72 @@ class _MainPerfilState extends State<MainPerfil> {
                           ],
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: _submitButton(),
+                      ),
                     ],
                   )),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.only(top: 2),
                   child: GridList(
-                    litems: onSomeEvent(),
+                    litems: litems,
                   ),
-                ),
+                )
               ],
             )));
   }
+
+  Widget _submitButton() {
+    if (subcribed) {
+      return RaisedButton(
+        elevation: 5,
+        splashColor: Colors.amber,
+        padding:
+            const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 60),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(100),
+        ),
+        color: Colors.amber[800],
+        onPressed: () {
+          setState(() {
+            subcribed = false;
+          });
+        },
+        textColor: Colors.white,
+        child: Text(
+          'Seguir',
+          style: TextStyle(
+              fontSize: 16, color: Colors.white, fontWeight: FontWeight.w400),
+        ),
+      );
+    } else {
+      return RaisedButton(
+        elevation: 5,
+        splashColor: Colors.amber[800],
+        padding:
+            const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 60),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: Colors.amber[800]),
+          borderRadius: BorderRadius.circular(100),
+        ),
+        color: Colors.white,
+        onPressed: () {
+          setState(() {
+            subcribed = true;
+          });
+        },
+        textColor: Colors.amber[800],
+        child: Text(
+          'Não Seguir',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+        ),
+      );
+    }
+  }
 }
+//GRID VIEW
 
 //ESCOLHER LIVRO DE RECEITAS
 class GridList extends StatefulWidget {
@@ -153,6 +183,8 @@ class GridList extends StatefulWidget {
 }
 
 class GridItemWidget extends State<GridList> {
+  //double itemHeight = 8.0;
+
   @override
   Widget build(BuildContext context) {
     if (widget.litems.length != 0) {
@@ -168,13 +200,13 @@ class GridItemWidget extends State<GridList> {
             return Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
-                margin: EdgeInsets.only(bottom: 0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-                color: Colors.blue,
-                elevation: 10,
-                child: InkWell(
+                  margin: EdgeInsets.only(bottom: 0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
+                  color: Colors.blue,
+                  elevation: 10,
+                  child: InkWell(
                     borderRadius: BorderRadius.circular(25),
                     onTap: () {
                       /* Map<String, dynamic> data = new Map<String, dynamic>();
@@ -183,8 +215,10 @@ class GridItemWidget extends State<GridList> {
                         data["title"] = widget.litems[index];
                         widget.onPush(data); */
                     },
-                    child: Center(child: Text(widget.litems[index]))),
-              ),
+                    child: Container(
+                        height: 200.0,
+                        child: Center(child: Text(widget.litems[index]))),
+                  )),
             );
           });
     } else {

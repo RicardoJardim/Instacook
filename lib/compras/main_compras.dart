@@ -226,11 +226,13 @@ class MyCheckBox extends StatefulWidget {
 }
 
 class _CheckBoxState extends State<MyCheckBox> {
-  TextDecoration decord = TextDecoration.none;
+  TextDecoration decord;
   @override
   Widget build(BuildContext context) {
     if (widget.done) {
       decord = TextDecoration.lineThrough;
+    } else {
+      decord = TextDecoration.none;
     }
     return LabeledCheckbox(
         quantity: widget.quantity,

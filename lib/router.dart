@@ -9,6 +9,7 @@ class TabRouterFeed {
   static const String root = '/';
   static const String search = "/search";
   static const String details = "/details";
+  static const String people = "/people";
 }
 
 class TabRouterSaved {

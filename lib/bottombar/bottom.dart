@@ -51,7 +51,7 @@ class _BottomWidgetState extends State<BottomlWidget> {
                   __buildItem('Receitas', Icons.local_dining),
                   __buildItem('Guardado', Icons.bookmark),
                   __buildItem('Compras', Icons.event_available),
-                  __buildItem('Perfil', Icons.person),
+                  __buildItem('Perfil', Icons.account_box),
                 ],
                 currentIndex: _selectedIndex,
                 selectedItemColor: Colors.amber[800],
