@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../router.dart';
+import '../main.dart';
 
 class MainPerfil extends StatefulWidget {
+  MainPerfil({Key key}) : super(key: key);
+
   _MainPerfilState createState() => _MainPerfilState();
 }
 
@@ -65,8 +68,8 @@ class _MainPerfilState extends State<MainPerfil> {
                     ]),
                 subtitle: Text('Terminar a sua sessão'),
                 onTap: () {
-                  Navigator.popUntil(
-                      context, (r) => r.settings.name == Routes.login);
+                  main_key.currentState
+                      .popUntil((r) => r.settings.name == Routes.login);
                 },
               ),
             ],

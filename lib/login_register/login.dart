@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/main.dart';
 import 'Widget/bezierContainer.dart';
 import '../router.dart';
 import 'dart:core';
@@ -77,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
               print(password.text);
               email.clear();
               password.clear();
-              Navigator.pushNamed(context, Routes.mainapp);
+              main_key.currentState.pushNamed(Routes.mainapp);
             }
           },
           textColor: Colors.white,
@@ -134,8 +135,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           color: Colors.blue[600],
           onPressed: () {
-            /* Navigator.pushNamed(context, Routes.mainapp); */
-            Navigator.pushNamed(context, Routes.mainapp);
+            main_key.currentState.pushNamed(Routes.mainapp);
           },
           textColor: Colors.white,
           child: Stack(
@@ -175,7 +175,8 @@ class _LoginPageState extends State<LoginPage> {
           ),
           InkWell(
             onTap: () {
-              Navigator.pushNamed(context, Routes.register);
+              main_key.currentState.pushNamed(Routes.register);
+
               email.clear();
               password.clear();
             },

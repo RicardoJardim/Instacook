@@ -5,9 +5,14 @@ import '../perfil/main_perfil.dart';
 import '../feed/main.dart';
 import '../compras/main_compras.dart';
 import '../guardado/main.dart';
+import '../router.dart';
+import '../receitas/see_recipe.dart';
 
 class BottomlWidget extends StatefulWidget {
-  BottomlWidget({Key key}) : super(key: key);
+  BottomlWidget({Key key, this.onPush, this.onPopUntil}) : super(key: key);
+
+  ValueChanged<Map<String, dynamic>> onPush;
+  ValueChanged<Map<String, dynamic>> onPopUntil;
 
   @override
   _BottomWidgetState createState() => _BottomWidgetState();
@@ -15,9 +20,11 @@ class BottomlWidget extends StatefulWidget {
 
 class _BottomWidgetState extends State<BottomlWidget> {
   int _selectedIndex = 0;
+
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static final List<Widget> _widgetOptions = <Widget>[
+
+  List<Widget> _widgetOptions = <Widget>[
     TabNavigatorFeed(),
     TabNavigatorSaved(),
     MainCompras(),

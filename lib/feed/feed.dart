@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/receitas/see_recipe.dart';
+import '../main.dart';
 import '../router.dart';
 
 GlobalKey<ListItemWidget> globalKey = GlobalKey();
@@ -10,6 +12,7 @@ class MainReceita extends StatefulWidget {
   }) : super(key: key);
 
   final ValueChanged<Map<String, dynamic>> onPush;
+
   _MainReceitalState createState() => _MainReceitalState();
 }
 
@@ -68,7 +71,9 @@ class _MainReceitalState extends State<MainReceita> {
                 color: Colors.amber[800],
                 size: 30,
               ),
-              onPressed: () {},
+              onPressed: () {
+                print("add Recipe");
+              },
             ),
             // overflow menu
           ],
@@ -105,37 +110,49 @@ class ListItemWidget extends State<SwipeList> {
     );
   }
 
+  void seeRecipe(String id) {
+    main_key.currentState.push(MaterialPageRoute(
+        builder: (context) => SeeRecipe(
+              id: id,
+            )));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: ListView.builder(
-        controller: _scrollController,
-        padding: const EdgeInsets.all(20),
-        itemCount: widget.litems.length,
-        itemBuilder: (context, index) {
-          return Card(
-              margin: EdgeInsets.only(bottom: 30.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25.0),
-              ),
-              color: Colors.blue,
-              elevation: 10,
-              child: Container(
-                height: 300.0,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(25),
-                  onTap: () {
-                    /* Map<String, dynamic> data = new Map<String, dynamic>();
-
-                        data["route"] = TabRouterFeed.people;
-                        data["title"] = widget.litems[index];
-                        widget.onPush(data); */
-                  },
-                  child: Center(child: Text(widget.litems[index])),
+    if (widget.litems.length != 0) {
+      return Container(
+        child: ListView.builder(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(20),
+          itemCount: widget.litems.length,
+          itemBuilder: (context, index) {
+            return Card(
+                margin: EdgeInsets.only(bottom: 30.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25.0),
                 ),
-              ));
-        },
-      ),
-    );
+                color: Colors.blue,
+                elevation: 10,
+                child: Container(
+                  height: 300.0,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(25),
+                    onTap: () {
+                      seeRecipe(widget.litems[index]);
+                    },
+                    child: Center(child: Text(widget.litems[index])),
+                  ),
+                ));
+          },
+        ),
+      );
+    } else {
+      return Center(
+          heightFactor: 15,
+          child: Text(
+            "Não tem neste momento nenhuma pessoa a seguir",
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+          ));
+    }
   }
 }

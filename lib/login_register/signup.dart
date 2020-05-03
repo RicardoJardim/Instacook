@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'Widget/bezierContainer.dart';
+import 'package:instacook/main.dart';
 import '../router.dart';
 
 class SignUpPage extends StatefulWidget {
-  SignUpPage({Key key, this.title}) : super(key: key);
-
-  final String title;
+  SignUpPage({Key key}) : super(key: key);
 
   @override
   _SignUpPageState createState() => _SignUpPageState();
@@ -23,7 +22,8 @@ class _SignUpPageState extends State<SignUpPage> {
           email.clear();
           password.clear();
           username.clear();
-          Navigator.pop(context);
+
+          main_key.currentState.pop(context);
         },
         child: Container(
           child: Icon(
@@ -89,7 +89,8 @@ class _SignUpPageState extends State<SignUpPage> {
               print(email.text.trim());
               print(password.text);
               print(username.text);
-              Navigator.popAndPushNamed(context, Routes.mainapp);
+
+              main_key.currentState.popAndPushNamed(Routes.mainapp);
             }
           },
           textColor: Colors.white,
@@ -119,7 +120,7 @@ class _SignUpPageState extends State<SignUpPage> {
               email.clear();
               password.clear();
               username.clear();
-              Navigator.pop(context);
+              main_key.currentState.pop(context);
             },
             child: Text(
               'Login',

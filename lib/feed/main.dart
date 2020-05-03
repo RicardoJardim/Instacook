@@ -6,7 +6,11 @@ import 'search_detail.dart';
 import 'people.dart';
 import '../router.dart';
 
+final GlobalKey<NavigatorState> feed_key = GlobalKey();
+
 class TabNavigatorFeed extends StatelessWidget {
+  TabNavigatorFeed({Key key}) : super(key: key);
+
   Map<String, dynamic> data = new Map<String, dynamic>();
 
   void _push(BuildContext context, Map<String, dynamic> data) {
@@ -50,6 +54,7 @@ class TabNavigatorFeed extends StatelessWidget {
   Widget build(BuildContext context) {
     final routeBuilders = _routeBuilders(context, data);
     return Navigator(
+      key: feed_key,
       initialRoute: TabRouterFeed.root,
       onGenerateRoute: (routeSettings) {
         return MaterialPageRoute(

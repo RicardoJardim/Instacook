@@ -3,6 +3,8 @@ import 'guardados.dart';
 import 'colletions.dart';
 import '../router.dart';
 
+final GlobalKey<NavigatorState> saved_key = GlobalKey();
+
 class TabNavigatorSaved extends StatelessWidget {
   Map<String, dynamic> data = new Map<String, dynamic>();
 
@@ -37,6 +39,7 @@ class TabNavigatorSaved extends StatelessWidget {
   Widget build(BuildContext context) {
     final routeBuilders = _routeBuilders(context, data);
     return Navigator(
+      key: saved_key,
       initialRoute: TabRouterSaved.root,
       onGenerateRoute: (routeSettings) {
         return MaterialPageRoute(

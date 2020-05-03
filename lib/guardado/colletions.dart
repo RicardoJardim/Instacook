@@ -112,20 +112,6 @@ class GridList extends StatefulWidget {
 }
 
 class GridItemWidget extends State<GridList> {
-  var first = false;
-
-  double itemHeight(int index) {
-    if (!first) {
-      if (index % 2 == 0) {
-        return 8.0;
-      } else {
-        first = true;
-        return 50.0;
-      }
-    } else {
-      return 8.0;
-    }
-  }
   //double itemHeight = 8.0;
 
   @override

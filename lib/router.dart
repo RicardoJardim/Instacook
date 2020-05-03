@@ -2,7 +2,7 @@ class Routes {
   static const String login = '/';
   static const String register = '/register';
   static const String mainapp = '/main';
-  static const String search = '/search';
+  static const String seerecipe = "seerecipe";
 }
 
 class TabRouterFeed {
