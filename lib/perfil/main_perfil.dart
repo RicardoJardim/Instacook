@@ -85,8 +85,8 @@ class _MainPerfilState extends State<MainPerfil> {
                       child: Column(
                     children: <Widget>[
                       Container(
-                          height: 110,
-                          width: 120,
+                          height: 120,
+                          width: 130,
                           child: Stack(children: [
                             Align(
                               alignment: Alignment.center,
@@ -94,6 +94,18 @@ class _MainPerfilState extends State<MainPerfil> {
                                   borderRadius: BorderRadius.circular(100.0),
                                   child: Image.network(
                                     photo,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
                                   )),
                             ),
                             pro
