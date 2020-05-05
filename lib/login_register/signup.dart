@@ -139,7 +139,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-          text: 'd',
+          text: ' ',
           style: TextStyle(fontSize: 46, fontWeight: FontWeight.w700),
           children: [
             TextSpan(

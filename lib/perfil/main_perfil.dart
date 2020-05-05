@@ -22,10 +22,8 @@ class _MainPerfilState extends State<MainPerfil> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
           elevation: 0.0,
         ),
         endDrawer: Drawer(
@@ -75,81 +73,88 @@ class _MainPerfilState extends State<MainPerfil> {
             ],
           ),
         ),
-        body: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(top: 2),
-                  child: Center(
-                      child: Column(
-                    children: <Widget>[
-                      Container(
-                          height: 120,
-                          width: 130,
-                          child: Stack(children: [
-                            Align(
-                              alignment: Alignment.center,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(100.0),
-                                  child: Image.network(
-                                    photo,
-                                    loadingBuilder: (context, child, progress) {
-                                      if (progress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: progress.expectedTotalBytes !=
-                                                  null
-                                              ? progress.cumulativeBytesLoaded /
-                                                  progress.expectedTotalBytes
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                  )),
+        body: SafeArea(
+            top: true,
+            child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 2),
+                      child: Center(
+                          child: Column(
+                        children: <Widget>[
+                          Container(
+                              height: 120,
+                              width: 130,
+                              child: Stack(children: [
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      child: Image.network(
+                                        photo,
+                                        loadingBuilder:
+                                            (context, child, progress) {
+                                          if (progress == null) return child;
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: progress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? progress
+                                                          .cumulativeBytesLoaded /
+                                                      progress
+                                                          .expectedTotalBytes
+                                                  : null,
+                                            ),
+                                          );
+                                        },
+                                      )),
+                                ),
+                                pro
+                                    ? Align(
+                                        alignment: Alignment.bottomRight,
+                                        child: Icon(
+                                          Icons.brightness_5,
+                                          color: Colors.blue,
+                                          size: 36,
+                                        ))
+                                    : Text("")
+                              ])),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0),
+                            child: Text(
+                              "$name",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: 30, fontWeight: FontWeight.w500),
                             ),
-                            pro
-                                ? Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: Icon(
-                                      Icons.brightness_5,
-                                      color: Colors.blue,
-                                      size: 36,
-                                    ))
-                                : Text("")
-                          ])),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0),
-                        child: Text(
-                          "$name",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              fontSize: 30, fontWeight: FontWeight.w500),
-                        ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text("$seguidores seguidores"),
+                                Text(" - "),
+                                Text("$aseguir a seguir")
+                              ],
+                            ),
+                          ),
+                        ],
+                      )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: GridList(
+                        litems: onSomeEvent(),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text("$seguidores seguidores"),
-                            Text(" - "),
-                            Text("$aseguir a seguir")
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: GridList(
-                    litems: onSomeEvent(),
-                  ),
-                ),
-              ],
-            )));
+                    ),
+                  ],
+                ))));
   }
 }
 

@@ -17,10 +17,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.white,
+        scaffoldBackgroundColor: Colors.white,
+        bottomAppBarColor: Colors.white,
       ),
-      darkTheme: ThemeData(
-        primaryColor: Colors.black,
-      ),
+      /* darkTheme: ThemeData(
+          primaryColor: Colors.black,
+          scaffoldBackgroundColor: Colors.white,
+          bottomAppBarColor: Colors.black,
+          iconTheme: IconThemeData(color: Colors.white)), */
       initialRoute: Routes.login,
       routes: {
         Routes.login: (BuildContext context) => LoginPage(),

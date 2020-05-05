@@ -54,115 +54,118 @@ class _SearchState extends State<Search> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(30),
-                          bottomRight: Radius.circular(30)),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0.0, 1.0), //(x,y)
-                          blurRadius: 6.0,
+        body: SafeArea(
+            top: true,
+            child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(30),
+                              bottomRight: Radius.circular(30)),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey,
+                              offset: Offset(0.0, 1.0), //(x,y)
+                              blurRadius: 6.0,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Column(children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: InkWell(
-                              borderRadius: BorderRadius.circular(100),
-                              onTap: () {
-                                widget.onPop(context);
-                              },
+                        child: Column(children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: InkWell(
+                                  borderRadius: BorderRadius.circular(100),
+                                  onTap: () {
+                                    widget.onPop(context);
+                                  },
+                                  child: Container(
+                                    child: Icon(
+                                      Icons.keyboard_arrow_left,
+                                      color: Colors.black,
+                                      size: 50,
+                                    ),
+                                  )),
+                            ),
+                          ),
+                          Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 10, left: 8.0, right: 8.0),
                               child: Container(
-                                child: Icon(
-                                  Icons.keyboard_arrow_left,
-                                  color: Colors.black,
-                                  size: 50,
+                                width: MediaQuery.of(context).size.width - 20,
+                                child: TextField(
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      height: 0.7,
+                                      color: Colors.black),
+                                  onChanged: (text) {
+                                    print("Pesquisa: $text");
+                                  },
+                                  decoration: InputDecoration(
+                                    prefixIcon: Icon(
+                                      Icons.search,
+                                      color: Colors.black,
+                                    ),
+                                    enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: const BorderSide(
+                                          color: Colors.black, width: 1.5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(30.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.blue, width: 2),
+                                    ),
+                                    hintText: 'Enter a search term',
+                                  ),
                                 ),
                               )),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.all(25.0),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  InkWell(
+                                      onTap: () {
+                                        if (!isFood) {
+                                          setNewState(true, true);
+                                        }
+                                      },
+                                      child: Icon(
+                                        Icons.local_dining,
+                                        size: 35,
+                                        color: color1,
+                                      )),
+                                  InkWell(
+                                      onTap: () {
+                                        if (isFood) {
+                                          setNewState(false, false);
+                                        }
+                                      },
+                                      child: Icon(Icons.account_circle,
+                                          size: 35, color: color2)),
+                                ]),
+                          )
+                        ])),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: GridList(
+                        key: globalKey,
+                        litems: litems,
+                        isFood: isFood,
+                        onPush: widget.onPush,
                       ),
-                      Padding(
-                          padding: const EdgeInsets.only(
-                              top: 10, left: 8.0, right: 8.0),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width - 20,
-                            child: TextField(
-                              style: TextStyle(
-                                  fontSize: 16.0,
-                                  height: 0.7,
-                                  color: Colors.black),
-                              onChanged: (text) {
-                                print("Pesquisa: $text");
-                              },
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(
-                                  Icons.search,
-                                  color: Colors.black,
-                                ),
-                                enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: const BorderSide(
-                                      color: Colors.black, width: 1.5),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30.0)),
-                                  borderSide:
-                                      BorderSide(color: Colors.blue, width: 2),
-                                ),
-                                hintText: 'Enter a search term',
-                              ),
-                            ),
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.all(25.0),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              InkWell(
-                                  onTap: () {
-                                    if (!isFood) {
-                                      setNewState(true, true);
-                                    }
-                                  },
-                                  child: Icon(
-                                    Icons.local_dining,
-                                    size: 35,
-                                    color: color1,
-                                  )),
-                              InkWell(
-                                  onTap: () {
-                                    if (isFood) {
-                                      setNewState(false, false);
-                                    }
-                                  },
-                                  child: Icon(Icons.account_circle,
-                                      size: 35, color: color2)),
-                            ]),
-                      )
-                    ])),
-                Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: GridList(
-                    key: globalKey,
-                    litems: litems,
-                    isFood: isFood,
-                    onPush: widget.onPush,
-                  ),
-                )
-              ],
-            )));
+                    )
+                  ],
+                ))));
   }
 }
 

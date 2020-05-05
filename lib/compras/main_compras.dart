@@ -73,31 +73,33 @@ class _MainCompraslState extends State<MainCompras> {
   Widget build(BuildContext context) {
     getLista2();
     return Scaffold(
-        body: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 17, right: 80, left: 7),
-                          child: Text(
-                            "Lista de Compras",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                fontSize: 40, fontWeight: FontWeight.w700),
-                          ),
-                        )),
-                    ListRecepie(
-                      elements: receitas,
-                    )
-                  ],
-                ))));
+        body: SafeArea(
+            top: true,
+            child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 80, left: 5),
+                              child: Text(
+                                "Lista de Compras",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    fontSize: 40, fontWeight: FontWeight.w700),
+                              ),
+                            )),
+                        ListRecepie(
+                          elements: receitas,
+                        )
+                      ],
+                    )))));
   }
 }
 
@@ -138,7 +140,7 @@ class _ListRecepieState extends State<ListRecepie> {
       );
     } else {
       return Center(
-          heightFactor: 25,
+          heightFactor: 15,
           child: Text(
             "Não tem neste momento uma lista de compras",
             style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),

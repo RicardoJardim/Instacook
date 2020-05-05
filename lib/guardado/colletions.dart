@@ -21,78 +21,82 @@ class _ColletionsState extends State<Colletions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: InkWell(
-                        borderRadius: BorderRadius.circular(100),
-                        onTap: () {
-                          widget.onPop(context);
-                        },
-                        child: Container(
-                          child: Icon(
-                            Icons.keyboard_arrow_left,
-                            color: Colors.black,
-                            size: 50,
+        body: SafeArea(
+            top: true,
+            child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: InkWell(
+                            borderRadius: BorderRadius.circular(100),
+                            onTap: () {
+                              widget.onPop(context);
+                            },
+                            child: Container(
+                              child: Icon(
+                                Icons.keyboard_arrow_left,
+                                color: Colors.black,
+                                size: 50,
+                              ),
+                            )),
+                      ),
+                    ),
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 60, left: 15),
+                          child: Text(
+                            widget.colletionName,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                fontSize: 40, fontWeight: FontWeight.w700),
                           ),
                         )),
-                  ),
-                ),
-                Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 60, left: 15),
-                      child: Text(
-                        widget.colletionName,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            fontSize: 40, fontWeight: FontWeight.w700),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width - 20,
+                          child: TextField(
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                height: 0.7,
+                                color: Colors.black),
+                            onChanged: (text) {
+                              print("Pesquisa: $text");
+                            },
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: Colors.black,
+                              ),
+                              enabledBorder: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: const BorderSide(
+                                    color: Colors.black, width: 1.5),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.blue, width: 2),
+                              ),
+                              hintText: 'Enter a search term',
+                            ),
+                          ),
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: GridList(
+                        litems: onSomeEvent2(),
                       ),
-                    )),
-                Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width - 20,
-                      child: TextField(
-                        style: TextStyle(
-                            fontSize: 16.0, height: 0.7, color: Colors.black),
-                        onChanged: (text) {
-                          print("Pesquisa: $text");
-                        },
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: Colors.black,
-                          ),
-                          enabledBorder: const OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50.0)),
-                            borderSide: const BorderSide(
-                                color: Colors.black, width: 1.5),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(30.0)),
-                            borderSide:
-                                BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          hintText: 'Enter a search term',
-                        ),
-                      ),
-                    )),
-                Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: GridList(
-                    litems: onSomeEvent2(),
-                  ),
-                )
-              ],
-            )));
+                    )
+                  ],
+                ))));
   }
 }
 //GRID VIEW

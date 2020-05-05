@@ -30,6 +30,16 @@ class _MainReceitalState extends State<MainReceita> {
     return items;
   }
 
+  void fetchNewList() {
+    List<String> items = [];
+    for (var item in litems) {
+      items.add(item + "1");
+    }
+    setState(() {
+      litems = items;
+    });
+  }
+
   static List<String> litems = onSomeEvent();
   @override
   Widget build(BuildContext context) {
@@ -39,9 +49,9 @@ class _MainReceitalState extends State<MainReceita> {
           title: GestureDetector(
               onTap: () {
                 globalKey.currentState.goUp();
-                setState(() {
+                /* setState(() {
                   litems = event();
-                });
+                }); */
               },
               child: Text(
                 "Instacook",
@@ -80,19 +90,15 @@ class _MainReceitalState extends State<MainReceita> {
         ),
         body: Center(
             child: SwipeList(
-          key: globalKey,
-          litems: litems,
-        )));
+                key: globalKey, litems: litems, fetch: fetchNewList)));
   }
 }
 
 class SwipeList extends StatefulWidget {
-  SwipeList({
-    Key key,
-    this.litems,
-  }) : super(key: key);
+  SwipeList({Key key, this.litems, this.fetch}) : super(key: key);
 
   final List litems;
+  final Function fetch;
   @override
   State<StatefulWidget> createState() {
     return ListItemWidget();
@@ -120,8 +126,12 @@ class ListItemWidget extends State<SwipeList> {
   @override
   Widget build(BuildContext context) {
     if (widget.litems.length != 0) {
-      return Container(
+      return RefreshIndicator(
+        onRefresh: () async {
+          return await Future.delayed(Duration(seconds: 1), widget.fetch());
+        },
         child: ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
           controller: _scrollController,
           padding: const EdgeInsets.all(20),
           itemCount: widget.litems.length,

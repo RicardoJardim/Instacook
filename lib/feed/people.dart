@@ -30,92 +30,94 @@ class _PeopleState extends State<People> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: InkWell(
-                        borderRadius: BorderRadius.circular(100),
-                        onTap: () {
-                          widget.onPop(context);
-                        },
-                        child: Container(
-                          child: Icon(
-                            Icons.keyboard_arrow_left,
-                            color: Colors.black,
-                            size: 50,
-                          ),
-                        )),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 2),
-                  child: Center(
-                      child: Column(
-                    children: <Widget>[
-                      Container(
-                          height: 110,
-                          width: 120,
-                          child: Stack(children: [
-                            Align(
-                              alignment: Alignment.center,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(100.0),
-                                  child: Image.network(
-                                    photo,
-                                  )),
+        body: SafeArea(
+            top: true,
+            child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: InkWell(
+                            borderRadius: BorderRadius.circular(100),
+                            onTap: () {
+                              widget.onPop(context);
+                            },
+                            child: Container(
+                              child: Icon(
+                                Icons.keyboard_arrow_left,
+                                color: Colors.black,
+                                size: 50,
+                              ),
+                            )),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 2),
+                      child: Center(
+                          child: Column(
+                        children: <Widget>[
+                          Container(
+                              height: 110,
+                              width: 120,
+                              child: Stack(children: [
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      child: Image.network(
+                                        photo,
+                                      )),
+                                ),
+                                pro
+                                    ? Align(
+                                        alignment: Alignment.bottomRight,
+                                        child: Icon(
+                                          Icons.brightness_5,
+                                          color: Colors.blue,
+                                          size: 36,
+                                        ))
+                                    : Text("")
+                              ])),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0),
+                            child: Text(
+                              "$name",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: 30, fontWeight: FontWeight.w500),
                             ),
-                            pro
-                                ? Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: Icon(
-                                      Icons.brightness_5,
-                                      color: Colors.blue,
-                                      size: 36,
-                                    ))
-                                : Text("")
-                          ])),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0),
-                        child: Text(
-                          "$name",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              fontSize: 30, fontWeight: FontWeight.w500),
-                        ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text("$seguidores seguidores"),
+                                Text(" - "),
+                                Text("$aseguir a seguir")
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: _submitButton(),
+                          ),
+                        ],
+                      )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: GridList(
+                        litems: litems,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text("$seguidores seguidores"),
-                            Text(" - "),
-                            Text("$aseguir a seguir")
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: _submitButton(),
-                      ),
-                    ],
-                  )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: GridList(
-                    litems: litems,
-                  ),
-                )
-              ],
-            )));
+                    )
+                  ],
+                ))));
   }
 
   Widget _submitButton() {

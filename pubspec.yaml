@@ -28,6 +28,7 @@ flutter:
 
   assets:
     - assets/images/google.png
+    - assets/images/waveone.png
 
   fonts:
     - family: CreamCake

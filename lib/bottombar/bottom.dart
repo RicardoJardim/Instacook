@@ -53,19 +53,20 @@ class _BottomWidgetState extends State<BottomlWidget> {
               topRight: Radius.circular(25.0),
             ),
             child: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                items: [
-                  __buildItem('Receitas', Icons.local_dining),
-                  __buildItem('Guardado', Icons.bookmark),
-                  __buildItem('Compras', Icons.event_available),
-                  __buildItem('Perfil', Icons.account_box),
-                ],
-                currentIndex: _selectedIndex,
-                selectedItemColor: Colors.amber[800],
-                selectedIconTheme: IconThemeData(size: 30),
-                onTap: _onItemTapped,
-                showUnselectedLabels: true,
-                unselectedItemColor: Colors.grey),
+              type: BottomNavigationBarType.fixed,
+              items: [
+                __buildItem('Receitas', Icons.local_dining),
+                __buildItem('Guardado', Icons.bookmark),
+                __buildItem('Compras', Icons.event_available),
+                __buildItem('Perfil', Icons.account_box),
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: Colors.amber[800],
+              selectedIconTheme: IconThemeData(size: 30),
+              onTap: _onItemTapped,
+              showUnselectedLabels: true,
+              unselectedItemColor: Colors.grey,
+            ),
           ),
         ));
   }
