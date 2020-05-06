@@ -373,13 +373,17 @@ class _SeeRecipelState extends State<SeeRecipe> {
                   ),
                   Stack(alignment: AlignmentDirectional.center, children: [
                     ButtonsContainer(func: () {
+                      print(saved);
                       main_key.currentState.push(MaterialPageRoute(
                           builder: (context) => PrepareRecipe(
                                 id: receita["id"],
+                                saved: saved,
                               ))); //        id: widget.id,
                     }),
                     InkWell(
                         onTap: () {
+                          print(saved);
+
                           main_key.currentState.push(MaterialPageRoute(
                               builder: (context) => PrepareRecipe(
                                     id: receita["id"],
