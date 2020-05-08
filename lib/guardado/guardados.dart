@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/receitas/see_recipe.dart';
+import '../main.dart';
 import '../router.dart';
 
 class MainGuardado extends StatefulWidget {
@@ -14,7 +16,33 @@ class MainGuardado extends StatefulWidget {
 
 class _MainGuardadoState extends State<MainGuardado> {
   static List onSomeEvent() {
-    List<String> litems = ["Carnes", "Pizzas", "Peixes", "4", "5"];
+    List<Map<String, dynamic>> litems = [
+      {
+        "id": 1,
+        "name": "Pregos",
+        "image":
+            "https://nit.pt/wp-content/uploads/2018/07/95915588dd8f97db9b5bedd24ea068a5-754x394.jpg"
+      },
+      {
+        "id": 2,
+        "name": "Peixes",
+        "image":
+            "https://s2.glbimg.com/sGfe5ndqXQ_LPvFNH24x0akv0NE=/300x375/e.glbimg.com/og/ed/f/original/2014/02/03/cc22api_184.jpg"
+      },
+      {
+        "id": 3,
+        "name": "Pizzas",
+        "image": "https://www.delonghi.com/Global/recipes/multifry/3.jpg"
+      },
+      {
+        "id": 4,
+        "name": "Carnes",
+        "image":
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTpgNdlNQQ2rGCZhwTe16Dc3axujG2UtE_4Q8R77Y0LSrG58Zjf&usqp=CAU"
+      },
+    ];
+
+    litems.insert(0, {"name": "Novo livro"});
     return litems;
   }
 
@@ -113,35 +141,100 @@ class SwipeList extends StatefulWidget {
 }
 
 class ListItemWidget extends State<SwipeList> {
-  Map<String, dynamic> data = ({"route": TabRouterSaved.saved});
-
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 100.0,
+        height: 120.0,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: widget.litems.length,
           shrinkWrap: false,
           itemBuilder: (context, index) {
-            return Container(
-                width: 100,
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                margin: EdgeInsets.only(right: 10.0, left: 10),
-                child: InkWell(
-                    enableFeedback: true,
-                    onTap: () {
-                      data["title"] = widget.litems[index];
-                      print(data);
-                      widget.onPush(data);
-                    },
-                    borderRadius: BorderRadius.circular(200),
-                    child: Center(
-                      child: Text(widget.litems[index]),
-                    )));
+            if (index == 0) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          border:
+                              Border.all(color: Colors.amber[900], width: 2)),
+                      margin: EdgeInsets.only(right: 10.0, left: 10),
+                      child: InkWell(
+                          enableFeedback: true,
+                          splashColor: Colors.amber[900],
+                          onTap: () {
+                            Map<String, dynamic> data = ({
+                              "route": TabRouterSaved.create,
+                            });
+
+                            print(data);
+                            widget.onPush(data);
+                          },
+                          borderRadius: BorderRadius.circular(200),
+                          child: Center(
+                            child: Icon(
+                              Icons.add,
+                              size: 30,
+                              color: Colors.amber[900],
+                            ),
+                          ))),
+                  Container(
+                    width: 100,
+                    child: Text(
+                      widget.litems[index]["name"],
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                      maxLines: 1,
+                    ),
+                  )
+                ],
+              );
+            }
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                        image: new DecorationImage(
+                            image: NetworkImage(widget.litems[index]["image"]),
+                            fit: BoxFit.fitHeight),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: Colors.amber[900], width: 2)),
+                    margin: EdgeInsets.only(right: 10.0, left: 10),
+                    child: InkWell(
+                      enableFeedback: true,
+                      splashColor: Colors.amber[900],
+                      onTap: () {
+                        Map<String, dynamic> data = ({
+                          "route": TabRouterSaved.saved,
+                          "title": widget.litems[index]["name"]
+                        });
+
+                        print(data);
+                        widget.onPush(data);
+                      },
+                      borderRadius: BorderRadius.circular(200),
+                    )),
+                Container(
+                  width: 100,
+                  child: Text(
+                    widget.litems[index]["name"],
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
+                    maxLines: 2,
+                  ),
+                )
+              ],
+            );
           },
         ));
   }
@@ -165,6 +258,13 @@ class GridList extends StatefulWidget {
 
 class GridItemWidget extends State<GridList> {
   //double itemHeight = 8.0;
+
+  void seeRecipe(String id) {
+    main_key.currentState.push(MaterialPageRoute(
+        builder: (context) => SeeRecipe(
+              id: id,
+            )));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,11 +292,7 @@ class GridItemWidget extends State<GridList> {
                     child: InkWell(
                         borderRadius: BorderRadius.circular(25),
                         onTap: () {
-                          /* Map<String, dynamic> data = new Map<String, dynamic>();
-
-                        data["route"] = TabRouterFeed.people;
-                        data["title"] = widget.litems[index];
-                        widget.onPush(data); */
+                          seeRecipe(widget.litems[index]);
                         },
                         child: Center(child: Text(widget.litems[index]))),
                   )),

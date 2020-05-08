@@ -15,6 +15,7 @@ class TabRouterFeed {
 class TabRouterSaved {
   static const String root = '/';
   static const String saved = "/saved";
+  static const String create = "/create";
 }
 
 //Navega para o widget SignUpPage() e adiciona à stack

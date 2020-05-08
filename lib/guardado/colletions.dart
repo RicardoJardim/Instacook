@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/receitas/see_recipe.dart';
+
+import '../main.dart';
 
 class Colletions extends StatefulWidget {
   Colletions({
@@ -117,6 +120,12 @@ class GridList extends StatefulWidget {
 
 class GridItemWidget extends State<GridList> {
   //double itemHeight = 8.0;
+  void seeRecipe(String id) {
+    main_key.currentState.push(MaterialPageRoute(
+        builder: (context) => SeeRecipe(
+              id: id,
+            )));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,16 +141,19 @@ class GridItemWidget extends State<GridList> {
           return Padding(
             padding: EdgeInsets.all(8.0),
             child: Card(
-                margin: EdgeInsets.only(bottom: 0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-                color: Colors.blue,
-                elevation: 10,
-                child: Container(
-                  height: 200.0,
-                  child: Center(child: Text(widget.litems[index])),
-                )),
+              margin: EdgeInsets.only(bottom: 0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25.0),
+              ),
+              color: Colors.blue,
+              elevation: 10,
+              child: InkWell(
+                  borderRadius: BorderRadius.circular(25),
+                  onTap: () {
+                    seeRecipe(widget.litems[index]);
+                  },
+                  child: Center(child: Text(widget.litems[index]))),
+            ),
           );
         });
   }

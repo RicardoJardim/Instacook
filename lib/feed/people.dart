@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/receitas/see_recipe.dart';
+
+import '../main.dart';
 
 class People extends StatefulWidget {
   People({
@@ -123,7 +126,7 @@ class _PeopleState extends State<People> {
   Widget _submitButton() {
     if (subcribed) {
       return RaisedButton(
-        elevation: 5,
+        elevation: 2,
         splashColor: Colors.amber,
         padding:
             const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 60),
@@ -145,7 +148,7 @@ class _PeopleState extends State<People> {
       );
     } else {
       return RaisedButton(
-        elevation: 5,
+        elevation: 2,
         splashColor: Colors.amber[800],
         padding:
             const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 60),
@@ -186,6 +189,12 @@ class GridList extends StatefulWidget {
 
 class GridItemWidget extends State<GridList> {
   //double itemHeight = 8.0;
+  void seeRecipe(String id) {
+    main_key.currentState.push(MaterialPageRoute(
+        builder: (context) => SeeRecipe(
+              id: id,
+            )));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,11 +220,7 @@ class GridItemWidget extends State<GridList> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(25),
                     onTap: () {
-                      /* Map<String, dynamic> data = new Map<String, dynamic>();
-
-                        data["route"] = TabRouterFeed.people;
-                        data["title"] = widget.litems[index];
-                        widget.onPush(data); */
+                      seeRecipe(widget.litems[index]);
                     },
                     child: Container(
                         height: 200.0,

@@ -21,6 +21,8 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
           "prods": [
             {"quant": 200, "type": "mg", "prod": "leite"},
             {"quant": 100, "type": "mg", "prod": "merda"},
+            {"quant": 200, "type": "mg", "prod": "leite"},
+            {"quant": 100, "type": "mg", "prod": "merda"},
           ],
           "description":
               " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sdasd asdas d asd asd a a uysgd aksb dkjahs kjdhn akjsdh kjash dkjahwsjkdh akjsdh ksjha kjdah kdjsah kjash ",

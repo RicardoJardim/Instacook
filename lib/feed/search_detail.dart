@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/receitas/see_recipe.dart';
+
+import '../main.dart';
 
 class Details extends StatefulWidget {
   Details({
@@ -212,6 +215,13 @@ class GridList extends StatefulWidget {
 class GridItemWidget extends State<GridList> {
   //double itemHeight = 8.0;
 
+  void seeRecipe(String id) {
+    main_key.currentState.push(MaterialPageRoute(
+        builder: (context) => SeeRecipe(
+              id: id,
+            )));
+  }
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -237,11 +247,7 @@ class GridItemWidget extends State<GridList> {
                   child: InkWell(
                       borderRadius: BorderRadius.circular(25),
                       onTap: () {
-                        /* Map<String, dynamic> data = new Map<String, dynamic>();
-
-                        data["route"] = TabRouterFeed.people;
-                        data["title"] = widget.litems[index];
-                        widget.onPush(data); */
+                        seeRecipe(widget.litems[index]);
                       },
                       child: Center(child: Text(widget.litems[index]))),
                 )),

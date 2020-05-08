@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/guardado/create_colletion.dart';
 import 'guardados.dart';
 import 'colletions.dart';
 import '../router.dart';
@@ -32,6 +33,8 @@ class TabNavigatorSaved extends StatelessWidget {
           ),
       TabRouterSaved.saved: (context) => Colletions(
           onPop: (context) => _pop(context), colletionName: data["title"]),
+      TabRouterSaved.create: (context) =>
+          CreateColletion(onPop: (context) => _pop(context)),
     };
   }
 

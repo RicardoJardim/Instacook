@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/perfil/change_perfil.dart';
+import 'package:instacook/receitas/see_recipe.dart';
 import '../router.dart';
 import '../main.dart';
 
@@ -9,15 +11,34 @@ class MainPerfil extends StatefulWidget {
 }
 
 class _MainPerfilState extends State<MainPerfil> {
-  static int seguidores = 44;
-  static int aseguir = 28;
-  static bool pro = false;
-  static String name = "Diana C. Faria";
-  static String photo = 'https://picsum.photos/250?image=9';
-  static List onSomeEvent() {
-    List<String> litems = ["1", "2", "3", "4", "5"];
-    return litems;
+  static Map getLista2() {
+    var profile = new Map<String, dynamic>();
+
+    profile = {
+      "id": 1,
+      "username": "Diana C. Faria",
+      "pro": false,
+      "photo": 'https://picsum.photos/250?image=9',
+      "email": "dciasojd@hotmail.com",
+      "recipes": ["1", "2", "3", "4", "5"],
+      "follow": 28,
+      "followers": 44
+    };
+    return profile;
   }
+
+  void initState() {
+    profile = getLista2();
+    super.initState();
+  }
+
+  void save() {
+    print("send profile");
+
+    print(profile);
+  }
+
+  static Map<String, dynamic> profile;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +54,7 @@ class _MainPerfilState extends State<MainPerfil> {
               Container(
                   height: 100.0,
                   child: DrawerHeader(
-                    child: Text("$name",
+                    child: Text(profile["username"],
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w500)),
                     decoration: BoxDecoration(
@@ -53,6 +74,8 @@ class _MainPerfilState extends State<MainPerfil> {
                 subtitle: Text('Edita aqui o seu perfil'),
                 onTap: () {
                   Navigator.pop(context);
+                  main_key.currentState.push(
+                      MaterialPageRoute(builder: (context) => ChangeProfile()));
                 },
               ),
               ListTile(
@@ -94,7 +117,7 @@ class _MainPerfilState extends State<MainPerfil> {
                                       borderRadius:
                                           BorderRadius.circular(100.0),
                                       child: Image.network(
-                                        photo,
+                                        profile["photo"],
                                         loadingBuilder:
                                             (context, child, progress) {
                                           if (progress == null) return child;
@@ -113,7 +136,7 @@ class _MainPerfilState extends State<MainPerfil> {
                                         },
                                       )),
                                 ),
-                                pro
+                                profile["pro"]
                                     ? Align(
                                         alignment: Alignment.bottomRight,
                                         child: Icon(
@@ -126,7 +149,7 @@ class _MainPerfilState extends State<MainPerfil> {
                           Padding(
                             padding: const EdgeInsets.only(top: 5.0),
                             child: Text(
-                              "$name",
+                              profile["username"],
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   fontSize: 30, fontWeight: FontWeight.w500),
@@ -138,9 +161,10 @@ class _MainPerfilState extends State<MainPerfil> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Text("$seguidores seguidores"),
+                                Text(profile["followers"].toString() +
+                                    " seguidores"),
                                 Text(" - "),
-                                Text("$aseguir a seguir")
+                                Text(profile["follow"].toString() + " a seguir")
                               ],
                             ),
                           ),
@@ -150,7 +174,7 @@ class _MainPerfilState extends State<MainPerfil> {
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: GridList(
-                        litems: onSomeEvent(),
+                        litems: profile["recipes"],
                       ),
                     ),
                   ],
@@ -173,6 +197,13 @@ class GridList extends StatefulWidget {
 }
 
 class GridItemWidget extends State<GridList> {
+  void seeRecipe(String id) {
+    main_key.currentState.push(MaterialPageRoute(
+        builder: (context) => SeeRecipe(
+              id: id,
+            )));
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.litems.length != 0) {
@@ -197,11 +228,7 @@ class GridItemWidget extends State<GridList> {
                 child: InkWell(
                     borderRadius: BorderRadius.circular(25),
                     onTap: () {
-                      /* Map<String, dynamic> data = new Map<String, dynamic>();
-
-                        data["route"] = TabRouterFeed.people;
-                        data["title"] = widget.litems[index];
-                        widget.onPush(data); */
+                      seeRecipe(widget.litems[index]);
                     },
                     child: Center(child: Text(widget.litems[index]))),
               ),

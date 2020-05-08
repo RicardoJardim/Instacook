@@ -49,9 +49,6 @@ class _MainReceitalState extends State<MainReceita> {
           title: GestureDetector(
               onTap: () {
                 globalKey.currentState.goUp();
-                /* setState(() {
-                  litems = event();
-                }); */
               },
               child: Text(
                 "Instacook",
