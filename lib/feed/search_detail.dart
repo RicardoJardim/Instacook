@@ -19,7 +19,40 @@ class _DetailsState extends State<Details> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   static List onSomeEvent2() {
-    List<String> litems = ["1", "2", "3", "4", "5"];
+    List<Map> litems = [
+      {
+        "id": 1,
+        "name": "Bife de vaca",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+        "time": "5-10 minutos",
+        "difficulty": "Difícil"
+      },
+      {
+        "id": 2,
+        "name": "Hamburguer de porco",
+        "image":
+            "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
+        "time": "5-10 minutos",
+        "difficulty": "Fácil"
+      },
+      {
+        "id": 3,
+        "name": "Bife de vaca",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+        "time": "5-10 minutos",
+        "difficulty": "Intermédio"
+      },
+      {
+        "id": 4,
+        "name": "Bife de vaca",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+        "time": "5-10 minutos",
+        "difficulty": "Difícil"
+      },
+    ];
     return litems;
   }
 
@@ -187,7 +220,7 @@ class _DetailsState extends State<Details> {
                           ],
                         )),
                     Padding(
-                      padding: const EdgeInsets.only(top: 15),
+                      padding: const EdgeInsets.only(top: 30),
                       child: GridList(
                         litems: litems,
                       ),
@@ -215,7 +248,7 @@ class GridList extends StatefulWidget {
 class GridItemWidget extends State<GridList> {
   //double itemHeight = 8.0;
 
-  void seeRecipe(String id) {
+  void seeRecipe(int id) {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
               id: id,
@@ -229,28 +262,82 @@ class GridItemWidget extends State<GridList> {
         primary: false,
         itemCount: widget.litems.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.9,
-        ),
+            crossAxisCount: 2, childAspectRatio: 0.88),
         itemBuilder: (context, index) {
           return Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Card(
-                margin: EdgeInsets.only(bottom: 0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-                color: Colors.blue,
-                elevation: 10,
-                child: Container(
-                  height: 200.0,
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: Column(
+              children: <Widget>[
+                index % 2 != 1
+                    ? SizedBox(
+                        height: 0,
+                      )
+                    : SizedBox(
+                        height: 35,
+                      ),
+                Container(
+                  height: 190,
+                  width: 300,
                   child: InkWell(
                       borderRadius: BorderRadius.circular(25),
                       onTap: () {
-                        seeRecipe(widget.litems[index]);
+                        //  seeRecipe(widget.litems[index]["id"]);
                       },
-                      child: Center(child: Text(widget.litems[index]))),
-                )),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              height: 140,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(
+                                  widget.litems[index]["image"],
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                  loadingBuilder: (context, child, progress) {
+                                    if (progress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: progress.expectedTotalBytes !=
+                                                null
+                                            ? progress.cumulativeBytesLoaded /
+                                                progress.expectedTotalBytes
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5, left: 2),
+                              child: Text(
+                                widget.litems[index]["name"],
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5, left: 2),
+                              child: Text(
+                                widget.litems[index]["time"] +
+                                    " - " +
+                                    widget.litems[index]["difficulty"],
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey[700]),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ])),
+                ),
+              ],
+            ),
           );
         });
   }

@@ -118,96 +118,94 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
     return Scaffold(
         body: SafeArea(
             top: true,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: InkWell(
-                          borderRadius: BorderRadius.circular(100),
-                          onTap: () {
-                            main_key.currentState.pop(context);
-                          },
-                          child: Container(
+            child: Column(children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: InkWell(
+                      borderRadius: BorderRadius.circular(100),
+                      onTap: () {
+                        main_key.currentState.pop(context);
+                      },
+                      child: Container(
+                        child: Icon(
+                          Icons.keyboard_arrow_left,
+                          color: Colors.black,
+                          size: 50,
+                        ),
+                      )),
+                ),
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height - 175,
+                child: ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    controller: _controller,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: receita["steps"].length,
+                    itemBuilder: (context, index) {
+                      return Step(
+                        index,
+                        receita["steps"].length,
+                        receita["steps"][index]["description"],
+                        receita["steps"][index]["prods"],
+                        image: receita["steps"][index]["image"],
+                      );
+                    }),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      FlatButton(
+                        shape: CircleBorder(),
+                        padding: EdgeInsets.all(15),
+                        splashColor: Colors.white,
+                        color: Colors.black,
+                        onPressed: () {
+                          if (index != 0) {
+                            index--;
+                            _animateToIndex(index);
+                          }
+                        },
+                        child: Center(
                             child: Icon(
-                              Icons.keyboard_arrow_left,
-                              color: Colors.black,
-                              size: 50,
-                            ),
-                          )),
-                    ),
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height - 175,
-                    child: ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        controller: _controller,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: receita["steps"].length,
-                        itemBuilder: (context, index) {
-                          return Step(
-                            index,
-                            receita["steps"].length,
-                            receita["steps"][index]["description"],
-                            receita["steps"][index]["prods"],
-                            image: receita["steps"][index]["image"],
-                          );
-                        }),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          FlatButton(
-                            shape: CircleBorder(),
-                            padding: EdgeInsets.all(15),
-                            splashColor: Colors.white,
-                            color: Colors.black,
-                            onPressed: () {
-                              if (index != 0) {
-                                index--;
-                                _animateToIndex(index);
-                              }
-                            },
-                            child: Center(
-                                child: Icon(
-                              Icons.arrow_back_ios,
-                              color: Colors.white,
-                              size: 40,
-                            )),
+                          Icons.arrow_back_ios,
+                          color: Colors.white,
+                          size: 40,
+                        )),
+                      ),
+                      FlatButton(
+                        padding: EdgeInsets.all(15),
+                        shape: CircleBorder(),
+                        color: Colors.black,
+                        splashColor: Colors.white,
+                        onPressed: () {
+                          if (index != (receita["steps"].length - 1)) {
+                            index++;
+                            _animateToIndex(index);
+                          } else {
+                            if (!widget.saved) {
+                              addGuardar();
+                            } else {
+                              main_key.currentState.pop(context);
+                              main_key.currentState.pop(context);
+                            }
+                          }
+                        },
+                        child: Center(
+                          child: Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white,
+                            size: 40,
                           ),
-                          FlatButton(
-                            padding: EdgeInsets.all(15),
-                            shape: CircleBorder(),
-                            color: Colors.black,
-                            splashColor: Colors.white,
-                            onPressed: () {
-                              if (index != (receita["steps"].length - 1)) {
-                                index++;
-                                _animateToIndex(index);
-                              } else {
-                                if (!widget.saved) {
-                                  addGuardar();
-                                } else {
-                                  main_key.currentState.pop(context);
-                                  main_key.currentState.pop(context);
-                                }
-                              }
-                            },
-                            child: Center(
-                              child: Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.white,
-                                size: 40,
-                              ),
-                            ),
-                          )
-                        ]),
-                  )
-                ]))));
+                        ),
+                      )
+                    ]),
+              )
+            ])));
   }
 }
 

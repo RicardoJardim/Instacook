@@ -113,7 +113,7 @@ class ListItemWidget extends State<SwipeList> {
     );
   }
 
-  void seeRecipe(String id) {
+  void seeRecipe(int id) {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
               id: id,

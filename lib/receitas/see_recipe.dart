@@ -7,12 +7,12 @@ import '../main.dart';
 class SeeRecipe extends StatefulWidget {
   SeeRecipe({Key key, this.id}) : super(key: key);
 
-  final String id;
+  final int id;
   _SeeRecipelState createState() => _SeeRecipelState();
 }
 
 class _SeeRecipelState extends State<SeeRecipe> {
-  Map getLista2(String id) {
+  Map getLista2(int id) {
     var receita = new Map<String, dynamic>();
 
     receita = {
@@ -42,11 +42,11 @@ class _SeeRecipelState extends State<SeeRecipe> {
     return receita;
   }
 
-  bool getLiked(String id) {
+  bool getLiked(int id) {
     return true;
   }
 
-  bool getSaved(String id) {
+  bool getSaved(int id) {
     return false;
   }
 
