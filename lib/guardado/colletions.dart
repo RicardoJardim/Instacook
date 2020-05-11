@@ -57,30 +57,24 @@ class _ColletionsState extends State<Colletions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          leading: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.black,
+              size: 50,
+            ),
+            onPressed: () => widget.onPop(context),
+          ),
+        ),
         body: SafeArea(
             top: true,
             child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: InkWell(
-                            borderRadius: BorderRadius.circular(100),
-                            onTap: () {
-                              widget.onPop(context);
-                            },
-                            child: Container(
-                              child: Icon(
-                                Icons.keyboard_arrow_left,
-                                color: Colors.black,
-                                size: 50,
-                              ),
-                            )),
-                      ),
-                    ),
                     Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(

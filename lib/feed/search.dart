@@ -101,6 +101,18 @@ class _SearchState extends State<Search> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          leading: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.black,
+              size: 50,
+            ),
+            onPressed: () => widget.onPop(context),
+          ),
+        ),
         body: SafeArea(
             top: true,
             child: SingleChildScrollView(
@@ -122,24 +134,6 @@ class _SearchState extends State<Search> {
                           ],
                         ),
                         child: Column(children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: InkWell(
-                                  borderRadius: BorderRadius.circular(100),
-                                  onTap: () {
-                                    widget.onPop(context);
-                                  },
-                                  child: Container(
-                                    child: Icon(
-                                      Icons.keyboard_arrow_left,
-                                      color: Colors.black,
-                                      size: 50,
-                                    ),
-                                  )),
-                            ),
-                          ),
                           Padding(
                               padding: const EdgeInsets.only(
                                   top: 10, left: 8.0, right: 8.0),
@@ -410,11 +404,3 @@ class GridItemWidget extends State<GridList> {
     }
   }
 }
-
-/* 
-Map<String, dynamic> data = new Map<String, dynamic>();
-
-                        data["route"] = TabRouterFeed.details;
-                        data["title"] = widget.litems[index];
-                        widget.onPush(data);
-                         */

@@ -101,34 +101,29 @@ class _SeeRecipelState extends State<SeeRecipe> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: backgroundColor,
+        appBar: AppBar(
+          backgroundColor: backgroundColor,
+          elevation: 0,
+          leading: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.black,
+              size: 50,
+            ),
+            onPressed: () => main_key.currentState.pop(context),
+          ),
+        ),
         body: SafeArea(
             top: true,
             child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(children: [
                   Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: InkWell(
-                          borderRadius: BorderRadius.circular(100),
-                          onTap: () {
-                            main_key.currentState.pop(context);
-                          },
-                          child: Container(
-                            child: Icon(
-                              Icons.keyboard_arrow_left,
-                              color: Colors.black,
-                              size: 50,
-                            ),
-                          )),
-                    ),
-                  ),
-                  Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding:
-                            const EdgeInsets.only(top: 10, right: 90, left: 15),
+                            const EdgeInsets.only(top: 5, right: 90, left: 15),
                         child: Text(
                           receita["name"],
                           textAlign: TextAlign.left,

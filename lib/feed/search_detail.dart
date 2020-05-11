@@ -121,30 +121,39 @@ class _DetailsState extends State<Details> {
             ],
           ),
         ),
+        appBar: AppBar(
+          elevation: 0,
+          leading: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.black,
+              size: 50,
+            ),
+            onPressed: () => widget.onPop(context),
+          ),
+          actions: <Widget>[
+            // action button
+            IconButton(
+                padding: EdgeInsets.only(right: 15, top: 5),
+                icon: Icon(
+                  Icons.tune,
+                  color: Colors.black,
+                  size: 35,
+                ),
+                onPressed: () {
+                  scaffoldKey.currentState.openEndDrawer();
+                }),
+            // action button
+            // overflow menu
+          ],
+        ),
         body: SafeArea(
             top: true,
             child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: InkWell(
-                            borderRadius: BorderRadius.circular(100),
-                            onTap: () {
-                              widget.onPop(context);
-                            },
-                            child: Container(
-                              child: Icon(
-                                Icons.keyboard_arrow_left,
-                                color: Colors.black,
-                                size: 50,
-                              ),
-                            )),
-                      ),
-                    ),
                     Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
@@ -159,65 +168,36 @@ class _DetailsState extends State<Details> {
                     Padding(
                         padding: const EdgeInsets.only(
                             top: 10, left: 8.0, right: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width - 95,
-                              child: TextField(
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    height: 0.7,
-                                    color: Colors.black),
-                                onChanged: (text) {
-                                  print("Pesquisa: $text");
-                                },
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(
-                                    Icons.search,
-                                    color: Colors.black,
-                                  ),
-                                  enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: const BorderSide(
-                                        color: Colors.black, width: 1.5),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(30.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.blue, width: 2),
-                                  ),
-                                  hintText: 'Enter a search term',
-                                ),
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width - 20,
+                          child: TextField(
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                height: 0.7,
+                                color: Colors.black),
+                            onChanged: (text) {
+                              print("Pesquisa: $text");
+                            },
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.search,
                                 color: Colors.black,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(25.0)),
                               ),
-                              child: InkWell(
+                              enabledBorder: const OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                                splashColor: Colors.white,
-                                onTap: () {
-                                  scaffoldKey.currentState.openEndDrawer();
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 8.0, bottom: 8, left: 15, right: 15),
-                                  child: Icon(
-                                    Icons.tune,
-                                    color: Colors.white,
-                                    size: 30,
-                                  ),
-                                ),
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: const BorderSide(
+                                    color: Colors.black, width: 1.5),
                               ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.blue, width: 2),
+                              ),
+                              hintText: 'Enter a search term',
                             ),
-                          ],
+                          ),
                         )),
                     Padding(
                       padding: const EdgeInsets.only(top: 30),
@@ -281,7 +261,7 @@ class GridItemWidget extends State<GridList> {
                   child: InkWell(
                       borderRadius: BorderRadius.circular(25),
                       onTap: () {
-                        //  seeRecipe(widget.litems[index]["id"]);
+                        seeRecipe(widget.litems[index]["id"]);
                       },
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,

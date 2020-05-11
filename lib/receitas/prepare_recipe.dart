@@ -116,29 +116,23 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          leading: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.black,
+              size: 50,
+            ),
+            onPressed: () => main_key.currentState.pop(context),
+          ),
+        ),
         body: SafeArea(
             top: true,
             child: Column(children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: InkWell(
-                      borderRadius: BorderRadius.circular(100),
-                      onTap: () {
-                        main_key.currentState.pop(context);
-                      },
-                      child: Container(
-                        child: Icon(
-                          Icons.keyboard_arrow_left,
-                          color: Colors.black,
-                          size: 50,
-                        ),
-                      )),
-                ),
-              ),
               Container(
-                height: MediaQuery.of(context).size.height - 175,
+                height: MediaQuery.of(context).size.height - 170,
                 child: ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     controller: _controller,
@@ -155,8 +149,9 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
                     }),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 5),
+                padding: const EdgeInsets.only(top: 10),
                 child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       FlatButton(
@@ -221,7 +216,7 @@ class Step extends StatelessWidget {
     if (image != "" && image != " ") {
       return Container(
           width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: EdgeInsets.symmetric(horizontal: 15),
           child: ScrollConfiguration(
               behavior: MyBehavior(),
               child: SingleChildScrollView(
@@ -230,18 +225,24 @@ class Step extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        "Passo " + (id + 1).toString(),
-                        style: TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.w800),
-                        overflow: TextOverflow.fade,
-                      ),
-                      Text(
-                        "de " + max.toString(),
-                        style: TextStyle(
-                          fontSize: 18,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5),
+                        child: Text(
+                          "Passo " + (id + 1).toString(),
+                          style: TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.w800),
+                          overflow: TextOverflow.fade,
                         ),
-                        overflow: TextOverflow.fade,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5),
+                        child: Text(
+                          "de " + max.toString(),
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                          overflow: TextOverflow.fade,
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10.0),
@@ -313,7 +314,7 @@ class Step extends StatelessWidget {
     } else {
       return Container(
           width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: EdgeInsets.symmetric(horizontal: 15),
           child: ScrollConfiguration(
               behavior: MyBehavior(),
               child: SingleChildScrollView(
@@ -322,20 +323,26 @@ class Step extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        "Passo " + (id + 1).toString(),
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w800,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5.0),
+                        child: Text(
+                          "Passo " + (id + 1).toString(),
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          overflow: TextOverflow.fade,
                         ),
-                        overflow: TextOverflow.fade,
                       ),
-                      Text(
-                        "de " + max.toString(),
-                        style: TextStyle(
-                          fontSize: 18,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5.0),
+                        child: Text(
+                          "de " + max.toString(),
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                          overflow: TextOverflow.fade,
                         ),
-                        overflow: TextOverflow.fade,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(10.0),

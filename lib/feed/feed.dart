@@ -22,14 +22,6 @@ class _MainReceitalState extends State<MainReceita> {
     return litems;
   }
 
-  static List event() {
-    List<String> items = [];
-    for (var item in litems) {
-      items.add(item + "1");
-    }
-    return items;
-  }
-
   void fetchNewList() {
     List<String> items = [];
     for (var item in litems) {

@@ -20,7 +20,7 @@ class _PeopleState extends State<People> {
   static int aseguir = 28;
   static bool pro = true;
   static String photo = 'https://picsum.photos/250?image=9';
-  static bool subcribed = false;
+  static bool subcribed = true;
 
   static List onSomeEvent() {
     List<Map> litems = [
@@ -65,30 +65,24 @@ class _PeopleState extends State<People> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          leading: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.black,
+              size: 50,
+            ),
+            onPressed: () => widget.onPop(context),
+          ),
+        ),
         body: SafeArea(
             top: true,
             child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: InkWell(
-                            borderRadius: BorderRadius.circular(100),
-                            onTap: () {
-                              widget.onPop(context);
-                            },
-                            child: Container(
-                              child: Icon(
-                                Icons.keyboard_arrow_left,
-                                color: Colors.black,
-                                size: 50,
-                              ),
-                            )),
-                      ),
-                    ),
                     Container(
                       margin: EdgeInsets.only(top: 2),
                       child: Center(
@@ -149,7 +143,7 @@ class _PeopleState extends State<People> {
   }
 
   Widget _submitButton() {
-    if (subcribed) {
+    if (!subcribed) {
       return RaisedButton(
         elevation: 2,
         splashColor: Colors.amber,
@@ -161,7 +155,8 @@ class _PeopleState extends State<People> {
         color: Colors.amber[800],
         onPressed: () {
           setState(() {
-            subcribed = false;
+            subcribed = true;
+            seguidores++;
           });
         },
         textColor: Colors.white,
@@ -184,7 +179,8 @@ class _PeopleState extends State<People> {
         color: Colors.white,
         onPressed: () {
           setState(() {
-            subcribed = true;
+            subcribed = false;
+            seguidores--;
           });
         },
         textColor: Colors.amber[800],
@@ -248,7 +244,7 @@ class GridItemWidget extends State<GridList> {
                     child: InkWell(
                         borderRadius: BorderRadius.circular(25),
                         onTap: () {
-                          //  seeRecipe(widget.litems[index]["id"]);
+                          seeRecipe(widget.litems[index]["id"]);
                         },
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
