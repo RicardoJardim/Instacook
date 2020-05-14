@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:instacook/receitas/see_recipe.dart';
 
 import '../main.dart';
+import 'edit_collection.dart';
 
 class Colletions extends StatefulWidget {
-  Colletions({
-    Key key,
-    this.onPop,
-    this.colletionName,
-  }) : super(key: key);
+  Colletions({Key key, this.onPop, this.colletionName, this.id})
+      : super(key: key);
 
   final ValueChanged<BuildContext> onPop;
   final String colletionName;
+  final int id;
   _ColletionsState createState() => _ColletionsState();
 }
 
@@ -68,6 +67,19 @@ class _ColletionsState extends State<Colletions> {
             ),
             onPressed: () => widget.onPop(context),
           ),
+          actions: <Widget>[
+            IconButton(
+                padding: EdgeInsets.zero,
+                icon: Icon(
+                  Icons.settings,
+                  color: Colors.black,
+                  size: 30,
+                ),
+                onPressed: () {
+                  main_key.currentState.push(MaterialPageRoute(
+                      builder: (context) => EditCollection(id: widget.id)));
+                }),
+          ],
         ),
         body: SafeArea(
             top: true,
@@ -165,7 +177,7 @@ class GridItemWidget extends State<GridList> {
               crossAxisCount: 2, childAspectRatio: 0.88),
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: <Widget>[
                   index % 2 != 1

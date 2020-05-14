@@ -1,56 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/guardado/main.dart';
 import 'package:instacook/perfil/change_pass.dart';
 import 'package:instacook/photo_picker.dart';
 
 import '../main.dart';
 import '../router.dart';
 
-class ChangeProfile extends StatefulWidget {
-  ChangeProfile({Key key}) : super(key: key);
+class EditCollection extends StatefulWidget {
+  EditCollection({Key key, this.id}) : super(key: key);
 
-  _ChangeProfileState createState() => _ChangeProfileState();
+  final int id;
+  _EditCollectionState createState() => _EditCollectionState();
 }
 
-class _ChangeProfileState extends State<ChangeProfile> {
-  Map getLista2() {
-    var profile = new Map<String, dynamic>();
+class _EditCollectionState extends State<EditCollection> {
+  Map getLista2(int id) {
+    var collection = new Map<String, dynamic>();
 
-    profile = {
-      "id": 1,
-      "username": "Diana C. Faria",
-      "pro": false,
-      "photo": 'https://picsum.photos/250?image=9',
-      "email": "dciasojd@hotmail.com",
+    collection = {
+      "id": id,
+      "photo":
+          'https://nit.pt/wp-content/uploads/2018/07/95915588dd8f97db9b5bedd24ea068a5-754x394.jpg',
+      "name": "Pregos",
+      "recipes": [
+        {
+          "id": 1,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Difícil"
+        },
+        {
+          "id": 2,
+          "name": "Hamburguer de porco",
+          "image":
+              "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
+          "time": "5-10 minutos",
+          "difficulty": "Fácil"
+        },
+        {
+          "id": 3,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Intermédio"
+        },
+        {
+          "id": 4,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Difícil"
+        },
+      ]
     };
-    return profile;
+    return collection;
   }
 
   void initState() {
-    profile = getLista2();
-    email.text = profile["email"];
-    username.text = profile["username"];
+    collection = getLista2(widget.id);
+    name.text = collection["name"];
 
     super.initState();
   }
 
   void save() {
-    print("send profile");
+    print("send collection");
 
-    print(profile);
+    print(collection);
 
     main_key.currentState.pop(context);
   }
 
-  Map<String, dynamic> profile;
-  final email = TextEditingController();
-  final username = TextEditingController();
+  Map<String, dynamic> collection;
+  final name = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           elevation: 0.0,
-          title: Text("Editar Perfil"),
+          title: Text("Editar Livro"),
           actions: <Widget>[
             IconButton(
               enableFeedback: true,
@@ -83,7 +116,7 @@ class _ChangeProfileState extends State<ChangeProfile> {
                             width: 120,
                             child: ClipOval(
                               child: Image.network(
-                                profile["photo"],
+                                collection["photo"],
                                 fit: BoxFit.cover,
                                 loadingBuilder: (context, child, progress) {
                                   if (progress == null) return child;
@@ -106,16 +139,16 @@ class _ChangeProfileState extends State<ChangeProfile> {
                       padding: const EdgeInsets.all(7.0),
                       child: InkWell(
                         onTap: () {
-                          main_key.currentState.push(MaterialPageRoute(
+                          /* main_key.currentState.push(MaterialPageRoute(
                               builder: (context) => PhotoPicker(
                                     sendPicture: (image) {
                                       print(image);
                                       print("Send to firebase");
                                     },
-                                  )));
+                                  ))); */
                         },
                         child: Text(
-                          "Alterar Foto de Perfil",
+                          "Alterar Foto do Livro",
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -123,18 +156,15 @@ class _ChangeProfileState extends State<ChangeProfile> {
                         ),
                       ),
                     ),
-                    _entryField("Nome", username),
-                    _entryField("Email", email),
+                    _entryField("Nome", name),
                     _divider(),
-                    _pro(profile["pro"]),
-                    _divider(),
-                    _sideButton("Modificar Password", Colors.blue, () {
-                      main_key.currentState.push(MaterialPageRoute(
-                          builder: (context) => ChangePassword()));
+                    _sideButton("Modificar Receitas", Colors.blue, () {
+                      /*  main_key.currentState.push(MaterialPageRoute(
+                          builder: (context) => ChangePassword())); */
                     }),
                     _divider(),
                     _sideButton(
-                        "Eliminar Conta", Colors.red, () => eliminarConta()),
+                        "Eliminar Livro", Colors.red, () => eliminarConta()),
                     _divider(),
                   ],
                 ))));
@@ -158,43 +188,6 @@ class _ChangeProfileState extends State<ChangeProfile> {
             ),
           ),
         ));
-  }
-
-  Widget _pro(bool pro) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      child: InkWell(
-        onTap: () {
-          if (!pro) {
-            print("mudar conta");
-          } else {
-            print("sair conta");
-          }
-        },
-        child: Container(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: pro
-                  ? Text(
-                      "Requisitar conta normal",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blue,
-                      ),
-                    )
-                  : Text(
-                      "Requisitar conta profissional",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blue,
-                      ),
-                    ),
-            )),
-      ),
-    );
   }
 
   Widget _sideButton(String text, Color cor, Function callback) {
@@ -236,13 +229,13 @@ class _ChangeProfileState extends State<ChangeProfile> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Eliminar conta"),
-          content: new Text("Deseja eliminar a sua conta?"),
+          title: new Text("Eliminar Libro"),
+          content:
+              new Text("Deseja eliminar o livro " + collection["name"] + " ?"),
           backgroundColor: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           actions: <Widget>[
-            // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text("Não"),
               onPressed: () {
@@ -250,14 +243,13 @@ class _ChangeProfileState extends State<ChangeProfile> {
               },
             ),
             new FlatButton(
-              child: new Text("Sim"),
-              onPressed: () {
-                print("Eliminar conta");
-                Navigator.of(context).pop();
-                main_key.currentState
-                    .popUntil((r) => r.settings.name == Routes.login);
-              },
-            ),
+                child: new Text("Sim"),
+                onPressed: () {
+                  print("Eliminar livro");
+                  Navigator.of(context).pop();
+                  main_key.currentState.pop(context);
+                  saved_key.currentState.pop(context);
+                }),
           ],
           elevation: 24,
         );

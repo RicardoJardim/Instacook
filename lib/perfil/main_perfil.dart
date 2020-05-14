@@ -142,32 +142,25 @@ class _MainPerfilState extends State<MainPerfil> {
                         children: <Widget>[
                           Container(
                               height: 120,
-                              width: 130,
+                              width: 120,
                               child: Stack(children: [
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(100.0),
-                                      child: Image.network(
-                                        profile["photo"],
-                                        loadingBuilder:
-                                            (context, child, progress) {
-                                          if (progress == null) return child;
-                                          return Center(
-                                            child: CircularProgressIndicator(
-                                              value: progress
-                                                          .expectedTotalBytes !=
-                                                      null
-                                                  ? progress
-                                                          .cumulativeBytesLoaded /
-                                                      progress
-                                                          .expectedTotalBytes
-                                                  : null,
-                                            ),
-                                          );
-                                        },
-                                      )),
+                                ClipOval(
+                                  child: Image.network(
+                                    profile["photo"],
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
                                 profile["pro"]
                                     ? Align(
@@ -228,6 +221,7 @@ class GridItemWidget extends State<GridList> {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
               id: id,
+              goProfile: false,
             )));
   }
 
@@ -242,7 +236,7 @@ class GridItemWidget extends State<GridList> {
               crossAxisCount: 2, childAspectRatio: 0.88),
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: <Widget>[
                   index % 2 != 1

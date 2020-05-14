@@ -254,7 +254,7 @@ class GridItemWidget extends State<GridList> {
               crossAxisCount: 2, childAspectRatio: 0.9),
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: <Widget>[
                   index % 2 != 1
@@ -274,7 +274,7 @@ class GridItemWidget extends State<GridList> {
                               new Map<String, dynamic>();
 
                           data["route"] = TabRouterFeed.details;
-                          data["title"] = widget.litems[index]["category"];
+                          data["id"] = widget.litems[index]["id"];
                           widget.onPush(data);
                         },
                         child: Column(
@@ -332,7 +332,7 @@ class GridItemWidget extends State<GridList> {
               crossAxisCount: 2, childAspectRatio: 0.88),
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: <Widget>[
                   index % 2 != 1
@@ -352,7 +352,7 @@ class GridItemWidget extends State<GridList> {
                               new Map<String, dynamic>();
 
                           data["route"] = TabRouterFeed.people;
-                          data["title"] = widget.litems[index]["username"];
+                          data["id"] = widget.litems[index]["id"];
                           widget.onPush(data);
                         },
                         child: Column(

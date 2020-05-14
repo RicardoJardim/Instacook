@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/feed/people.dart';
 import 'package:instacook/receitas/prepare_recipe.dart';
 import 'Widget/ButtonsContainer.dart';
-
+import '../feed/main.dart';
 import '../main.dart';
 
 class SeeRecipe extends StatefulWidget {
-  SeeRecipe({Key key, this.id}) : super(key: key);
+  SeeRecipe({Key key, this.id, this.goProfile: true}) : super(key: key);
 
   final int id;
+  final bool goProfile;
   _SeeRecipelState createState() => _SeeRecipelState();
 }
 
@@ -33,6 +35,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
         {"quant": 0.5, "type": "mg", "prod": "merda"},
       ],
       "user": {
+        "id": 1,
         "username": "Ricardo Lucas",
         "pro": true,
         "image":
@@ -134,6 +137,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                   Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: Container(
+                        height: 310,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
                           color: Colors.white,
@@ -149,6 +153,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                             borderRadius: BorderRadius.circular(25),
                             child: Image.network(
                               receita["image"],
+                              fit: BoxFit.cover,
                               width: MediaQuery.of(context).size.width,
                               filterQuality: FilterQuality.high,
                               loadingBuilder: (context, child, progress) {
@@ -244,7 +249,15 @@ class _SeeRecipelState extends State<SeeRecipe> {
                           InkWell(
                               borderRadius: BorderRadius.circular(15),
                               onTap: () {
-                                print(receita["user"]["username"]);
+                                if (widget.goProfile) {
+                                  main_key.currentState.push(MaterialPageRoute(
+                                      builder: (context) => People(
+                                            id: receita["user"]["id"],
+                                            onPop: (context) => main_key
+                                                .currentState
+                                                .pop(context),
+                                          )));
+                                }
                               },
                               child: CircleAvatar(
                                   radius: 22,
@@ -254,26 +267,55 @@ class _SeeRecipelState extends State<SeeRecipe> {
                               ? Positioned(
                                   right: -3,
                                   bottom: -3,
-                                  child: Icon(
-                                    Icons.brightness_5,
-                                    color: Colors.blue,
-                                    size: 20,
-                                  ))
+                                  child: InkWell(
+                                      borderRadius: BorderRadius.circular(15),
+                                      onTap: () {
+                                        if (widget.goProfile) {
+                                          main_key.currentState
+                                              .push(MaterialPageRoute(
+                                                  builder: (context) => People(
+                                                        id: receita["user"]
+                                                            ["id"],
+                                                        onPop: (context) =>
+                                                            main_key
+                                                                .currentState
+                                                                .pop(context),
+                                                      )));
+                                        }
+                                      },
+                                      child: Icon(
+                                        Icons.brightness_5,
+                                        color: Colors.blue,
+                                        size: 20,
+                                      )))
                               : Text("")
                         ]),
                         Padding(
-                          padding: const EdgeInsets.only(left: 8.0, top: 15),
-                          child: Text(
-                            receita["user"]["username"],
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600),
-                          ),
-                        )
+                            padding: const EdgeInsets.only(left: 8.0, top: 15),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(15),
+                              onTap: () {
+                                if (widget.goProfile) {
+                                  main_key.currentState.push(MaterialPageRoute(
+                                      builder: (context) => People(
+                                            id: receita["user"]["id"],
+                                            onPop: (context) => main_key
+                                                .currentState
+                                                .pop(context),
+                                          )));
+                                }
+                              },
+                              child: Text(
+                                receita["user"]["username"],
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
+                              ),
+                            ))
                       ],
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(15.0),
                     child: Text(
                       receita["description"],
                       style: TextStyle(fontSize: 16),

@@ -248,7 +248,8 @@ class ListItemWidget extends State<SwipeList> {
                       onTap: () {
                         Map<String, dynamic> data = ({
                           "route": TabRouterSaved.saved,
-                          "title": widget.litems[index]["name"]
+                          "title": widget.litems[index]["name"],
+                          "id": widget.litems[index]["id"],
                         });
 
                         print(data);
@@ -310,7 +311,7 @@ class GridItemWidget extends State<GridList> {
               crossAxisCount: 2, childAspectRatio: 0.88),
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: <Widget>[
                   index % 2 != 1

@@ -7,60 +7,71 @@ class People extends StatefulWidget {
   People({
     Key key,
     this.onPop,
-    this.colletionName,
+    this.id,
   }) : super(key: key);
 
   final ValueChanged<BuildContext> onPop;
-  final String colletionName;
+  final int id;
   _PeopleState createState() => _PeopleState();
 }
 
 class _PeopleState extends State<People> {
-  static int seguidores = 44;
-  static int aseguir = 28;
-  static bool pro = true;
-  static String photo = 'https://picsum.photos/250?image=9';
-  static bool subcribed = true;
+  static Map getLista2() {
+    var profile = new Map<String, dynamic>();
 
-  static List onSomeEvent() {
-    List<Map> litems = [
-      {
-        "id": 1,
-        "name": "Bife de vaca",
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        "time": "5-10 minutos",
-        "difficulty": "Difícil"
-      },
-      {
-        "id": 2,
-        "name": "Hamburguer de porco",
-        "image":
-            "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
-        "time": "5-10 minutos",
-        "difficulty": "Fácil"
-      },
-      {
-        "id": 3,
-        "name": "Bife de vaca",
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        "time": "5-10 minutos",
-        "difficulty": "Intermédio"
-      },
-      {
-        "id": 4,
-        "name": "Bife de vaca",
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        "time": "5-10 minutos",
-        "difficulty": "Difícil"
-      },
-    ];
-    return litems;
+    profile = {
+      "id": 1,
+      "username": "RicardoL",
+      "pro": false,
+      "photo": 'https://picsum.photos/250?image=9',
+      "recipes": [
+        {
+          "id": 1,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Difícil"
+        },
+        {
+          "id": 2,
+          "name": "Hamburguer de porco",
+          "image":
+              "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
+          "time": "5-10 minutos",
+          "difficulty": "Fácil"
+        },
+        {
+          "id": 3,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Intermédio"
+        },
+        {
+          "id": 4,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Difícil"
+        },
+      ],
+      "follow": 28,
+      "followers": 44
+    };
+    return profile;
   }
 
-  final List litems = onSomeEvent();
+  void initState() {
+    profile = getLista2();
+    subcribed = false;
+    super.initState();
+  }
+
+  static Map<String, dynamic> profile;
+  static bool subcribed;
 
   @override
   Widget build(BuildContext context) {
@@ -90,18 +101,27 @@ class _PeopleState extends State<People> {
                         children: <Widget>[
                           Container(
                               height: 120,
-                              width: 130,
+                              width: 120,
                               child: Stack(children: [
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(100.0),
-                                      child: Image.network(
-                                        photo,
-                                      )),
+                                ClipOval(
+                                  child: Image.network(
+                                    profile["photo"],
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
-                                pro
+                                profile["pro"]
                                     ? Align(
                                         alignment: Alignment.bottomRight,
                                         child: Icon(
@@ -114,7 +134,7 @@ class _PeopleState extends State<People> {
                           Padding(
                             padding: const EdgeInsets.only(top: 5.0),
                             child: Text(
-                              widget.colletionName,
+                              profile["username"],
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   fontSize: 30, fontWeight: FontWeight.w500),
@@ -122,8 +142,10 @@ class _PeopleState extends State<People> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
-                            child: Text(
-                                "$seguidores seguidores - $aseguir a seguir"),
+                            child: Text(profile["followers"].toString() +
+                                " seguidores - " +
+                                profile["follow"].toString() +
+                                " a seguir"),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 4),
@@ -135,7 +157,7 @@ class _PeopleState extends State<People> {
                     Padding(
                       padding: const EdgeInsets.only(top: 30),
                       child: GridList(
-                        litems: litems,
+                        litems: profile["recipes"],
                       ),
                     )
                   ],
@@ -156,7 +178,7 @@ class _PeopleState extends State<People> {
         onPressed: () {
           setState(() {
             subcribed = true;
-            seguidores++;
+            profile["followers"]++;
           });
         },
         textColor: Colors.white,
@@ -180,7 +202,7 @@ class _PeopleState extends State<People> {
         onPressed: () {
           setState(() {
             subcribed = false;
-            seguidores--;
+            profile["followers"]--;
           });
         },
         textColor: Colors.amber[800],
@@ -214,6 +236,7 @@ class GridItemWidget extends State<GridList> {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
               id: id,
+              goProfile: false,
             )));
   }
 
@@ -228,7 +251,7 @@ class GridItemWidget extends State<GridList> {
               crossAxisCount: 2, childAspectRatio: 0.88),
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: <Widget>[
                   index % 2 != 1

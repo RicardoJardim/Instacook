@@ -7,56 +7,69 @@ class Details extends StatefulWidget {
   Details({
     Key key,
     this.onPop,
-    this.colletionName,
+    this.id,
   }) : super(key: key);
 
   final ValueChanged<BuildContext> onPop;
-  final String colletionName;
+  final int id;
   _DetailsState createState() => _DetailsState();
 }
 
 class _DetailsState extends State<Details> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
-  static List onSomeEvent2() {
-    List<Map> litems = [
-      {
-        "id": 1,
-        "name": "Bife de vaca",
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        "time": "5-10 minutos",
-        "difficulty": "Difícil"
-      },
-      {
-        "id": 2,
-        "name": "Hamburguer de porco",
-        "image":
-            "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
-        "time": "5-10 minutos",
-        "difficulty": "Fácil"
-      },
-      {
-        "id": 3,
-        "name": "Bife de vaca",
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        "time": "5-10 minutos",
-        "difficulty": "Intermédio"
-      },
-      {
-        "id": 4,
-        "name": "Bife de vaca",
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        "time": "5-10 minutos",
-        "difficulty": "Difícil"
-      },
-    ];
-    return litems;
+  static Map onSomeEvent2() {
+    var searchDetail = new Map<String, dynamic>();
+
+    searchDetail = {
+      "id": 1,
+      "name": "Carne",
+      "recipes": [
+        {
+          "id": 1,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Difícil"
+        },
+        {
+          "id": 2,
+          "name": "Hamburguer de porco",
+          "image":
+              "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
+          "time": "5-10 minutos",
+          "difficulty": "Fácil"
+        },
+        {
+          "id": 3,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Intermédio"
+        },
+        {
+          "id": 4,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Difícil"
+        },
+      ],
+      "follow": 28,
+      "followers": 44
+    };
+    return searchDetail;
   }
 
-  List litems = onSomeEvent2();
+  void initState() {
+    searchDetail = onSomeEvent2();
+    super.initState();
+  }
+
+  static Map<String, dynamic> searchDetail;
 
   bool switch1 = false;
   bool switch2 = false;
@@ -72,7 +85,7 @@ class _DetailsState extends State<Details> {
               Container(
                   height: 100.0,
                   child: DrawerHeader(
-                    child: Text(widget.colletionName,
+                    child: Text(searchDetail["name"],
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w500)),
                     decoration: BoxDecoration(
@@ -159,7 +172,7 @@ class _DetailsState extends State<Details> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 60, left: 15),
                           child: Text(
-                            widget.colletionName,
+                            searchDetail["name"],
                             textAlign: TextAlign.left,
                             style: TextStyle(
                                 fontSize: 40, fontWeight: FontWeight.w700),
@@ -202,7 +215,7 @@ class _DetailsState extends State<Details> {
                     Padding(
                       padding: const EdgeInsets.only(top: 30),
                       child: GridList(
-                        litems: litems,
+                        litems: searchDetail["recipes"],
                       ),
                     )
                   ],
@@ -245,7 +258,7 @@ class GridItemWidget extends State<GridList> {
             crossAxisCount: 2, childAspectRatio: 0.88),
         itemBuilder: (context, index) {
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
             child: Column(
               children: <Widget>[
                 index % 2 != 1
