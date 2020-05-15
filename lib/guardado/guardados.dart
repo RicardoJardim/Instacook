@@ -19,23 +19,29 @@ class _MainGuardadoState extends State<MainGuardado> {
     List<Map<String, dynamic>> litems = [
       {
         "id": 1,
+        "name": "Geral",
+        "image":
+            "https://restaurants.mu/blog-admin/wp-content/uploads/2019/05/1.jpg"
+      },
+      {
+        "id": 2,
         "name": "Pregos",
         "image":
             "https://nit.pt/wp-content/uploads/2018/07/95915588dd8f97db9b5bedd24ea068a5-754x394.jpg"
       },
       {
-        "id": 2,
+        "id": 3,
         "name": "Peixes",
         "image":
             "https://s2.glbimg.com/sGfe5ndqXQ_LPvFNH24x0akv0NE=/300x375/e.glbimg.com/og/ed/f/original/2014/02/03/cc22api_184.jpg"
       },
       {
-        "id": 3,
+        "id": 4,
         "name": "Pizzas",
         "image": "https://www.delonghi.com/Global/recipes/multifry/3.jpg"
       },
       {
-        "id": 4,
+        "id": 5,
         "name": "Carnes",
         "image":
             "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTpgNdlNQQ2rGCZhwTe16Dc3axujG2UtE_4Q8R77Y0LSrG58Zjf&usqp=CAU"
@@ -239,7 +245,7 @@ class ListItemWidget extends State<SwipeList> {
                         image: new DecorationImage(
                             image: NetworkImage(widget.litems[index]["image"]),
                             fit: BoxFit.fitHeight),
-                        borderRadius: BorderRadius.circular(100),
+                        shape: BoxShape.circle,
                         border: Border.all(color: Colors.amber[900], width: 2)),
                     margin: EdgeInsets.only(right: 10.0, left: 10),
                     child: InkWell(

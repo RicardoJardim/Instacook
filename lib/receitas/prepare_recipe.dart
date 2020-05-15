@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/receitas/save_recipe.dart';
 
 import '../main.dart';
 
@@ -94,7 +95,16 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
                 print("Gaurdar receita");
                 Navigator.of(context).pop();
                 main_key.currentState.pop(context);
-                main_key.currentState.pop(context);
+                main_key.currentState.push(MaterialPageRoute(
+                    builder: (context) => SaveRecipe(
+                          recipeId: widget.id,
+                          onSave: (saved) {
+                            if (saved) {
+                              print("GUARDAR DOS GUARDADOS " +
+                                  widget.id.toString());
+                            }
+                          },
+                        )));
               },
             ),
           ],
@@ -369,6 +379,7 @@ class Step extends StatelessWidget {
                                   ),
                                   ListView.builder(
                                       shrinkWrap: true,
+                                      primary: false,
                                       scrollDirection: Axis.vertical,
                                       itemCount: products.length,
                                       itemBuilder: (context, index) {

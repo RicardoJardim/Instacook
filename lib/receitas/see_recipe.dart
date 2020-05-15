@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:instacook/feed/people.dart';
 import 'package:instacook/receitas/prepare_recipe.dart';
+import 'package:instacook/receitas/save_recipe.dart';
 import 'Widget/ButtonsContainer.dart';
-import '../feed/main.dart';
 import '../main.dart';
 
 class SeeRecipe extends StatefulWidget {
-  SeeRecipe({Key key, this.id, this.goProfile: true}) : super(key: key);
+  SeeRecipe({
+    Key key,
+    this.id,
+    this.goProfile: true,
+    this.mine: false,
+  }) : super(key: key);
 
   final int id;
   final bool goProfile;
+  final bool mine;
   _SeeRecipelState createState() => _SeeRecipelState();
 }
 
@@ -18,7 +24,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
     var receita = new Map<String, dynamic>();
 
     receita = {
-      "id": 1,
+      "id": id,
       "name": "Hamburguer de Frango",
       "props": 2,
       "likes": 1020,
@@ -116,6 +122,20 @@ class _SeeRecipelState extends State<SeeRecipe> {
             ),
             onPressed: () => main_key.currentState.pop(context),
           ),
+          actions: <Widget>[
+            widget.mine
+                ? IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.settings,
+                      color: Colors.black,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      print("edit recipe");
+                    })
+                : Text(""),
+          ],
         ),
         body: SafeArea(
             top: true,
@@ -182,64 +202,80 @@ class _SeeRecipelState extends State<SeeRecipe> {
                           " pessoas gostaram desta receita",
                           style: TextStyle(fontSize: 14),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(15),
-                            onTap: () {
-                              if (liked) {
-                                print("TIRAR LIKE NA RECEITA");
-                                setState(() {
-                                  receita["likes"]--;
-                                  liked = false;
-                                });
-                              } else {
-                                print("DAR LIKE NA RECEITA");
-                                setState(() {
-                                  receita["likes"]++;
-                                  liked = true;
-                                });
-                              }
-                            },
-                            child: liked
-                                ? Icon(
-                                    Icons.favorite,
-                                    size: 34,
-                                  )
-                                : Icon(
-                                    Icons.favorite_border,
-                                    size: 34,
-                                  ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(15),
-                            onTap: () {
-                              if (saved) {
-                                print("TIRAR DOS GUARDADOS");
-                                setState(() {
-                                  saved = false;
-                                });
-                              } else {
-                                print("GUARDAR DOS GUARDADOS");
-                                setState(() {
-                                  saved = true;
-                                });
-                              }
-                            },
-                            child: saved
-                                ? Icon(
-                                    Icons.bookmark,
-                                    size: 34,
-                                  )
-                                : Icon(
-                                    Icons.bookmark_border,
-                                    size: 34,
-                                  ),
-                          ),
-                        )
+                        !widget.mine
+                            ? Padding(
+                                padding: const EdgeInsets.only(left: 15),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(15),
+                                  onTap: () {
+                                    if (liked) {
+                                      print("TIRAR LIKE NA RECEITA");
+                                      setState(() {
+                                        receita["likes"]--;
+                                        liked = false;
+                                      });
+                                    } else {
+                                      print("DAR LIKE NA RECEITA");
+                                      setState(() {
+                                        receita["likes"]++;
+                                        liked = true;
+                                      });
+                                    }
+                                  },
+                                  child: liked
+                                      ? Icon(
+                                          Icons.favorite,
+                                          size: 34,
+                                        )
+                                      : Icon(
+                                          Icons.favorite_border,
+                                          size: 34,
+                                        ),
+                                ),
+                              )
+                            : Text(""),
+                        !widget.mine
+                            ? Padding(
+                                padding: const EdgeInsets.only(left: 15),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(15),
+                                  onTap: () {
+                                    if (saved) {
+                                      print("TIRAR DOS GUARDADOS");
+                                      setState(() {
+                                        saved = false;
+                                      });
+                                    } else {
+                                      main_key.currentState
+                                          .push(MaterialPageRoute(
+                                              builder: (context) => SaveRecipe(
+                                                    recipeId: widget.id,
+                                                    onSave: (saveds) {
+                                                      setState(() {
+                                                        saved = saveds;
+                                                      });
+                                                      if (saved) {
+                                                        print(
+                                                            "GUARDAR DOS GUARDADOS " +
+                                                                widget.id
+                                                                    .toString());
+                                                      }
+                                                    },
+                                                  )));
+                                    }
+                                  },
+                                  child: saved
+                                      ? Icon(
+                                          Icons.bookmark,
+                                          size: 34,
+                                        )
+                                      : Icon(
+                                          Icons.bookmark_border,
+                                          size: 34,
+                                        ),
+                                ),
+                              )
+                            : Text("")
                       ]),
                   Padding(
                     padding: const EdgeInsets.all(15.0),
@@ -410,7 +446,11 @@ class _SeeRecipelState extends State<SeeRecipe> {
                   ),
                   Stack(alignment: AlignmentDirectional.center, children: [
                     ButtonsContainer(func: () {
-                      print(saved);
+                      if (widget.mine) {
+                        setState(() {
+                          saved = true;
+                        });
+                      }
                       main_key.currentState.push(MaterialPageRoute(
                           builder: (context) => PrepareRecipe(
                                 id: receita["id"],
@@ -419,11 +459,15 @@ class _SeeRecipelState extends State<SeeRecipe> {
                     }),
                     InkWell(
                         onTap: () {
-                          print(saved);
-
+                          if (widget.mine) {
+                            setState(() {
+                              saved = true;
+                            });
+                          }
                           main_key.currentState.push(MaterialPageRoute(
                               builder: (context) => PrepareRecipe(
                                     id: receita["id"],
+                                    saved: saved,
                                   )));
                         },
                         child: Column(

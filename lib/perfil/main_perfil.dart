@@ -27,7 +27,8 @@ class _MainPerfilState extends State<MainPerfil> {
           "image":
               "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
           "time": "5-10 minutos",
-          "difficulty": "Difícil"
+          "difficulty": "Difícil",
+          "privacy": true
         },
         {
           "id": 2,
@@ -35,7 +36,8 @@ class _MainPerfilState extends State<MainPerfil> {
           "image":
               "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
           "time": "5-10 minutos",
-          "difficulty": "Fácil"
+          "difficulty": "Fácil",
+          "privacy": false
         },
         {
           "id": 3,
@@ -43,7 +45,8 @@ class _MainPerfilState extends State<MainPerfil> {
           "image":
               "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
           "time": "5-10 minutos",
-          "difficulty": "Intermédio"
+          "difficulty": "Intermédio",
+          "privacy": false
         },
         {
           "id": 4,
@@ -51,7 +54,8 @@ class _MainPerfilState extends State<MainPerfil> {
           "image":
               "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
           "time": "5-10 minutos",
-          "difficulty": "Difícil"
+          "difficulty": "Difícil",
+          "privacy": true
         },
       ],
       "follow": 28,
@@ -143,7 +147,7 @@ class _MainPerfilState extends State<MainPerfil> {
                           Container(
                               height: 120,
                               width: 120,
-                              child: Stack(children: [
+                              child: Stack(fit: StackFit.expand, children: [
                                 ClipOval(
                                   child: Image.network(
                                     profile["photo"],
@@ -222,6 +226,7 @@ class GridItemWidget extends State<GridList> {
         builder: (context) => SeeRecipe(
               id: id,
               goProfile: false,
+              mine: true,
             )));
   }
 
@@ -250,37 +255,61 @@ class GridItemWidget extends State<GridList> {
                     height: 190,
                     width: 300,
                     child: InkWell(
-                        borderRadius: BorderRadius.circular(25),
                         onTap: () {
-                          seeRecipe(widget.litems[index]["id"]);
+                          seeRecipe(
+                            widget.litems[index]["id"],
+                          );
                         },
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Container(
-                                height: 140,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.network(
-                                    widget.litems[index]["image"],
-                                    fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.high,
-                                    loadingBuilder: (context, child, progress) {
-                                      if (progress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: progress.expectedTotalBytes !=
-                                                  null
-                                              ? progress.cumulativeBytesLoaded /
-                                                  progress.expectedTotalBytes
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
+                                  height: 140,
+                                  child: Stack(fit: StackFit.expand, children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.network(
+                                        widget.litems[index]["image"],
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.high,
+                                        loadingBuilder:
+                                            (context, child, progress) {
+                                          if (progress == null) return child;
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: progress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? progress
+                                                          .cumulativeBytesLoaded /
+                                                      progress
+                                                          .expectedTotalBytes
+                                                  : null,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    widget.litems[index]["privacy"]
+                                        ? Positioned(
+                                            right: 0,
+                                            bottom: 0,
+                                            child: Container(
+                                                padding: EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.red,
+                                                    shape: BoxShape.circle,
+                                                    border: Border.all(
+                                                        width: 2,
+                                                        color: Colors.red)),
+                                                child: Icon(
+                                                  Icons.lock,
+                                                  color: Colors.white,
+                                                  size: 24,
+                                                )))
+                                        : Text("")
+                                  ])),
                               Padding(
                                 padding: const EdgeInsets.only(top: 5, left: 2),
                                 child: Text(

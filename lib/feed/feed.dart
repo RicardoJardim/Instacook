@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/receitas/save_recipe.dart';
 import 'package:instacook/receitas/see_recipe.dart';
 import '../main.dart';
 import '../router.dart';
@@ -362,14 +363,16 @@ class ListItemWidget extends State<SwipeList> {
                                 borderRadius: BorderRadius.circular(15),
                                 onTap: () {
                                   if (widget.litems[index]["me"]["liked"]) {
-                                    print("TIRAR LIKE NA RECEITA");
+                                    print("TIRAR LIKE NA RECEITA " +
+                                        widget.litems[index]["id"].toString());
                                     setState(() {
                                       widget.litems[index]["likes"]--;
                                       widget.litems[index]["me"]["liked"] =
                                           false;
                                     });
                                   } else {
-                                    print("DAR LIKE NA RECEITA");
+                                    print("DAR LIKE NA RECEITA " +
+                                        widget.litems[index]["id"].toString());
                                     setState(() {
                                       widget.litems[index]["likes"]++;
                                       widget.litems[index]["me"]["liked"] =
@@ -395,17 +398,33 @@ class ListItemWidget extends State<SwipeList> {
                                 borderRadius: BorderRadius.circular(15),
                                 onTap: () {
                                   if (widget.litems[index]["me"]["saved"]) {
-                                    print("TIRAR DOS GUARDADOS");
+                                    print("TIRAR DOS GUARDADOS " +
+                                        widget.litems[index]["id"].toString());
                                     setState(() {
                                       widget.litems[index]["me"]["saved"] =
                                           false;
                                     });
                                   } else {
-                                    print("GUARDAR DOS GUARDADOS");
-                                    setState(() {
-                                      widget.litems[index]["me"]["saved"] =
-                                          true;
-                                    });
+                                    main_key.currentState
+                                        .push(MaterialPageRoute(
+                                            builder: (context) => SaveRecipe(
+                                                  recipeId: widget.litems[index]
+                                                      ["id"],
+                                                  onSave: (saved) {
+                                                    setState(() {
+                                                      widget.litems[index]["me"]
+                                                          ["saved"] = saved;
+                                                    });
+                                                    if (saved) {
+                                                      print(
+                                                          "GUARDAR DOS GUARDADOS " +
+                                                              widget
+                                                                  .litems[index]
+                                                                      ["id"]
+                                                                  .toString());
+                                                    }
+                                                  },
+                                                )));
                                   }
                                 },
                                 child: widget.litems[index]["me"]["saved"]
