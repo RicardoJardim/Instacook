@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/receitas/create/create_recipe.dart';
 import 'package:instacook/receitas/save_recipe.dart';
 import 'package:instacook/receitas/see_recipe.dart';
 import '../main.dart';
@@ -164,7 +165,8 @@ class _MainReceitalState extends State<MainReceita> {
                 size: 30,
               ),
               onPressed: () {
-                print("add Recipe");
+                main_key.currentState.push(
+                    MaterialPageRoute(builder: (context) => CreateRecipe()));
               },
             ),
             // overflow menu

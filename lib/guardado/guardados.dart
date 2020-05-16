@@ -76,7 +76,7 @@ class _MainGuardadoState extends State<MainGuardado> {
         "image":
             "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
         "time": "5-10 minutos",
-        "difficulty": "Intermédio"
+        "difficulty": "Médio"
       },
       {
         "id": 4,

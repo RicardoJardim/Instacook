@@ -108,6 +108,7 @@ class _ChangeProfileState extends State<ChangeProfile> {
                         onTap: () {
                           main_key.currentState.push(MaterialPageRoute(
                               builder: (context) => PhotoPicker(
+                                    textTitle: "Alterar foto de perfil",
                                     sendPicture: (image) {
                                       print(image);
                                       print("Send to firebase");
