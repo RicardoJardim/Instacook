@@ -1,111 +1,71 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:instacook/receitas/save_recipe.dart';
+import 'package:instacook/bottombar/bottom.dart';
 
-import '../main.dart';
+import '../../main.dart';
 
-class PrepareRecipe extends StatefulWidget {
-  PrepareRecipe({Key key, this.id, this.saved}) : super(key: key);
+class PreviewPrepare extends StatefulWidget {
+  PreviewPrepare({Key key, this.receita}) : super(key: key);
 
-  final int id;
-  final bool saved;
-  _PrepareRecipelState createState() => _PrepareRecipelState();
+  final Map receita;
+
+  _PreviewPreparelState createState() => _PreviewPreparelState();
 }
 
-class _PrepareRecipelState extends State<PrepareRecipe> {
-  Map getLista2(int id) {
-    var receita = new Map<String, dynamic>();
+class _PreviewPreparelState extends State<PreviewPrepare> {
+  int index = 0;
+  ScrollController _controller = ScrollController();
 
-    receita = {
-      "id": id,
-      "steps": [
-        {
-          "prods": [
-            {"quant": 200, "type": "mg", "prod": "leite"},
-            {"quant": 100, "type": "mg", "prod": "merda"},
-            {"quant": 200, "type": "mg", "prod": "leite"},
-            {"quant": 100, "type": "mg", "prod": "merda"},
-          ],
-          "description":
-              " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sdasd asdas d asd asd a a uysgd aksb dkjahs kjdhn akjsdh kjash dkjahwsjkdh akjsdh ksjha kjdah kdjsah kjash ",
-          "image":
-              "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
-        },
-        {
-          "prods": [
-            {"quant": 200, "type": "mg", "prod": "leite"},
-            {"quant": 100, "type": "mg", "prod": "merda"},
-          ],
-          "description":
-              " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd as dasd ",
-          "image": " ",
-        },
-        {
-          "prods": [
-            {"quant": 500, "type": "mg", "prod": "manteiga"},
-            {"quant": 200, "type": "mg", "prod": "merda"},
-          ],
-          "description":
-              " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd as dasdasd as dasdas d",
-          "image":
-              "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
-        },
-        {
-          "prods": [
-            {"quant": 800, "type": "mg", "prod": "leadsdite"},
-            {"quant": 700, "type": "mg", "prod": "cxa"},
-          ],
-          "description":
-              " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd asda sda  s asd",
-          "image": " ",
-        },
-      ]
-    };
-    return receita;
-  }
+  _animateToIndex(i) =>
+      _controller.animateTo(MediaQuery.of(context).size.width * i,
+          duration: Duration(seconds: 1), curve: Curves.fastOutSlowIn);
 
-  @override
-  void initState() {
-    receita = getLista2(widget.id);
-    super.initState();
-  }
-
-  void addGuardar() {
+  void saveRecipe() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Guardar receita"),
-          content: new Text("Deseja guardar a receita?"),
+          title: new Text("Finalizar receita"),
+          content: new Text("Deseja guardar a receita criada?"),
           backgroundColor: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Não"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                main_key.currentState.pop(context);
-              },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new FlatButton(
+                child: new Text(
+                  "Eliminar",
+                  style: TextStyle(fontSize: 16),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  main_key.currentState.pop(context);
+                  main_key.currentState.pop(context);
+                  main_key.currentState.pop(context);
+                },
+                textColor: Colors.red,
+              ),
             ),
-            new FlatButton(
-              child: new Text("Sim"),
-              onPressed: () {
-                print("Gaurdar receita");
-                Navigator.of(context).pop();
-                main_key.currentState.pop(context);
-                main_key.currentState.push(MaterialPageRoute(
-                    builder: (context) => SaveRecipe(
-                          recipeId: widget.id,
-                          onSave: (saved) {
-                            if (saved) {
-                              print("GUARDAR DOS GUARDADOS " +
-                                  widget.id.toString());
-                            }
-                          },
-                        )));
-              },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new FlatButton(
+                child: new Text(
+                  "Guardar",
+                  style: TextStyle(fontSize: 16),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  print("enviar " + widget.receita.toString());
+                  main_key.currentState.pop(context);
+                  main_key.currentState.pop(context);
+                  main_key.currentState.pop(context);
+                },
+                textColor: Colors.green,
+              ),
             ),
           ],
           elevation: 24,
@@ -113,15 +73,6 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
       },
     );
   }
-
-  Map<String, dynamic> receita = new Map<String, dynamic>();
-  bool saved;
-  int index = 0;
-  ScrollController _controller = ScrollController();
-
-  _animateToIndex(i) =>
-      _controller.animateTo(MediaQuery.of(context).size.width * i,
-          duration: Duration(seconds: 1), curve: Curves.fastOutSlowIn);
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +88,21 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
             ),
             onPressed: () => main_key.currentState.pop(context),
           ),
+          actions: <Widget>[
+            IconButton(
+                padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
+                enableFeedback: true,
+                tooltip: "confirmar",
+                icon: Icon(
+                  Icons.check,
+                  color: Colors.black,
+                  size: 34,
+                ),
+                onPressed: () {
+                  print("concluir");
+                  saveRecipe();
+                })
+          ],
         ),
         body: SafeArea(
             top: true,
@@ -147,14 +113,14 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
                     physics: const NeverScrollableScrollPhysics(),
                     controller: _controller,
                     scrollDirection: Axis.horizontal,
-                    itemCount: receita["steps"].length,
+                    itemCount: widget.receita["steps"].length,
                     itemBuilder: (context, index) {
                       return Step(
                         index,
-                        receita["steps"].length,
-                        receita["steps"][index]["description"],
-                        receita["steps"][index]["prods"],
-                        image: receita["steps"][index]["image"],
+                        widget.receita["steps"].length,
+                        widget.receita["steps"][index]["description"],
+                        widget.receita["steps"][index]["prods"],
+                        widget.receita["steps"][index]["image"],
                       );
                     }),
               ),
@@ -188,16 +154,9 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
                         color: Colors.black,
                         splashColor: Colors.white,
                         onPressed: () {
-                          if (index != (receita["steps"].length - 1)) {
+                          if (index != (widget.receita["steps"].length - 1)) {
                             index++;
                             _animateToIndex(index);
-                          } else {
-                            if (!widget.saved) {
-                              addGuardar();
-                            } else {
-                              main_key.currentState.pop(context);
-                              main_key.currentState.pop(context);
-                            }
                           }
                         },
                         child: Center(
@@ -215,15 +174,15 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
 }
 
 class Step extends StatelessWidget {
-  const Step(this.id, this.max, this.description, this.products, {this.image});
+  const Step(this.id, this.max, this.description, this.products, this.image);
   final String description;
   final int id;
   final int max;
-  final String image;
+  final File image;
   final List products;
 
   Widget build(BuildContext context) {
-    if (image != "" && image != " ") {
+    if (image != null) {
       return Container(
           width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.symmetric(horizontal: 15),
@@ -270,21 +229,13 @@ class Step extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            child: Image.network(
-                              image,
-                              filterQuality: FilterQuality.high,
-                              loadingBuilder: (context, child, progress) {
-                                if (progress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: progress.expectedTotalBytes != null
-                                        ? progress.cumulativeBytesLoaded /
-                                            progress.expectedTotalBytes
-                                        : null,
-                                  ),
-                                );
-                              },
-                            )),
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(25),
+                                child: Image.file(
+                                  image,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                ))),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(12.0),

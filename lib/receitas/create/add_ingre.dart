@@ -46,7 +46,7 @@ class _AddIngridientlState extends State<AddIngridient> {
               onPressed: () {
                 if (ingr.text != "") {
                   widget.callback({
-                    "quant": quant.text,
+                    "quant": int.parse(quant.text),
                     "prod": ingr.text,
                     "type": unit.text
                   });

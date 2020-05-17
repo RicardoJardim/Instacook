@@ -13,20 +13,6 @@ class AddStep extends StatefulWidget {
   _AddSteplState createState() => _AddSteplState();
 }
 
-/*
- "prods": [
-            {"quant": 200, "type": "mg", "prod": "leite"},
-            {"quant": 100, "type": "mg", "prod": "merda"},
-            {"quant": 200, "type": "mg", "prod": "leite"},
-            {"quant": 100, "type": "mg", "prod": "merda"},
-          ],
-          "description":
-              " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sdasd asdas d asd asd a a uysgd aksb dkjahs kjdhn akjsdh kjash dkjahwsjkdh akjsdh ksjha kjdah kdjsah kjash ",
-          "image":
-              "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
-        },
-*/
-
 class _AddSteplState extends State<AddStep> {
   final description = TextEditingController();
   File _selectedFile;
@@ -116,12 +102,29 @@ class _AddSteplState extends State<AddStep> {
                       ),
                     ),
                     _entryField("Descrição", "Descriva o passo", description),
-                    FlatButton(
-                      onPressed: () {
-                        _showMultiSelect(context);
-                      },
-                      child: Text("Ingredientes"),
-                    )
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15.0),
+                      child: Center(
+                        child: ButtonTheme(
+                            minWidth: 200.0,
+                            child: FlatButton(
+                                onPressed: () {
+                                  _showMultiSelect(context);
+                                },
+                                autofocus: false,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                ),
+                                padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
+                                splashColor: Colors.amber[800],
+                                color: Colors.amber[800],
+                                child: Text(
+                                  "Escolher Ingredientes",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                ))),
+                      ),
+                    ),
                   ],
                 ))));
   }
@@ -161,6 +164,7 @@ class _AddSteplState extends State<AddStep> {
         padding: const EdgeInsets.all(10.0),
         child: TextField(
           autofocus: false,
+          focusNode: FocusNode(canRequestFocus: false),
           controller: _controller,
           style: TextStyle(color: Colors.black, fontSize: 18),
           decoration: InputDecoration(
@@ -237,15 +241,16 @@ class _MultiSelectDialogState<Map> extends State<MultiSelectDialog<Map>> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Select animals'),
-      contentPadding: EdgeInsets.only(top: 12.0),
+      title: Text('Ingredientes'),
+      contentPadding: EdgeInsets.only(top: 18.0),
       content: SingleChildScrollView(
-        child: ListTileTheme(
-          contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
-          child: ListBody(
-            children: widget.items.map(_buildItem).toList(),
-          ),
-        ),
+        child: widget.items.length != 0
+            ? ListTileTheme(
+                contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
+                child:
+                    ListBody(children: widget.items.map(_buildItem).toList()),
+              )
+            : Center(child: Text("Não inserio ingredientes na receita")),
       ),
       actions: <Widget>[
         FlatButton(

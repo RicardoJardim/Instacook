@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:instacook/photo_picker.dart';
 import 'package:instacook/receitas/create/add_ingre.dart';
 import 'package:instacook/receitas/create/add_step.dart';
+import 'package:instacook/receitas/create/preview_recipe.dart';
 
 import '../../main.dart';
 
@@ -12,39 +13,6 @@ class CreateRecipe extends StatefulWidget {
 
   _CreateRecipelState createState() => _CreateRecipelState();
 }
-
-/*
-      "name": "Hamburguer de Frango",
-      "props": 2,
-      "likes": 1020,
-      "time": "5-10 minutos",
-      "type": "carnes",
-      "description":
-          "O Lorem Ipsum é um texto modelo da indústria tipográfica e de impressão. O Lorem Ipsum tem vindo a ser o texto padrão usado por estas indústrias desde o ano de 1500, quando uma misturou os caracteres de um texto para criar um espécime de livro. Este texto não só sobreviveu 5 séculos, mas também o salto para a tipografia electrónica, mantendo-se essencialmente inalterada. Foi popularizada nos anos 60 com a disponibilização das folhas de Letraset, que continham passagens com Lorem Ipsum, e mais recentemente com os programas de publicação como o Aldus PageMaker que incluem versões do Lorem Ipsum",
-      "image":
-          "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg",
-      "prods": [
-        {"quant": 200, "type": "mg", "prod": "leite"},
-        {"quant": 100, "type": "mg", "prod": "merda"},
-        {"quant": 50, "type": "mg", "prod": "merda"},
-        {"quant": 0.5, "type": "mg", "prod": "merda"},
-      ],
-      "steps":[
-        {
-          "prods": [
-            {"quant": 200, "type": "mg", "prod": "leite"},
-            {"quant": 100, "type": "mg", "prod": "merda"},
-            {"quant": 200, "type": "mg", "prod": "leite"},
-            {"quant": 100, "type": "mg", "prod": "merda"},
-          ],
-          "description":
-              " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sdasd asdas d asd asd a a uysgd aksb dkjahs kjdhn akjsdh kjash dkjahwsjkdh akjsdh ksjha kjdah kdjsah kjash ",
-          "image":
-              "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
-        },
-      ]
-     
-*/
 
 class _CreateRecipelState extends State<CreateRecipe> {
   @override
@@ -82,8 +50,8 @@ class _CreateRecipelState extends State<CreateRecipe> {
 
   void saveRecipe() {
     print(receita);
-    print("save recipe");
-    main_key.currentState.pop(context);
+    main_key.currentState.push(MaterialPageRoute(
+        builder: (context) => PreviewRecipe(receita: receita)));
   }
 
   @override
@@ -235,9 +203,11 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                         break;
                                       case 2:
                                         if (props.text != "" &&
-                                            time.text != "") {
+                                            time.text != "" &&
+                                            dif != "") {
                                           receita["time"] = time.text;
-                                          receita["props"] = props.text;
+                                          receita["props"] =
+                                              int.parse(props.text);
                                           receita["difficulty"] = dif;
                                           setState(() {
                                             progvalue += 0.20;
@@ -247,7 +217,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                         }
                                         break;
                                       case 3:
-                                        receita["prod"] = prods;
+                                        receita["prods"] = prods;
                                         setState(() {
                                           progvalue += 0.20;
                                         });
@@ -377,8 +347,8 @@ class _CreateRecipelState extends State<CreateRecipe> {
                 Transform.scale(
                     scale: 1,
                     child: Switch(
-                        activeTrackColor: Colors.lightGreenAccent,
-                        activeColor: Colors.green,
+                        activeTrackColor: Colors.amber[300],
+                        activeColor: Colors.amber[800],
                         value: privacy,
                         onChanged: (bool value) {
                           setState(() {
@@ -496,7 +466,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                       offset: Offset(2.0, 2.0),
                                     ),
                                   ],
-                                  color: Colors.amber[300],
+                                  color: Colors.grey[300],
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(15.0),
                                   ),
@@ -620,7 +590,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                       offset: Offset(2.0, 2.0),
                                     ),
                                   ],
-                                  color: Colors.amber[300],
+                                  color: Colors.grey[300],
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(15.0),
                                   ),
@@ -657,8 +627,9 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                                 width: 200,
                                                 height: 80,
                                                 child: Text(
-                                                  stepsRecipe[index]
-                                                      ["description"],
+                                                  "Descrição: " +
+                                                      stepsRecipe[index]
+                                                          ["description"],
                                                   style:
                                                       TextStyle(fontSize: 18),
                                                   overflow:
@@ -727,6 +698,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
         child: TextField(
           keyboardType: inputType,
           autofocus: false,
+          focusNode: FocusNode(canRequestFocus: false),
           controller: _controller,
           style: TextStyle(color: Colors.black, fontSize: 18),
           decoration: InputDecoration(
@@ -774,6 +746,7 @@ class _DiffButtonsState extends State<DiffButtons> {
 
   void changeState(int id) {
     buttons.forEach((key, value) {
+      print(value);
       buttons[key] = [Colors.black, Colors.white];
     });
     setState(() {
