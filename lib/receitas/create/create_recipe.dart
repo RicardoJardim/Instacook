@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:instacook/photo_picker.dart';
 import 'package:instacook/receitas/create/add_ingre.dart';
+import 'package:instacook/receitas/create/add_step.dart';
 
 import '../../main.dart';
 
@@ -79,6 +80,12 @@ class _CreateRecipelState extends State<CreateRecipe> {
   final time = TextEditingController();
   final props = TextEditingController();
 
+  void saveRecipe() {
+    print(receita);
+    print("save recipe");
+    main_key.currentState.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,180 +108,186 @@ class _CreateRecipelState extends State<CreateRecipe> {
         ),
         body: SafeArea(
             top: true,
-            child: Column(children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: LinearProgressIndicator(
-                  value: progvalue,
-                  backgroundColor: Colors.grey,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.amber[800]),
-                ),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height - 200,
-                child: ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    controller: _controller,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: steps.length,
-                    itemBuilder: (context, index) {
-                      Widget childs;
-                      switch (index) {
-                        case 0:
-                          childs = _page1();
-                          break;
-                        case 1:
-                          childs = _page2();
-                          break;
-                        case 2:
-                          childs = _page3();
-                          break;
-                        case 3:
-                          childs = _page4();
-                          break;
-                        case 4:
-                          childs = _page5();
-                          break;
-                      }
-                      return Container(
-                        width: MediaQuery.of(context).size.width,
-                        padding: EdgeInsets.symmetric(horizontal: 15),
-                        child: childs,
-                      );
-                    }),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ButtonTheme(
-                          minWidth: 140.0,
-                          child: FlatButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                                side: BorderSide(color: Colors.grey, width: 2)),
-                            padding: EdgeInsets.all(20),
-                            splashColor: Colors.amber[800],
-                            color: Colors.white,
-                            onPressed: () {
-                              if (indexs != 0) {
-                                setState(() {
-                                  progvalue -= 0.20;
-                                });
-                                indexs--;
-                                _animateToIndex(indexs);
-                              }
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(Icons.arrow_back),
-                                Text(
-                                  " Anterior",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              ],
-                            ),
-                          )),
-                      ButtonTheme(
-                          minWidth: 140.0,
-                          child: FlatButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                                side: BorderSide(
-                                    color: Colors.amber[800], width: 2)),
-                            padding: EdgeInsets.all(20),
-                            splashColor: Colors.amber[800],
-                            color: Colors.white,
-                            onPressed: () {
-                              if (indexs != (steps.length - 1)) {
-                                switch (indexs) {
-                                  case 0:
-                                    if (name.text != "" &&
-                                        _selectedFile != null) {
-                                      receita["name"] = name.text;
-                                      receita["image"] = _selectedFile;
-                                      print(receita);
-                                      setState(() {
-                                        progvalue += 0.20;
-                                      });
-                                      indexs++;
-                                      _animateToIndex(indexs);
-                                    }
-                                    break;
-                                  case 1:
-                                    if (type.text != "" &&
-                                        description.text != "") {
-                                      receita["type"] = type.text;
-                                      receita["description"] = description.text;
-                                      receita["privacy"] = privacy;
-                                      setState(() {
-                                        progvalue += 0.20;
-                                      });
-                                      indexs++;
-                                      _animateToIndex(indexs);
-                                    }
-                                    break;
-                                  case 2:
-                                    if (props.text != "" && time.text != "") {
-                                      receita["time"] = time.text;
-                                      receita["props"] = props.text;
-                                      receita["difficulty"] = dif;
-                                      setState(() {
-                                        progvalue += 0.20;
-                                      });
-                                      indexs++;
-                                      _animateToIndex(indexs);
-                                    }
-                                    break;
-                                  case 3:
-                                    receita["prod"] = prods;
+            child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                physics: const NeverScrollableScrollPhysics(),
+                child: Column(children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: LinearProgressIndicator(
+                      value: progvalue,
+                      backgroundColor: Colors.grey,
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.amber[800]),
+                    ),
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height - 200,
+                    child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        controller: _controller,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: steps.length,
+                        itemBuilder: (context, index) {
+                          Widget childs;
+                          switch (index) {
+                            case 0:
+                              childs = _page1();
+                              break;
+                            case 1:
+                              childs = _page2();
+                              break;
+                            case 2:
+                              childs = _page3();
+                              break;
+                            case 3:
+                              childs = _page4();
+                              break;
+                            case 4:
+                              childs = _page5();
+                              break;
+                          }
+                          return Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: childs,
+                          );
+                        }),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ButtonTheme(
+                              minWidth: 140.0,
+                              child: FlatButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    side: BorderSide(
+                                        color: Colors.grey, width: 2)),
+                                padding: EdgeInsets.all(20),
+                                splashColor: Colors.amber[800],
+                                color: Colors.white,
+                                onPressed: () {
+                                  if (indexs != 0) {
                                     setState(() {
-                                      progvalue += 0.20;
+                                      progvalue -= 0.20;
                                     });
-                                    indexs++;
+                                    indexs--;
                                     _animateToIndex(indexs);
-
-                                    break;
-                                  case 4:
-                                    if (stepsRecipe.length != 0) {
-                                      receita["steps"] = stepsRecipe;
-                                      setState(() {
-                                        progvalue += 0.20;
-                                      });
-                                      indexs++;
-                                      _animateToIndex(indexs);
-                                    }
-                                    break;
-                                }
-                              }
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  "Seguinte ",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.amber[800]),
+                                  }
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Icon(Icons.arrow_back),
+                                    Text(
+                                      " Anterior",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  ],
                                 ),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: Colors.amber[800],
-                                )
-                              ],
-                            ),
-                          ))
-                    ]),
-              )
-            ])));
+                              )),
+                          ButtonTheme(
+                              minWidth: 140.0,
+                              child: FlatButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    side: BorderSide(
+                                        color: Colors.amber[800], width: 2)),
+                                padding: EdgeInsets.all(20),
+                                splashColor: Colors.amber[800],
+                                color: Colors.white,
+                                onPressed: () {
+                                  if (indexs != (steps.length)) {
+                                    switch (indexs) {
+                                      case 0:
+                                        if (name.text != "" &&
+                                            _selectedFile != null) {
+                                          receita["name"] = name.text;
+                                          receita["image"] = _selectedFile;
+                                          print(receita);
+                                          setState(() {
+                                            progvalue += 0.20;
+                                          });
+                                          indexs++;
+                                          _animateToIndex(indexs);
+                                        }
+                                        break;
+                                      case 1:
+                                        if (type.text != "" &&
+                                            description.text != "") {
+                                          receita["type"] = type.text;
+                                          receita["description"] =
+                                              description.text;
+                                          receita["privacy"] = privacy;
+                                          setState(() {
+                                            progvalue += 0.20;
+                                          });
+                                          indexs++;
+                                          _animateToIndex(indexs);
+                                        }
+                                        break;
+                                      case 2:
+                                        if (props.text != "" &&
+                                            time.text != "") {
+                                          receita["time"] = time.text;
+                                          receita["props"] = props.text;
+                                          receita["difficulty"] = dif;
+                                          setState(() {
+                                            progvalue += 0.20;
+                                          });
+                                          indexs++;
+                                          _animateToIndex(indexs);
+                                        }
+                                        break;
+                                      case 3:
+                                        receita["prod"] = prods;
+                                        setState(() {
+                                          progvalue += 0.20;
+                                        });
+                                        indexs++;
+                                        _animateToIndex(indexs);
+
+                                        break;
+                                      case 4:
+                                        if (stepsRecipe.length != 0) {
+                                          receita["steps"] = stepsRecipe;
+                                          setState(() {
+                                            progvalue += 0.20;
+                                          });
+                                          saveRecipe();
+                                        }
+                                        break;
+                                    }
+                                  }
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      "Seguinte ",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.amber[800]),
+                                    ),
+                                    Icon(
+                                      Icons.arrow_forward,
+                                      color: Colors.amber[800],
+                                    )
+                                  ],
+                                ),
+                              ))
+                        ]),
+                  )
+                ]))));
   }
 
   Widget _page1() {
@@ -549,9 +562,10 @@ class _CreateRecipelState extends State<CreateRecipe> {
                   child: FlatButton(
                       onPressed: () {
                         main_key.currentState.push(MaterialPageRoute(
-                            builder: (context) => AddIngridient(
-                                  // MUDAR
+                            builder: (context) => AddStep(
+                                  ingr: prods,
                                   callback: (map) {
+                                    print(map);
                                     setState(() {
                                       stepsRecipe.add(map);
                                     });
@@ -613,28 +627,85 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(5.0),
-                                  child: Row(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Text(
-                                        "ss",
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                      IconButton(
-                                          icon: Icon(
-                                            Icons.remove_circle,
-                                            color: Colors.red,
-                                            size: 30,
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: <Widget>[
+                                              stepsRecipe[index]["image"] == ""
+                                                  ? Text("")
+                                                  : Image.file(
+                                                      _selectedFile,
+                                                      height: 80,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(left: 10),
+                                                width: 200,
+                                                height: 80,
+                                                child: Text(
+                                                  stepsRecipe[index]
+                                                      ["description"],
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 4,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          onPressed: () {
-                                            print("remove");
-                                            setState(() {
-                                              stepsRecipe.removeAt(index);
-                                            });
-                                          })
+                                          IconButton(
+                                              icon: Icon(
+                                                Icons.remove_circle,
+                                                color: Colors.red,
+                                                size: 30,
+                                              ),
+                                              onPressed: () {
+                                                print("remove");
+                                                setState(() {
+                                                  stepsRecipe.removeAt(index);
+                                                });
+                                              })
+                                        ],
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: ListView.builder(
+                                            shrinkWrap: true,
+                                            scrollDirection: Axis.vertical,
+                                            primary: true,
+                                            itemCount: stepsRecipe[index]
+                                                    ["prods"]
+                                                .length,
+                                            itemBuilder: (context, indexs) {
+                                              return Text(
+                                                " - " +
+                                                    stepsRecipe[index]["prods"]
+                                                        [indexs]["quant"] +
+                                                    " " +
+                                                    stepsRecipe[index]["prods"]
+                                                        [indexs]["prod"] +
+                                                    " " +
+                                                    stepsRecipe[index]["prods"]
+                                                        [indexs]["type"],
+                                                style: TextStyle(fontSize: 14),
+                                              );
+                                            }),
+                                      ),
                                     ],
                                   ),
                                 ),

@@ -115,7 +115,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
                         child: getImageWidget(),
                       ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 50.0),
+                  padding: const EdgeInsets.only(top: 40.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[

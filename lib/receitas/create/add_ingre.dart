@@ -58,15 +58,17 @@ class _AddIngridientlState extends State<AddIngridient> {
         ),
         body: SafeArea(
             top: true,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                _entryField("Ingrediente", "Agua", ingr),
-                _entryField("Quantidade", "500", quant),
-                _entryField("Unidade", "mL", unit)
-              ],
-            )));
+            child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    _entryField("Ingrediente", "Agua", ingr),
+                    _entryField("Quantidade", "500", quant),
+                    _entryField("Unidade", "mL", unit)
+                  ],
+                ))));
   }
 
   Widget _entryField(
