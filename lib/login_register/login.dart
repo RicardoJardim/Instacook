@@ -24,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
     email.dispose();
     password.dispose();
     super.dispose();
+    //tadeu1@live.com.pt
   }
 
   Widget _entryField(String title, bool isPassword,
@@ -76,12 +77,13 @@ class _LoginPageState extends State<LoginPage> {
           color: Colors.amber[800],
           onPressed: () async {
             if ((email.text.trim()).isNotEmpty && password.text.isNotEmpty) {
+            
               dynamic result = await _auth.signInEmailPassword(email.text, password.text);
               if(result == null){
                 print("Error Login");
               }
               else{
-                print("EMAIL: "+result.email);
+                print("UID: "+result.uid);
                 main_key.currentState.pushNamed(Routes.mainapp);
               }
             }
@@ -213,10 +215,20 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget _inputErrorMsg (String errorMsg){
+    return Text(
+      errorMsg,
+      style: TextStyle(
+        color: Colors.red,
+        
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
+      body: SingleChildScrollView(
             child: Container(
       height: MediaQuery.of(context).size.height,
       child: Stack(
