@@ -18,12 +18,59 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
   static List onSomeEvent() {
-    List<String> litems = ["Carnes", "Peixes", "Pizzas", "Bolos", "Veg"];
+    List<Map> litems = [
+      {
+        "id": 1,
+        "category": "Carne",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
+      {
+        "id": 2,
+        "category": "Peixe",
+        "image":
+            "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
+      },
+      {
+        "id": 3,
+        "category": "Pizza",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
+      {
+        "id": 4,
+        "category": "Massas",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
+    ];
     return litems;
   }
 
   static List event() {
-    List<String> items = ["ricardo", "lucas", "Jardim"];
+    List<Map> items = [
+      {
+        "id": 1,
+        "username": "Ricardo",
+        "pro": true,
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
+      {
+        "id": 2,
+        "username": "Lucas",
+        "pro": false,
+        "image":
+            "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
+      },
+      {
+        "id": 3,
+        "username": "Jardim",
+        "pro": true,
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
+    ];
     return items;
   }
 
@@ -46,7 +93,7 @@ class _SearchState extends State<Search> {
     });
   }
 
-  List<String> litems = onSomeEvent();
+  List<Map> litems = onSomeEvent();
   Color color2 = Colors.grey[900];
   Color color1 = Colors.amber[800];
   bool isFood = true;
@@ -54,6 +101,18 @@ class _SearchState extends State<Search> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          leading: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.black,
+              size: 50,
+            ),
+            onPressed: () => widget.onPop(context),
+          ),
+        ),
         body: SafeArea(
             top: true,
             child: SingleChildScrollView(
@@ -75,24 +134,6 @@ class _SearchState extends State<Search> {
                           ],
                         ),
                         child: Column(children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: InkWell(
-                                  borderRadius: BorderRadius.circular(100),
-                                  onTap: () {
-                                    widget.onPop(context);
-                                  },
-                                  child: Container(
-                                    child: Icon(
-                                      Icons.keyboard_arrow_left,
-                                      color: Colors.black,
-                                      size: 50,
-                                    ),
-                                  )),
-                            ),
-                          ),
                           Padding(
                               padding: const EdgeInsets.only(
                                   top: 10, left: 8.0, right: 8.0),
@@ -156,7 +197,7 @@ class _SearchState extends State<Search> {
                           )
                         ])),
                     Padding(
-                      padding: const EdgeInsets.only(top: 15),
+                      padding: const EdgeInsets.only(top: 30),
                       child: GridList(
                         key: globalKey,
                         litems: litems,
@@ -210,32 +251,75 @@ class GridItemWidget extends State<GridList> {
           primary: false,
           itemCount: widget.litems.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.9,
-          ),
+              crossAxisCount: 2, childAspectRatio: 0.9),
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Card(
-                  margin: EdgeInsets.only(bottom: 0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                  ),
-                  color: Colors.blue,
-                  elevation: 10,
-                  child: InkWell(
-                      borderRadius: BorderRadius.circular(25),
-                      onTap: () {
-                        Map<String, dynamic> data = new Map<String, dynamic>();
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
+              child: Column(
+                children: <Widget>[
+                  index % 2 != 1
+                      ? SizedBox(
+                          height: 0,
+                        )
+                      : SizedBox(
+                          height: 45,
+                        ),
+                  Container(
+                    height: 175,
+                    width: 300,
+                    child: InkWell(
+                        borderRadius: BorderRadius.circular(25),
+                        onTap: () {
+                          Map<String, dynamic> data =
+                              new Map<String, dynamic>();
 
-                        data["route"] = TabRouterFeed.details;
-                        data["title"] = widget.litems[index];
-                        widget.onPush(data);
-                      },
-                      child: Container(
-                        height: 200.0,
-                        child: Center(child: Text(widget.litems[index])),
-                      ))),
+                          data["route"] = TabRouterFeed.details;
+                          data["id"] = widget.litems[index]["id"];
+                          widget.onPush(data);
+                        },
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                height: 140,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.network(
+                                    widget.litems[index]["image"],
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5, left: 2),
+                                child: Text(
+                                  widget.litems[index]["category"],
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey[800]),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ])),
+                  ),
+                ],
+              ),
             );
           });
     } else {
@@ -245,32 +329,76 @@ class GridItemWidget extends State<GridList> {
           primary: false,
           itemCount: widget.litems.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.9,
-          ),
+              crossAxisCount: 2, childAspectRatio: 0.88),
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Card(
-                  margin: EdgeInsets.only(bottom: 0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                  ),
-                  color: Colors.blue,
-                  elevation: 10,
-                  child: InkWell(
-                      borderRadius: BorderRadius.circular(25),
-                      onTap: () {
-                        Map<String, dynamic> data = new Map<String, dynamic>();
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
+              child: Column(
+                children: <Widget>[
+                  index % 2 != 1
+                      ? SizedBox(
+                          height: 0,
+                        )
+                      : SizedBox(
+                          height: 45,
+                        ),
+                  Container(
+                    height: 175,
+                    width: 300,
+                    child: InkWell(
+                        borderRadius: BorderRadius.circular(25),
+                        onTap: () {
+                          Map<String, dynamic> data =
+                              new Map<String, dynamic>();
 
-                        data["route"] = TabRouterFeed.people;
-                        data["title"] = widget.litems[index];
-                        widget.onPush(data);
-                      },
-                      child: Container(
-                        height: 200.0,
-                        child: Center(child: Text(widget.litems[index])),
-                      ))),
+                          data["route"] = TabRouterFeed.people;
+                          data["id"] = widget.litems[index]["id"];
+                          widget.onPush(data);
+                        },
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                height: 140,
+                                width: 140,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(200),
+                                  child: Image.network(
+                                    widget.litems[index]["image"],
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5, left: 2),
+                                child: Text(
+                                  widget.litems[index]["username"],
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey[800]),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ])),
+                  ),
+                ],
+              ),
             );
           });
     }

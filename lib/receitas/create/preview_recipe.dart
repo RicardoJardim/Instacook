@@ -1,101 +1,90 @@
 import 'package:flutter/material.dart';
-import 'package:instacook/feed/people.dart';
-import 'package:instacook/receitas/create/create_recipe.dart';
-import 'package:instacook/receitas/prepare_recipe.dart';
-import 'package:instacook/receitas/save_recipe.dart';
-import 'Widget/ButtonsContainer.dart';
-import '../main.dart';
+import 'package:instacook/receitas/Widget/ButtonsContainer.dart';
+import 'package:instacook/receitas/create/preview_prepare.dart';
 
-class SeeRecipe extends StatefulWidget {
-  SeeRecipe({
-    Key key,
-    this.id,
-    this.goProfile: true,
-    this.mine: false,
-  }) : super(key: key);
+import '../../main.dart';
 
-  final int id;
-  final bool goProfile;
-  final bool mine;
-  _SeeRecipelState createState() => _SeeRecipelState();
+class PreviewRecipe extends StatefulWidget {
+  PreviewRecipe({Key key, this.receita}) : super(key: key);
+
+  final Map receita;
+  _PreviewRecipelState createState() => _PreviewRecipelState();
 }
 
-class _SeeRecipelState extends State<SeeRecipe> {
-  Map getLista2(int id) {
-    var receita = new Map<String, dynamic>();
-
-    receita = {
+class _PreviewRecipelState extends State<PreviewRecipe> {
+  Map getUser(int id) {
+    var user = new Map<String, dynamic>();
+    user = {
       "id": id,
-      "name": "Hamburguer de Frango",
-      "props": 2,
-      "likes": 1020,
-      "time": "5-10 minutos",
-      "type": "carnes",
-      "difficulty": "Difícil",
-      "privacy": true,
-      "description":
-          "O Lorem Ipsum é um texto modelo da indústria tipográfica e de impressão. O Lorem Ipsum tem vindo a ser o texto padrão usado por estas indústrias desde o ano de 1500, quando uma misturou os caracteres de um texto para criar um espécime de livro. Este texto não só sobreviveu 5 séculos, mas também o salto para a tipografia electrónica, mantendo-se essencialmente inalterada. Foi popularizada nos anos 60 com a disponibilização das folhas de Letraset, que continham passagens com Lorem Ipsum, e mais recentemente com os programas de publicação como o Aldus PageMaker que incluem versões do Lorem Ipsum",
+      "username": "Ricardo Lucas",
+      "pro": true,
       "image":
-          "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg",
-      "prods": [
-        {"quant": 200, "type": "mg", "prod": "leite"},
-        {"quant": 100, "type": "mg", "prod": "merda"},
-        {"quant": 50, "type": "mg", "prod": "merda"},
-        {"quant": 0.5, "type": "mg", "prod": "merda"},
-      ],
-      "user": {
-        "id": 1,
-        "username": "Ricardo Lucas",
-        "pro": true,
-        "image":
-            "https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg",
-      }
+          "https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg",
     };
-    return receita;
-  }
-
-  bool getLiked(int id) {
-    return true;
-  }
-
-  bool getSaved(int id) {
-    return false;
+    return user;
   }
 
   @override
   void initState() {
-    receita = getLista2(widget.id);
-    liked = getLiked(widget.id);
-    saved = getSaved(widget.id);
+    user = getUser(1);
     backgroundColor = Colors.amber[600];
     super.initState();
   }
 
-  void addIngredients() {
+  Map<String, dynamic> user = new Map<String, dynamic>();
+  bool liked;
+  bool saved;
+  Color backgroundColor;
+
+  void saveRecipe() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Adicionar à lista de compras"),
-          content: new Text("Deseja adicionar à lista de compras?"),
+          title: new Text("Finalizar receita"),
+          content: new Text(widget.receita["id"] != null
+              ? "Deseja guardar a receita editada?"
+              : "Deseja guardar a receita criada?"),
           backgroundColor: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Não"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new FlatButton(
+                child: new Text(
+                  "Eliminar",
+                  style: TextStyle(fontSize: 16),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  main_key.currentState.pop(context);
+                  main_key.currentState.pop(context);
+                },
+                textColor: Colors.red,
+              ),
             ),
-            new FlatButton(
-              child: new Text("Sim"),
-              onPressed: () {
-                print(ingredients_key.currentState.widget.litems);
-                Navigator.of(context).pop();
-              },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new FlatButton(
+                child: new Text(
+                  "Guardar",
+                  style: TextStyle(fontSize: 16),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  if (widget.receita["id"] == null) {
+                    print("guardar " + widget.receita.toString());
+                  } else {
+                    print("editar " + widget.receita.toString());
+                  }
+                  main_key.currentState.pop(context);
+                  main_key.currentState.pop(context);
+                },
+                textColor: Colors.green,
+              ),
             ),
           ],
           elevation: 24,
@@ -103,11 +92,6 @@ class _SeeRecipelState extends State<SeeRecipe> {
       },
     );
   }
-
-  Map<String, dynamic> receita = new Map<String, dynamic>();
-  bool liked;
-  bool saved;
-  Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -126,21 +110,19 @@ class _SeeRecipelState extends State<SeeRecipe> {
             onPressed: () => main_key.currentState.pop(context),
           ),
           actions: <Widget>[
-            widget.mine
-                ? IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: Icon(
-                      Icons.settings,
-                      color: Colors.black,
-                      size: 30,
-                    ),
-                    onPressed: () {
-                      main_key.currentState.push(MaterialPageRoute(
-                          builder: (context) => CreateRecipe(
-                                editRecipe: receita,
-                              )));
-                    })
-                : Text(""),
+            IconButton(
+                padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
+                enableFeedback: true,
+                tooltip: "confirmar",
+                icon: Icon(
+                  Icons.check,
+                  color: Colors.black,
+                  size: 34,
+                ),
+                onPressed: () {
+                  print("concluir");
+                  saveRecipe();
+                })
           ],
         ),
         body: SafeArea(
@@ -154,7 +136,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                         padding:
                             const EdgeInsets.only(top: 5, right: 90, left: 15),
                         child: Text(
-                          receita["name"],
+                          widget.receita["name"],
                           textAlign: TextAlign.left,
                           style: TextStyle(
                               fontSize: 35, fontWeight: FontWeight.w700),
@@ -164,6 +146,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                     padding: const EdgeInsets.all(15.0),
                     child: Container(
                         height: 300,
+                        width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
                           color: Colors.white,
@@ -177,30 +160,36 @@ class _SeeRecipelState extends State<SeeRecipe> {
                         ),
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(25),
-                            child: Image.network(
-                              receita["image"],
-                              fit: BoxFit.cover,
-                              width: MediaQuery.of(context).size.width,
-                              filterQuality: FilterQuality.high,
-                              loadingBuilder: (context, child, progress) {
-                                if (progress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: progress.expectedTotalBytes != null
-                                        ? progress.cumulativeBytesLoaded /
-                                            progress.expectedTotalBytes
-                                        : null,
-                                  ),
-                                );
-                              },
-                            ))),
+                            child: widget.receita["id"] == null
+                                ? Image.file(
+                                    widget.receita["image"],
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high,
+                                  )
+                                : Image.network(
+                                    widget.receita["image"],
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  ))),
                   ),
                   Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          receita["likes"].toString(),
+                          "0",
                           style: TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 14),
                         ),
@@ -208,80 +197,6 @@ class _SeeRecipelState extends State<SeeRecipe> {
                           " pessoas gostaram desta receita",
                           style: TextStyle(fontSize: 14),
                         ),
-                        !widget.mine
-                            ? Padding(
-                                padding: const EdgeInsets.only(left: 15),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(15),
-                                  onTap: () {
-                                    if (liked) {
-                                      print("TIRAR LIKE NA RECEITA");
-                                      setState(() {
-                                        receita["likes"]--;
-                                        liked = false;
-                                      });
-                                    } else {
-                                      print("DAR LIKE NA RECEITA");
-                                      setState(() {
-                                        receita["likes"]++;
-                                        liked = true;
-                                      });
-                                    }
-                                  },
-                                  child: liked
-                                      ? Icon(
-                                          Icons.favorite,
-                                          size: 34,
-                                        )
-                                      : Icon(
-                                          Icons.favorite_border,
-                                          size: 34,
-                                        ),
-                                ),
-                              )
-                            : Text(""),
-                        !widget.mine
-                            ? Padding(
-                                padding: const EdgeInsets.only(left: 15),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(15),
-                                  onTap: () {
-                                    if (saved) {
-                                      print("TIRAR DOS GUARDADOS");
-                                      setState(() {
-                                        saved = false;
-                                      });
-                                    } else {
-                                      main_key.currentState
-                                          .push(MaterialPageRoute(
-                                              builder: (context) => SaveRecipe(
-                                                    recipeId: widget.id,
-                                                    onSave: (saveds) {
-                                                      setState(() {
-                                                        saved = saveds;
-                                                      });
-                                                      if (saved) {
-                                                        print(
-                                                            "GUARDAR DOS GUARDADOS " +
-                                                                widget.id
-                                                                    .toString());
-                                                      }
-                                                    },
-                                                  )));
-                                    }
-                                  },
-                                  child: saved
-                                      ? Icon(
-                                          Icons.bookmark,
-                                          size: 34,
-                                        )
-                                      : Icon(
-                                          Icons.bookmark_border,
-                                          size: 34,
-                                        ),
-                                ),
-                              )
-                            : Text("")
                       ]),
                   Padding(
                     padding: const EdgeInsets.all(15.0),
@@ -290,41 +205,18 @@ class _SeeRecipelState extends State<SeeRecipe> {
                         Stack(children: [
                           InkWell(
                               borderRadius: BorderRadius.circular(15),
-                              onTap: () {
-                                if (widget.goProfile) {
-                                  main_key.currentState.push(MaterialPageRoute(
-                                      builder: (context) => People(
-                                            id: receita["user"]["id"],
-                                            onPop: (context) => main_key
-                                                .currentState
-                                                .pop(context),
-                                          )));
-                                }
-                              },
+                              onTap: () {},
                               child: CircleAvatar(
                                   radius: 22,
                                   backgroundImage:
-                                      NetworkImage(receita["user"]["image"]))),
-                          receita["user"]["pro"]
+                                      NetworkImage(user["image"]))),
+                          user["pro"]
                               ? Positioned(
                                   right: -3,
                                   bottom: -3,
                                   child: InkWell(
                                       borderRadius: BorderRadius.circular(15),
-                                      onTap: () {
-                                        if (widget.goProfile) {
-                                          main_key.currentState
-                                              .push(MaterialPageRoute(
-                                                  builder: (context) => People(
-                                                        id: receita["user"]
-                                                            ["id"],
-                                                        onPop: (context) =>
-                                                            main_key
-                                                                .currentState
-                                                                .pop(context),
-                                                      )));
-                                        }
-                                      },
+                                      onTap: () {},
                                       child: Icon(
                                         Icons.brightness_5,
                                         color: Colors.blue,
@@ -336,19 +228,9 @@ class _SeeRecipelState extends State<SeeRecipe> {
                             padding: const EdgeInsets.only(left: 8.0, top: 15),
                             child: InkWell(
                               borderRadius: BorderRadius.circular(15),
-                              onTap: () {
-                                if (widget.goProfile) {
-                                  main_key.currentState.push(MaterialPageRoute(
-                                      builder: (context) => People(
-                                            id: receita["user"]["id"],
-                                            onPop: (context) => main_key
-                                                .currentState
-                                                .pop(context),
-                                          )));
-                                }
-                              },
+                              onTap: () {},
                               child: Text(
-                                receita["user"]["username"],
+                                user["username"],
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w600),
                               ),
@@ -359,7 +241,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                   Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: Text(
-                      receita["description"],
+                      widget.receita["description"],
                       style: TextStyle(fontSize: 16),
                       textAlign: TextAlign.justify,
                     ),
@@ -377,7 +259,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                               size: 30,
                             ),
                             Text(
-                              "  " + receita["time"],
+                              "  " + widget.receita["time"],
                               style: TextStyle(fontSize: 16),
                             )
                           ],
@@ -390,7 +272,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                               size: 30,
                             ),
                             Text(
-                              "  " + receita["type"],
+                              "  " + widget.receita["type"],
                               style: TextStyle(fontSize: 16),
                             )
                           ],
@@ -402,7 +284,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                             size: 30,
                           ),
                           Text(
-                            receita["difficulty"],
+                            "  " + widget.receita["difficulty"],
                             style: TextStyle(fontSize: 16),
                           )
                         ])
@@ -419,9 +301,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                         borderRadius: BorderRadius.circular(100),
                       ),
                       color: backgroundColor,
-                      onPressed: () {
-                        addIngredients();
-                      },
+                      onPressed: () {},
                       textColor: Colors.black,
                       child: Container(
                         width: 200,
@@ -456,35 +336,22 @@ class _SeeRecipelState extends State<SeeRecipe> {
                         ),
                       )),
                   IngredientsList(
-                    key: ingredients_key,
-                    litems: receita["prods"],
-                    props: receita["props"],
+                    litems: widget.receita["prods"],
+                    props: widget.receita["props"],
                     backgroundColor: backgroundColor,
                   ),
                   Stack(alignment: AlignmentDirectional.center, children: [
                     ButtonsContainer(func: () {
-                      if (widget.mine) {
-                        setState(() {
-                          saved = true;
-                        });
-                      }
                       main_key.currentState.push(MaterialPageRoute(
-                          builder: (context) => PrepareRecipe(
-                                id: receita["id"],
-                                saved: saved,
-                              ))); //        id: widget.id,
+                          builder: (context) => PreviewPrepare(
+                                receita: widget.receita,
+                              )));
                     }),
                     InkWell(
                         onTap: () {
-                          if (widget.mine) {
-                            setState(() {
-                              saved = true;
-                            });
-                          }
                           main_key.currentState.push(MaterialPageRoute(
-                              builder: (context) => PrepareRecipe(
-                                    id: receita["id"],
-                                    saved: saved,
+                              builder: (context) => PreviewPrepare(
+                                    receita: widget.receita,
                                   )));
                         },
                         child: Column(
@@ -495,7 +362,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                               size: 30,
                             ),
                             Text(
-                              "Preparar",
+                              "Ver Preparar",
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w500),
                             ),
@@ -505,8 +372,6 @@ class _SeeRecipelState extends State<SeeRecipe> {
                 ]))));
   }
 }
-
-final GlobalKey<ListItemWidget> ingredients_key = GlobalKey();
 
 class IngredientsList extends StatefulWidget {
   IngredientsList({Key key, this.litems, this.props, this.backgroundColor})
@@ -524,23 +389,6 @@ class IngredientsList extends StatefulWidget {
 
 class ListItemWidget extends State<IngredientsList> {
   ScrollController _scrollController = new ScrollController();
-  void updateDown(bool ups) {
-    if (widget.props != 1 && ups) {
-      setState(() {
-        widget.props--;
-        widget.litems.forEach((element) {
-          element["quant"] = (element["quant"] / 1.5).round();
-        });
-      });
-    } else {
-      setState(() {
-        widget.props++;
-        widget.litems.forEach((element) {
-          element["quant"] = (element["quant"] * 1.5).round();
-        });
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -559,9 +407,7 @@ class ListItemWidget extends State<IngredientsList> {
                     side: BorderSide(color: Colors.black)),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(100),
-                  onTap: () {
-                    updateDown(true);
-                  },
+                  onTap: () {},
                   child: Center(
                     child: Text(
                       "  -  ",
@@ -580,9 +426,7 @@ class ListItemWidget extends State<IngredientsList> {
                     side: BorderSide(color: Colors.black)),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(100),
-                  onTap: () {
-                    updateDown(false);
-                  },
+                  onTap: () {},
                   child: Center(
                     child: Text(
                       "  +  ",

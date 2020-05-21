@@ -7,75 +7,121 @@ class People extends StatefulWidget {
   People({
     Key key,
     this.onPop,
-    this.colletionName,
+    this.id,
   }) : super(key: key);
 
   final ValueChanged<BuildContext> onPop;
-  final String colletionName;
+  final int id;
   _PeopleState createState() => _PeopleState();
 }
 
 class _PeopleState extends State<People> {
-  static int seguidores = 44;
-  static int aseguir = 28;
-  static bool pro = true;
-  static String name = "Diana C. Faria";
-  static String photo = 'https://picsum.photos/250?image=9';
-  static bool subcribed = false;
+  static Map getLista2() {
+    var profile = new Map<String, dynamic>();
 
-  static List onSomeEvent() {
-    List<String> litems = ["1", "2", "3", "4", "5"];
-    return litems;
+    profile = {
+      "id": 1,
+      "username": "RicardoL",
+      "pro": false,
+      "photo": 'https://picsum.photos/250?image=9',
+      "recipes": [
+        {
+          "id": 1,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Difícil"
+        },
+        {
+          "id": 2,
+          "name": "Hamburguer de porco",
+          "image":
+              "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
+          "time": "5-10 minutos",
+          "difficulty": "Fácil"
+        },
+        {
+          "id": 3,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Intermédio"
+        },
+        {
+          "id": 4,
+          "name": "Bife de vaca",
+          "image":
+              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+          "time": "5-10 minutos",
+          "difficulty": "Difícil"
+        },
+      ],
+      "follow": 28,
+      "followers": 44
+    };
+    return profile;
   }
 
-  final List litems = onSomeEvent();
+  void initState() {
+    profile = getLista2();
+    subcribed = false;
+    super.initState();
+  }
+
+  static Map<String, dynamic> profile;
+  static bool subcribed;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          leading: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.black,
+              size: 50,
+            ),
+            onPressed: () => widget.onPop(context),
+          ),
+        ),
         body: SafeArea(
             top: true,
             child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: InkWell(
-                            borderRadius: BorderRadius.circular(100),
-                            onTap: () {
-                              widget.onPop(context);
-                            },
-                            child: Container(
-                              child: Icon(
-                                Icons.keyboard_arrow_left,
-                                color: Colors.black,
-                                size: 50,
-                              ),
-                            )),
-                      ),
-                    ),
                     Container(
                       margin: EdgeInsets.only(top: 2),
                       child: Center(
                           child: Column(
                         children: <Widget>[
                           Container(
-                              height: 110,
+                              height: 120,
                               width: 120,
                               child: Stack(children: [
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(100.0),
-                                      child: Image.network(
-                                        photo,
-                                      )),
+                                ClipOval(
+                                  child: Image.network(
+                                    profile["photo"],
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
-                                pro
+                                profile["pro"]
                                     ? Align(
                                         alignment: Alignment.bottomRight,
                                         child: Icon(
@@ -88,7 +134,7 @@ class _PeopleState extends State<People> {
                           Padding(
                             padding: const EdgeInsets.only(top: 5.0),
                             child: Text(
-                              "$name",
+                              profile["username"],
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   fontSize: 30, fontWeight: FontWeight.w500),
@@ -96,15 +142,10 @@ class _PeopleState extends State<People> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text("$seguidores seguidores"),
-                                Text(" - "),
-                                Text("$aseguir a seguir")
-                              ],
-                            ),
+                            child: Text(profile["followers"].toString() +
+                                " seguidores - " +
+                                profile["follow"].toString() +
+                                " a seguir"),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 4),
@@ -114,9 +155,9 @@ class _PeopleState extends State<People> {
                       )),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 2),
+                      padding: const EdgeInsets.only(top: 30),
                       child: GridList(
-                        litems: litems,
+                        litems: profile["recipes"],
                       ),
                     )
                   ],
@@ -124,7 +165,7 @@ class _PeopleState extends State<People> {
   }
 
   Widget _submitButton() {
-    if (subcribed) {
+    if (!subcribed) {
       return RaisedButton(
         elevation: 2,
         splashColor: Colors.amber,
@@ -136,7 +177,8 @@ class _PeopleState extends State<People> {
         color: Colors.amber[800],
         onPressed: () {
           setState(() {
-            subcribed = false;
+            subcribed = true;
+            profile["followers"]++;
           });
         },
         textColor: Colors.white,
@@ -159,7 +201,8 @@ class _PeopleState extends State<People> {
         color: Colors.white,
         onPressed: () {
           setState(() {
-            subcribed = true;
+            subcribed = false;
+            profile["followers"]--;
           });
         },
         textColor: Colors.amber[800],
@@ -189,10 +232,11 @@ class GridList extends StatefulWidget {
 
 class GridItemWidget extends State<GridList> {
   //double itemHeight = 8.0;
-  void seeRecipe(String id) {
+  void seeRecipe(int id) {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
               id: id,
+              goProfile: false,
             )));
   }
 
@@ -204,28 +248,83 @@ class GridItemWidget extends State<GridList> {
           primary: false,
           itemCount: widget.litems.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.9,
-          ),
+              crossAxisCount: 2, childAspectRatio: 0.88),
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Card(
-                  margin: EdgeInsets.only(bottom: 0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0),
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
+              child: Column(
+                children: <Widget>[
+                  index % 2 != 1
+                      ? SizedBox(
+                          height: 0,
+                        )
+                      : SizedBox(
+                          height: 35,
+                        ),
+                  Container(
+                    height: 190,
+                    width: 300,
+                    child: InkWell(
+                        borderRadius: BorderRadius.circular(25),
+                        onTap: () {
+                          seeRecipe(widget.litems[index]["id"]);
+                        },
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                height: 140,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.network(
+                                    widget.litems[index]["image"],
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5, left: 2),
+                                child: Text(
+                                  widget.litems[index]["name"],
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5, left: 2),
+                                child: Text(
+                                  widget.litems[index]["time"] +
+                                      " - " +
+                                      widget.litems[index]["difficulty"],
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey[700]),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ])),
                   ),
-                  color: Colors.blue,
-                  elevation: 10,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(25),
-                    onTap: () {
-                      seeRecipe(widget.litems[index]);
-                    },
-                    child: Container(
-                        height: 200.0,
-                        child: Center(child: Text(widget.litems[index]))),
-                  )),
+                ],
+              ),
             );
           });
     } else {

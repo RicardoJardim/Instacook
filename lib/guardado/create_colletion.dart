@@ -20,6 +20,18 @@ class _CreateColletionState extends State<CreateColletion> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          leading: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.black,
+              size: 50,
+            ),
+            onPressed: () => widget.onPop(context),
+          ),
+        ),
         body: SafeArea(
             top: true,
             child: SingleChildScrollView(
@@ -28,24 +40,6 @@ class _CreateColletionState extends State<CreateColletion> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: InkWell(
-                            borderRadius: BorderRadius.circular(100),
-                            onTap: () {
-                              widget.onPop(context);
-                            },
-                            child: Container(
-                              child: Icon(
-                                Icons.keyboard_arrow_left,
-                                color: Colors.black,
-                                size: 50,
-                              ),
-                            )),
-                      ),
-                    ),
                     Text(
                       "Crie um novo livro!",
                       textAlign: TextAlign.center,

@@ -32,7 +32,10 @@ class TabNavigatorSaved extends StatelessWidget {
             onPush: (data) => _push(context, data),
           ),
       TabRouterSaved.saved: (context) => Colletions(
-          onPop: (context) => _pop(context), colletionName: data["title"]),
+            onPop: (context) => _pop(context),
+            colletionName: data["title"],
+            id: data["id"],
+          ),
       TabRouterSaved.create: (context) =>
           CreateColletion(onPop: (context) => _pop(context)),
     };

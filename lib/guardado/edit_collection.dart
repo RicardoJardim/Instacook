@@ -1,56 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:instacook/perfil/change_pass.dart';
-import 'package:instacook/photo_picker.dart';
-
+import 'package:instacook/guardado/edit_photo.dart';
+import 'package:instacook/guardado/edit_recipes.dart';
+import 'package:instacook/guardado/main.dart';
 import '../main.dart';
-import '../router.dart';
 
-class ChangeProfile extends StatefulWidget {
-  ChangeProfile({Key key}) : super(key: key);
+class EditCollection extends StatefulWidget {
+  EditCollection({Key key, this.id}) : super(key: key);
 
-  _ChangeProfileState createState() => _ChangeProfileState();
+  final int id;
+  _EditCollectionState createState() => _EditCollectionState();
 }
 
-class _ChangeProfileState extends State<ChangeProfile> {
-  Map getLista2() {
-    var profile = new Map<String, dynamic>();
+class _EditCollectionState extends State<EditCollection> {
+  Map getLista2(int id) {
+    var collection = new Map<String, dynamic>();
 
-    profile = {
-      "id": 1,
-      "username": "Diana C. Faria",
-      "pro": false,
-      "photo": 'https://picsum.photos/250?image=9',
-      "email": "dciasojd@hotmail.com",
+    collection = {
+      "id": id,
+      "photo":
+          'https://nit.pt/wp-content/uploads/2018/07/95915588dd8f97db9b5bedd24ea068a5-754x394.jpg',
+      "name": "Pregos",
     };
-    return profile;
+    return collection;
   }
 
   void initState() {
-    profile = getLista2();
-    email.text = profile["email"];
-    username.text = profile["username"];
-
+    collection = getLista2(widget.id);
+    name.text = collection["name"];
+    imageUrl = collection["photo"];
     super.initState();
   }
 
   void save() {
-    print("send profile");
+    print("send collection");
 
-    print(profile);
+    print(collection);
 
     main_key.currentState.pop(context);
   }
 
-  Map<String, dynamic> profile;
-  final email = TextEditingController();
-  final username = TextEditingController();
+  Map<String, dynamic> collection;
+  String imageUrl;
+  final name = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           elevation: 0.0,
-          title: Text("Editar Perfil"),
+          title: Text("Editar Livro"),
           actions: <Widget>[
             IconButton(
               enableFeedback: true,
@@ -81,9 +79,14 @@ class _ChangeProfileState extends State<ChangeProfile> {
                           Container(
                             height: 120,
                             width: 120,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: Colors.amber[900], width: 2),
+                            ),
                             child: ClipOval(
                               child: Image.network(
-                                profile["photo"],
+                                imageUrl,
                                 fit: BoxFit.cover,
                                 loadingBuilder: (context, child, progress) {
                                   if (progress == null) return child;
@@ -107,16 +110,17 @@ class _ChangeProfileState extends State<ChangeProfile> {
                       child: InkWell(
                         onTap: () {
                           main_key.currentState.push(MaterialPageRoute(
-                              builder: (context) => PhotoPicker(
-                                    textTitle: "Alterar foto de perfil",
-                                    sendPicture: (image) {
-                                      print(image);
-                                      print("Send to firebase");
+                              builder: (context) => EditPhoto(
+                                    id: widget.id,
+                                    onClickImage: (str) {
+                                      setState(() {
+                                        imageUrl = str;
+                                      });
                                     },
                                   )));
                         },
                         child: Text(
-                          "Alterar Foto de Perfil",
+                          "Alterar Foto do Livro",
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -124,19 +128,20 @@ class _ChangeProfileState extends State<ChangeProfile> {
                         ),
                       ),
                     ),
-                    _entryField("Nome", username),
-                    _entryField("Email", email),
+                    _entryField("Nome", name),
                     _divider(),
-                    _pro(profile["pro"]),
-                    _divider(),
-                    _sideButton("Modificar Password", Colors.blue, () {
+                    _sideButton("Modificar Receitas", Colors.blue, () {
                       main_key.currentState.push(MaterialPageRoute(
-                          builder: (context) => ChangePassword()));
+                          builder: (context) => EditRecipes(
+                                id: widget.id,
+                              )));
                     }),
                     _divider(),
-                    _sideButton(
-                        "Eliminar Conta", Colors.red, () => eliminarConta()),
-                    _divider(),
+                    widget.id != 1
+                        ? _sideButton(
+                            "Eliminar Livro", Colors.red, () => eliminarConta())
+                        : Text(""),
+                    widget.id != 1 ? _divider() : Text(""),
                   ],
                 ))));
   }
@@ -159,43 +164,6 @@ class _ChangeProfileState extends State<ChangeProfile> {
             ),
           ),
         ));
-  }
-
-  Widget _pro(bool pro) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      child: InkWell(
-        onTap: () {
-          if (!pro) {
-            print("mudar conta");
-          } else {
-            print("sair conta");
-          }
-        },
-        child: Container(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: pro
-                  ? Text(
-                      "Requisitar conta normal",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blue,
-                      ),
-                    )
-                  : Text(
-                      "Requisitar conta profissional",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blue,
-                      ),
-                    ),
-            )),
-      ),
-    );
   }
 
   Widget _sideButton(String text, Color cor, Function callback) {
@@ -237,13 +205,13 @@ class _ChangeProfileState extends State<ChangeProfile> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Eliminar conta"),
-          content: new Text("Deseja eliminar a sua conta?"),
+          title: new Text("Eliminar Libro"),
+          content:
+              new Text("Deseja eliminar o livro " + collection["name"] + " ?"),
           backgroundColor: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           actions: <Widget>[
-            // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text("Não"),
               onPressed: () {
@@ -251,14 +219,13 @@ class _ChangeProfileState extends State<ChangeProfile> {
               },
             ),
             new FlatButton(
-              child: new Text("Sim"),
-              onPressed: () {
-                print("Eliminar conta");
-                Navigator.of(context).pop();
-                main_key.currentState
-                    .popUntil((r) => r.settings.name == Routes.login);
-              },
-            ),
+                child: new Text("Sim"),
+                onPressed: () {
+                  print("Eliminar livro");
+                  Navigator.of(context).pop();
+                  main_key.currentState.pop(context);
+                  saved_key.currentState.pop(context);
+                }),
           ],
           elevation: 24,
         );

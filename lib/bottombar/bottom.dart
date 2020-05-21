@@ -5,8 +5,6 @@ import '../perfil/main_perfil.dart';
 import '../feed/main.dart';
 import '../compras/main_compras.dart';
 import '../guardado/main.dart';
-import '../router.dart';
-import '../receitas/see_recipe.dart';
 
 class BottomlWidget extends StatefulWidget {
   BottomlWidget({Key key, this.onPush, this.onPopUntil}) : super(key: key);

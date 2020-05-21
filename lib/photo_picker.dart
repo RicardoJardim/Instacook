@@ -5,10 +5,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:instacook/main.dart';
 
 class PhotoPicker extends StatefulWidget {
-  PhotoPicker({Key key, this.sendPicture}) : super(key: key);
+  PhotoPicker({Key key, this.sendPicture, this.textTitle, this.round: true})
+      : super(key: key);
 
   final ValueChanged<File> sendPicture;
-
+  final bool round;
+  final String textTitle;
   @override
   _PhotoPickerState createState() => _PhotoPickerState();
 }
@@ -34,6 +36,11 @@ class _PhotoPickerState extends State<PhotoPicker> {
   }
 
   getImage(ImageSource source) async {
+    var crop = CropStyle.circle;
+    if (!widget.round) {
+      crop = CropStyle.rectangle;
+    }
+
     this.setState(() {
       _inProcess = true;
     });
@@ -41,7 +48,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
     if (image != null) {
       File cropped = await ImageCropper.cropImage(
           sourcePath: image.path,
-          cropStyle: CropStyle.circle,
+          cropStyle: crop,
           aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
           compressQuality: 100,
           maxWidth: 700,
@@ -75,7 +82,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0.0,
-          title: Text("Alterar foto de perfil"),
+          title: Text(widget.textTitle),
           actions: <Widget>[
             IconButton(
               enableFeedback: true,
@@ -99,12 +106,16 @@ class _PhotoPickerState extends State<PhotoPicker> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(500.0),
-                  child: getImageWidget(),
-                ),
+                widget.round
+                    ? ClipOval(
+                        child: getImageWidget(),
+                      )
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(25.0),
+                        child: getImageWidget(),
+                      ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 50.0),
+                  padding: const EdgeInsets.only(top: 40.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
