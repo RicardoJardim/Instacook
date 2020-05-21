@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instacook/main.dart';
+import 'package:instacook/services/auth.dart';
 import 'Widget/bezierContainer.dart';
 import '../router.dart';
 import 'dart:core';
@@ -14,6 +15,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final email = TextEditingController();
   final password = TextEditingController();
+  final AuthService _auth = AuthService();
 
   @override
   void dispose() {
@@ -72,13 +74,16 @@ class _LoginPageState extends State<LoginPage> {
             borderRadius: BorderRadius.circular(7.0),
           ),
           color: Colors.amber[800],
-          onPressed: () {
+          onPressed: () async {
             if ((email.text.trim()).isNotEmpty && password.text.isNotEmpty) {
-              print(email.text.trim());
-              print(password.text);
-              email.clear();
-              password.clear();
-              main_key.currentState.pushNamed(Routes.mainapp);
+              dynamic result = await _auth.signInEmailPassword(email.text, password.text);
+              if(result == null){
+                print("Error Login");
+              }
+              else{
+                print("EMAIL: "+result.email);
+                main_key.currentState.pushNamed(Routes.mainapp);
+              }
             }
           },
           textColor: Colors.white,
@@ -149,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Container(
                 alignment: Alignment.center,
-                child: Text('  Login com o Google',
+                child: Text('Login com o Google',
                     style: TextStyle(
                         fontSize: 20,
                         color: Colors.white,
@@ -193,24 +198,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _title() {
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-          text: ' ',
-          style: TextStyle(fontSize: 46, fontWeight: FontWeight.w700),
-          children: [
-            TextSpan(
-              text: 'Insta',
-              style: TextStyle(color: Colors.black, fontSize: 30),
-            ),
-            TextSpan(
-              text: 'cook',
-              style: TextStyle(color: Colors.amber[800], fontSize: 30),
-            ),
-          ]),
-    );
-  }
+  // Widget _title() {
+  //   return Container(
+  //     child: AssetImage("assets/instacool_logo.png"),
+  //   );
+  // }
 
   Widget _emailPasswordWidget() {
     return Column(
@@ -236,10 +228,10 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                _title(),
-                SizedBox(
-                  height: 20,
-                ),
+                Image.asset(
+                  "assets/images/instacook_logo.png",
+                  scale: 3,
+                  ),
                 _emailPasswordWidget(),
                 SizedBox(
                   height: 20,

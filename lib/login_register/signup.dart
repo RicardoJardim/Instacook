@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/services/auth.dart';
 import 'Widget/bezierContainer.dart';
 import 'package:instacook/main.dart';
 import '../router.dart';
@@ -14,6 +15,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final username = TextEditingController();
   final email = TextEditingController();
   final password = TextEditingController();
+  final AuthService _auth = AuthService(); 
+  String _errorMsg="";
 
   Widget _backButton() {
     return InkWell(
@@ -82,14 +85,11 @@ class _SignUpPageState extends State<SignUpPage> {
             borderRadius: BorderRadius.circular(7.0),
           ),
           color: Colors.amber[800],
-          onPressed: () {
+          onPressed: ()async {
             if ((email.text.trim()).isNotEmpty &&
                 password.text.isNotEmpty &&
                 username.text.isNotEmpty) {
-              print(email.text.trim());
-              print(password.text);
-              print(username.text);
-
+              await _auth.registEmailPassword(email.text, password.text, username.text);
               main_key.currentState.popAndPushNamed(Routes.mainapp);
             }
           },
@@ -135,24 +135,24 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _title() {
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-          text: ' ',
-          style: TextStyle(fontSize: 46, fontWeight: FontWeight.w700),
-          children: [
-            TextSpan(
-              text: 'Insta',
-              style: TextStyle(color: Colors.black, fontSize: 30),
-            ),
-            TextSpan(
-              text: 'cook',
-              style: TextStyle(color: Colors.amber[800], fontSize: 30),
-            ),
-          ]),
-    );
-  }
+  // Widget _title() {
+  //   return RichText(
+  //     textAlign: TextAlign.center,
+  //     text: TextSpan(
+  //         text: ' ',
+  //         style: TextStyle(fontSize: 46, fontWeight: FontWeight.w700),
+  //         children: [
+  //           TextSpan(
+  //             text: 'Insta',
+  //             style: TextStyle(color: Colors.black, fontSize: 30),
+  //           ),
+  //           TextSpan(
+  //             text: 'cook',
+  //             style: TextStyle(color: Colors.amber[800], fontSize: 30),
+  //           ),
+  //         ]),
+  //   );
+  // }
 
   Widget _emailPasswordWidget() {
     return Column(
@@ -179,10 +179,10 @@ class _SignUpPageState extends State<SignUpPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                _title(),
-                SizedBox(
-                  height: 10,
-                ),
+                Image.asset(
+                  "assets/images/instacook_logo.png",
+                  scale: 3,
+                  ),
                 _emailPasswordWidget(),
                 SizedBox(
                   height: 20,

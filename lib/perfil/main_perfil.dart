@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instacook/perfil/change_perfil.dart';
 import 'package:instacook/receitas/see_recipe.dart';
+import 'package:instacook/services/auth.dart';
 import '../router.dart';
 import '../main.dart';
 
@@ -11,6 +12,9 @@ class MainPerfil extends StatefulWidget {
 }
 
 class _MainPerfilState extends State<MainPerfil> {
+
+  final AuthService _auth = AuthService();
+
   static Map getLista2() {
     var profile = new Map<String, dynamic>();
 
@@ -88,7 +92,8 @@ class _MainPerfilState extends State<MainPerfil> {
                       Icon(Icons.forward),
                     ]),
                 subtitle: Text('Terminar a sua sessão'),
-                onTap: () {
+                onTap: ()async {
+                  await _auth.signOut();
                   main_key.currentState
                       .popUntil((r) => r.settings.name == Routes.login);
                 },

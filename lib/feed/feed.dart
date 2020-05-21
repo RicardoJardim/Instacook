@@ -50,13 +50,14 @@ class _MainReceitalState extends State<MainReceita> {
               onTap: () {
                 globalKey.currentState.goUp();
               },
-              child: Text(
-                "Instacook",
-                style: TextStyle(
-                    fontFamily: "CreamCake",
-                    fontSize: 40,
-                    fontWeight: FontWeight.w200),
-              )),
+              child: Padding(
+                padding:EdgeInsets.fromLTRB(0, 10, 0, 0),
+                child: Image.asset(
+                  "assets/images/instacook_logo.png",
+                  scale: 7,
+                  ),
+              )
+              ),
           actions: <Widget>[
             // action button
             IconButton(
