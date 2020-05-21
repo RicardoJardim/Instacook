@@ -9,17 +9,78 @@ import 'package:instacook/receitas/create/preview_recipe.dart';
 import '../../main.dart';
 
 class CreateRecipe extends StatefulWidget {
-  CreateRecipe({Key key}) : super(key: key);
+  CreateRecipe({Key key, this.editRecipe}) : super(key: key);
 
+  final Map editRecipe;
   _CreateRecipelState createState() => _CreateRecipelState();
 }
 
 class _CreateRecipelState extends State<CreateRecipe> {
   @override
   void initState() {
-    receita = new Map<String, dynamic>();
+    if (widget.editRecipe == null) {
+      receita = new Map<String, dynamic>();
+    } else {
+      receita = widget.editRecipe;
+      privacy = widget.editRecipe["privacy"];
+      dif = widget.editRecipe["difficulty"];
+      prods = widget.editRecipe["prods"];
+      stepsRecipe = getSteps(widget.editRecipe["id"]);
+      name.text = widget.editRecipe["name"];
+      type.text = widget.editRecipe["type"];
+      description.text = widget.editRecipe["description"];
+      time.text = widget.editRecipe["time"];
+      props.text = widget.editRecipe["props"].toString();
+      imageUrl = widget.editRecipe["image"];
+    }
     steps = [1, 2, 3, 4, 5];
     super.initState();
+  }
+
+  List getSteps(int id) {
+    //PEsquisa na bd pelo id
+    return [
+      {
+        "prods": [
+          {"quant": 200, "type": "mg", "prod": "leite"},
+          {"quant": 100, "type": "mg", "prod": "merda"},
+          {"quant": 200, "type": "mg", "prod": "leite"},
+          {"quant": 100, "type": "mg", "prod": "merda"},
+        ],
+        "description":
+            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sdasd asdas d asd asd a a uysgd aksb dkjahs kjdhn akjsdh kjash dkjahwsjkdh akjsdh ksjha kjdah kdjsah kjash ",
+        "image":
+            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
+      },
+      {
+        "prods": [
+          {"quant": 200, "type": "mg", "prod": "leite"},
+          {"quant": 100, "type": "mg", "prod": "merda"},
+        ],
+        "description":
+            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd as dasd ",
+        "image": " ",
+      },
+      {
+        "prods": [
+          {"quant": 500, "type": "mg", "prod": "manteiga"},
+          {"quant": 200, "type": "mg", "prod": "merda"},
+        ],
+        "description":
+            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd as dasdasd as dasdas d",
+        "image":
+            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
+      },
+      {
+        "prods": [
+          {"quant": 800, "type": "mg", "prod": "leadsdite"},
+          {"quant": 700, "type": "mg", "prod": "cxa"},
+        ],
+        "description":
+            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd asda sda  s asd",
+        "image": " ",
+      },
+    ];
   }
 
   Map<String, dynamic> receita;
@@ -37,7 +98,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
   String dif = "";
   List prods = [];
   List stepsRecipe = [];
-
+  String imageUrl = "";
   //Files
   File _selectedFile;
 
@@ -54,6 +115,14 @@ class _CreateRecipelState extends State<CreateRecipe> {
         builder: (context) => PreviewRecipe(receita: receita)));
   }
 
+  void moveToNext() {
+    setState(() {
+      progvalue += 0.20;
+    });
+    indexs++;
+    _animateToIndex(indexs);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +130,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
           elevation: 0,
           centerTitle: true,
           title: Text(
-            "Criar Receita",
+            widget.editRecipe == null ? "Criar Receita" : "Editar Receita",
             style: TextStyle(fontSize: 24),
           ),
           leading: IconButton(
@@ -175,16 +244,23 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                   if (indexs != (steps.length)) {
                                     switch (indexs) {
                                       case 0:
-                                        if (name.text != "" &&
-                                            _selectedFile != null) {
+                                        if (name.text != "") {
                                           receita["name"] = name.text;
-                                          receita["image"] = _selectedFile;
-                                          print(receita);
-                                          setState(() {
-                                            progvalue += 0.20;
-                                          });
-                                          indexs++;
-                                          _animateToIndex(indexs);
+                                          if (widget.editRecipe == null &&
+                                              _selectedFile != null) {
+                                            receita["image"] = _selectedFile;
+                                            moveToNext();
+                                          } else if (widget.editRecipe !=
+                                              null) {
+                                            if (_selectedFile != null) {
+                                              receita["image"] = _selectedFile;
+                                              moveToNext();
+                                            } else {
+                                              receita["image"] =
+                                                  receita["image"];
+                                              moveToNext();
+                                            }
+                                          }
                                         }
                                         break;
                                       case 1:
@@ -194,11 +270,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                           receita["description"] =
                                               description.text;
                                           receita["privacy"] = privacy;
-                                          setState(() {
-                                            progvalue += 0.20;
-                                          });
-                                          indexs++;
-                                          _animateToIndex(indexs);
+                                          moveToNext();
                                         }
                                         break;
                                       case 2:
@@ -209,21 +281,12 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                           receita["props"] =
                                               int.parse(props.text);
                                           receita["difficulty"] = dif;
-                                          setState(() {
-                                            progvalue += 0.20;
-                                          });
-                                          indexs++;
-                                          _animateToIndex(indexs);
+                                          moveToNext();
                                         }
                                         break;
                                       case 3:
                                         receita["prods"] = prods;
-                                        setState(() {
-                                          progvalue += 0.20;
-                                        });
-                                        indexs++;
-                                        _animateToIndex(indexs);
-
+                                        moveToNext();
                                         break;
                                       case 4:
                                         if (stepsRecipe.length != 0) {
@@ -285,7 +348,8 @@ class _CreateRecipelState extends State<CreateRecipe> {
               ),
               Center(
                 child: Container(
-                    width: MediaQuery.of(context).size.width - 100,
+                    width: MediaQuery.of(context).size.width - 50,
+                    height: MediaQuery.of(context).size.height - 380,
                     child: InkWell(
                       onTap: () {
                         main_key.currentState.push(MaterialPageRoute(
@@ -384,11 +448,14 @@ class _CreateRecipelState extends State<CreateRecipe> {
           Padding(
               padding: const EdgeInsets.only(top: 10.0),
               child: DiffButtons(
+                init: widget.editRecipe == null
+                    ? ""
+                    : widget.editRecipe["difficulty"],
                 callback: (str) {
                   dif = str;
                 },
               ))
-        ]);
+        ]); //MANDAR
   }
 
   Widget _page4() {
@@ -480,11 +547,11 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                         MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       Text(
-                                        prods[index]["quant"] +
+                                        prods[index]["quant"].toString() +
                                             " " +
-                                            prods[index]["prod"] +
+                                            prods[index]["prod"].toString() +
                                             " " +
-                                            prods[index]["type"],
+                                            prods[index]["type"].toString(),
                                         style: TextStyle(fontSize: 20),
                                       ),
                                       IconButton(
@@ -614,13 +681,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: <Widget>[
-                                              stepsRecipe[index]["image"] == ""
-                                                  ? Text("")
-                                                  : Image.file(
-                                                      _selectedFile,
-                                                      height: 80,
-                                                      fit: BoxFit.cover,
-                                                    ),
+                                              getImageForStep(index),
                                               Container(
                                                 padding:
                                                     EdgeInsets.only(left: 10),
@@ -658,7 +719,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                         child: ListView.builder(
                                             shrinkWrap: true,
                                             scrollDirection: Axis.vertical,
-                                            primary: true,
+                                            primary: false,
                                             itemCount: stepsRecipe[index]
                                                     ["prods"]
                                                 .length,
@@ -666,13 +727,16 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                               return Text(
                                                 " - " +
                                                     stepsRecipe[index]["prods"]
-                                                        [indexs]["quant"] +
+                                                            [indexs]["quant"]
+                                                        .toString() +
                                                     " " +
                                                     stepsRecipe[index]["prods"]
-                                                        [indexs]["prod"] +
+                                                            [indexs]["prod"]
+                                                        .toString() +
                                                     " " +
                                                     stepsRecipe[index]["prods"]
-                                                        [indexs]["type"],
+                                                            [indexs]["type"]
+                                                        .toString(),
                                                 style: TextStyle(fontSize: 14),
                                               );
                                             }),
@@ -715,6 +779,50 @@ class _CreateRecipelState extends State<CreateRecipe> {
         ));
   }
 
+  Widget getImageForStep(index) {
+    if (widget.editRecipe == null) {
+      if (stepsRecipe[index]["image"] == "") {
+        return Text("");
+      } else {
+        return Image.file(
+          stepsRecipe[index]["image"],
+          height: 80,
+          width: 80,
+          fit: BoxFit.cover,
+        );
+      }
+    } else {
+      if (stepsRecipe[index]["image"] == "") {
+        return Text("");
+      } else if (stepsRecipe[index]["image"] is String) {
+        return Image.network(
+          stepsRecipe[index]["image"],
+          height: 80,
+          width: 80,
+          filterQuality: FilterQuality.high,
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: progress.expectedTotalBytes != null
+                    ? progress.cumulativeBytesLoaded /
+                        progress.expectedTotalBytes
+                    : null,
+              ),
+            );
+          },
+        );
+      } else {
+        return Image.file(
+          stepsRecipe[index]["image"],
+          height: 80,
+          width: 80,
+          fit: BoxFit.cover,
+        );
+      }
+    }
+  }
+
   Widget getImageWidget() {
     if (_selectedFile != null) {
       return Image.file(
@@ -722,22 +830,56 @@ class _CreateRecipelState extends State<CreateRecipe> {
         fit: BoxFit.cover,
       );
     } else {
-      return Image.asset(
-        "assets/placeholder.jpg",
-        fit: BoxFit.cover,
-      );
+      if (widget.editRecipe == null) {
+        return Image.asset(
+          "assets/placeholder.jpg",
+          fit: BoxFit.cover,
+        );
+      } else {
+        return Image.network(
+          receita["image"],
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: progress.expectedTotalBytes != null
+                    ? progress.cumulativeBytesLoaded /
+                        progress.expectedTotalBytes
+                    : null,
+              ),
+            );
+          },
+        );
+      }
     }
   }
 }
 
 class DiffButtons extends StatefulWidget {
-  DiffButtons({Key key, this.callback}) : super(key: key);
+  DiffButtons({Key key, this.callback, this.init: ""}) : super(key: key);
 
   final ValueChanged<String> callback;
+  final String init;
   _DiffButtonsState createState() => _DiffButtonsState();
 }
 
 class _DiffButtonsState extends State<DiffButtons> {
+  @override
+  void initState() {
+    if (widget.init != "") {
+      if (widget.init == "Fácil") {
+        changeState(1);
+      } else if (widget.init == "Médio") {
+        changeState(2);
+      } else {
+        changeState(3);
+      }
+    }
+    super.initState();
+  }
+
   Map<String, dynamic> buttons = {
     "btn1": [Colors.black, Colors.white],
     "btn2": [Colors.black, Colors.white],

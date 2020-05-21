@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:instacook/bottombar/bottom.dart';
 import 'package:instacook/receitas/Widget/ButtonsContainer.dart';
 import 'package:instacook/receitas/create/preview_prepare.dart';
 
@@ -44,7 +43,9 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Finalizar receita"),
-          content: new Text("Deseja guardar a receita criada?"),
+          content: new Text(widget.receita["id"] != null
+              ? "Deseja guardar a receita editada?"
+              : "Deseja guardar a receita criada?"),
           backgroundColor: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
@@ -74,7 +75,11 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  print("enviar " + widget.receita.toString());
+                  if (widget.receita["id"] == null) {
+                    print("guardar " + widget.receita.toString());
+                  } else {
+                    print("editar " + widget.receita.toString());
+                  }
                   main_key.currentState.pop(context);
                   main_key.currentState.pop(context);
                 },
@@ -155,11 +160,29 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                         ),
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(25),
-                            child: Image.file(
-                              widget.receita["image"],
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.high,
-                            ))),
+                            child: widget.receita["id"] == null
+                                ? Image.file(
+                                    widget.receita["image"],
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high,
+                                  )
+                                : Image.network(
+                                    widget.receita["image"],
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  ))),
                   ),
                   Row(
                       mainAxisSize: MainAxisSize.max,

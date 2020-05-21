@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instacook/feed/people.dart';
+import 'package:instacook/receitas/create/create_recipe.dart';
 import 'package:instacook/receitas/prepare_recipe.dart';
 import 'package:instacook/receitas/save_recipe.dart';
 import 'Widget/ButtonsContainer.dart';
@@ -30,7 +31,8 @@ class _SeeRecipelState extends State<SeeRecipe> {
       "likes": 1020,
       "time": "5-10 minutos",
       "type": "carnes",
-      "difficulty": "Dificil",
+      "difficulty": "Difícil",
+      "privacy": true,
       "description":
           "O Lorem Ipsum é um texto modelo da indústria tipográfica e de impressão. O Lorem Ipsum tem vindo a ser o texto padrão usado por estas indústrias desde o ano de 1500, quando uma misturou os caracteres de um texto para criar um espécime de livro. Este texto não só sobreviveu 5 séculos, mas também o salto para a tipografia electrónica, mantendo-se essencialmente inalterada. Foi popularizada nos anos 60 com a disponibilização das folhas de Letraset, que continham passagens com Lorem Ipsum, e mais recentemente com os programas de publicação como o Aldus PageMaker que incluem versões do Lorem Ipsum",
       "image":
@@ -133,7 +135,10 @@ class _SeeRecipelState extends State<SeeRecipe> {
                       size: 30,
                     ),
                     onPressed: () {
-                      print("edit recipe");
+                      main_key.currentState.push(MaterialPageRoute(
+                          builder: (context) => CreateRecipe(
+                                editRecipe: receita,
+                              )));
                     })
                 : Text(""),
           ],

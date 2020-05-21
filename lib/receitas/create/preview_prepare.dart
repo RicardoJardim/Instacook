@@ -1,8 +1,5 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:instacook/bottombar/bottom.dart';
-
 import '../../main.dart';
 
 class PreviewPrepare extends StatefulWidget {
@@ -28,7 +25,7 @@ class _PreviewPreparelState extends State<PreviewPrepare> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Finalizar receita"),
-          content: new Text("Deseja guardar a receita criada?"),
+          content: new Text("Deseja guardar a receita?"),
           backgroundColor: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
@@ -59,7 +56,11 @@ class _PreviewPreparelState extends State<PreviewPrepare> {
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  print("enviar " + widget.receita.toString());
+                  if (widget.receita["id"] == null) {
+                    print("guardar " + widget.receita.toString());
+                  } else {
+                    print("editar " + widget.receita.toString());
+                  }
                   main_key.currentState.pop(context);
                   main_key.currentState.pop(context);
                   main_key.currentState.pop(context);
@@ -115,13 +116,25 @@ class _PreviewPreparelState extends State<PreviewPrepare> {
                     scrollDirection: Axis.horizontal,
                     itemCount: widget.receita["steps"].length,
                     itemBuilder: (context, index) {
-                      return Step(
-                        index,
-                        widget.receita["steps"].length,
-                        widget.receita["steps"][index]["description"],
-                        widget.receita["steps"][index]["prods"],
-                        widget.receita["steps"][index]["image"],
-                      );
+                      if (widget.receita["steps"][index]["image"] is String) {
+                        return Step(
+                          index,
+                          widget.receita["steps"].length,
+                          widget.receita["steps"][index]["description"],
+                          widget.receita["steps"][index]["prods"],
+                          null,
+                          widget.receita["steps"][index]["image"],
+                        );
+                      } else {
+                        return Step(
+                          index,
+                          widget.receita["steps"].length,
+                          widget.receita["steps"][index]["description"],
+                          widget.receita["steps"][index]["prods"],
+                          widget.receita["steps"][index]["image"],
+                          "",
+                        );
+                      }
                     }),
               ),
               Padding(
@@ -174,116 +187,20 @@ class _PreviewPreparelState extends State<PreviewPrepare> {
 }
 
 class Step extends StatelessWidget {
-  const Step(this.id, this.max, this.description, this.products, this.image);
+  const Step(this.id, this.max, this.description, this.products, this.image,
+      this.image2);
   final String description;
   final int id;
   final int max;
-  final File image;
   final List products;
+  final File image;
+  final String image2;
 
   Widget build(BuildContext context) {
-    if (image != null) {
-      return Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          child: ScrollConfiguration(
-              behavior: MyBehavior(),
-              child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(left: 5),
-                        child: Text(
-                          "Passo " + (id + 1).toString(),
-                          style: TextStyle(
-                              fontSize: 30, fontWeight: FontWeight.w800),
-                          overflow: TextOverflow.fade,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 5),
-                        child: Text(
-                          "de " + max.toString(),
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                          overflow: TextOverflow.fade,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Container(
-                            height: 310,
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey,
-                                  offset: Offset(8, 8), //(x,y)
-                                  blurRadius: 10.0,
-                                ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(25),
-                                child: Image.file(
-                                  image,
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.high,
-                                ))),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(
-                          description,
-                          style: TextStyle(
-                            fontSize: 17,
-                          ),
-                          overflow: TextOverflow.fade,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      products.length != 0
-                          ? Padding(
-                              padding: const EdgeInsets.only(left: 10.0),
-                              child: Column(
-                                children: <Widget>[
-                                  Text(
-                                    "Ingredientes",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.vertical,
-                                      itemCount: products.length,
-                                      itemBuilder: (context, index) {
-                                        return Text(
-                                          products[index]["quant"].toString() +
-                                              " " +
-                                              products[index]["type"] +
-                                              " " +
-                                              products[index]["prod"],
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600),
-                                          overflow: TextOverflow.fade,
-                                          textAlign: TextAlign.left,
-                                        );
-                                      }),
-                                ],
-                              ))
-                          : Text(""),
-                    ],
-                  ))));
-    } else {
+    print(image);
+    print(image2);
+
+    if (image == null && (image2 == " " || image2 == "")) {
       return Container(
           width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.symmetric(horizontal: 15),
@@ -342,6 +259,129 @@ class Step extends StatelessWidget {
                                   ListView.builder(
                                       shrinkWrap: true,
                                       primary: false,
+                                      scrollDirection: Axis.vertical,
+                                      itemCount: products.length,
+                                      itemBuilder: (context, index) {
+                                        return Text(
+                                          products[index]["quant"].toString() +
+                                              " " +
+                                              products[index]["type"] +
+                                              " " +
+                                              products[index]["prod"],
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600),
+                                          overflow: TextOverflow.fade,
+                                          textAlign: TextAlign.left,
+                                        );
+                                      }),
+                                ],
+                              ))
+                          : Text(""),
+                    ],
+                  ))));
+    } else {
+      return Container(
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: ScrollConfiguration(
+              behavior: MyBehavior(),
+              child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5),
+                        child: Text(
+                          "Passo " + (id + 1).toString(),
+                          style: TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.w800),
+                          overflow: TextOverflow.fade,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5),
+                        child: Text(
+                          "de " + max.toString(),
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                          overflow: TextOverflow.fade,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Container(
+                            height: 310,
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(25),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  offset: Offset(8, 8), //(x,y)
+                                  blurRadius: 10.0,
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(25),
+                                child: image != null
+                                    ? Image.file(
+                                        image,
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.high,
+                                      )
+                                    : Image.network(
+                                        image2,
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.high,
+                                        loadingBuilder:
+                                            (context, child, progress) {
+                                          if (progress == null) return child;
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: progress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? progress
+                                                          .cumulativeBytesLoaded /
+                                                      progress
+                                                          .expectedTotalBytes
+                                                  : null,
+                                            ),
+                                          );
+                                        },
+                                      ))),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(
+                          description,
+                          style: TextStyle(
+                            fontSize: 17,
+                          ),
+                          overflow: TextOverflow.fade,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      products.length != 0
+                          ? Padding(
+                              padding: const EdgeInsets.only(left: 10.0),
+                              child: Column(
+                                children: <Widget>[
+                                  Text(
+                                    "Ingredientes",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  ListView.builder(
+                                      shrinkWrap: true,
                                       scrollDirection: Axis.vertical,
                                       itemCount: products.length,
                                       itemBuilder: (context, index) {

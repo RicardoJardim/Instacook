@@ -101,7 +101,7 @@ class _AddSteplState extends State<AddStep> {
                             )),
                       ),
                     ),
-                    _entryField("Descrição", "Descriva o passo", description),
+                    _entryField("Descrição *", "Descriva o passo", description),
                     Padding(
                       padding: const EdgeInsets.only(top: 15.0),
                       child: Center(
@@ -134,11 +134,17 @@ class _AddSteplState extends State<AddStep> {
     widget.ingr.forEach((element) {
       print(element);
       items.add(
-        MultiSelectDialogItem({
-          "quant": element["quant"],
-          "prod": element["prod"],
-          "type": element["type"]
-        }, element["quant"] + " " + element["prod"] + " " + element["type"]),
+        MultiSelectDialogItem(
+            {
+              "quant": element["quant"],
+              "prod": element["prod"],
+              "type": element["type"]
+            },
+            element["quant"].toString() +
+                " " +
+                element["prod"].toString() +
+                " " +
+                element["type"].toString()),
       );
     });
 
