@@ -17,6 +17,8 @@ class _LoginPageState extends State<LoginPage> {
   final password = TextEditingController();
   final AuthService _auth = AuthService();
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the
@@ -24,11 +26,10 @@ class _LoginPageState extends State<LoginPage> {
     email.dispose();
     password.dispose();
     super.dispose();
-    //tadeu1@live.com.pt
   }
 
   Widget _entryField(String title, bool isPassword,
-      TextEditingController _controller, bool focus) {
+      TextEditingController _controller, bool focus, Function errorHandler) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -41,12 +42,19 @@ class _LoginPageState extends State<LoginPage> {
           SizedBox(
             height: 10,
           ),
-          TextField(
+          TextFormField(
+            validator: (value) => errorHandler(value),
             autofocus: focus,
             obscureText: isPassword,
             controller: _controller,
             decoration: InputDecoration(
-              border: InputBorder.none,
+              errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                  borderSide: BorderSide(color: Colors.grey, width: 1)),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                borderSide: BorderSide(color: Colors.amber[800], width: 2),
+              ),
               fillColor: Colors.grey[200],
               filled: true,
               enabledBorder: const OutlineInputBorder(
@@ -76,14 +84,13 @@ class _LoginPageState extends State<LoginPage> {
           ),
           color: Colors.amber[800],
           onPressed: () async {
-            if ((email.text.trim()).isNotEmpty && password.text.isNotEmpty) {
-            
-              dynamic result = await _auth.signInEmailPassword(email.text, password.text);
-              if(result == null){
+            if (_formKey.currentState.validate()) {
+              dynamic result =
+                  await _auth.signInEmailPassword(email.text, password.text);
+              if (result == null) {
                 print("Error Login");
-              }
-              else{
-                print("UID: "+result.uid);
+              } else {
+                print("EMAIL: " + result.email);
                 main_key.currentState.pushNamed(Routes.mainapp);
               }
             }
@@ -200,35 +207,40 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Widget _title() {
-  //   return Container(
-  //     child: AssetImage("assets/instacool_logo.png"),
-  //   );
-  // }
-
   Widget _emailPasswordWidget() {
-    return Column(
-      children: <Widget>[
-        _entryField("Email", false, email, false),
-        _entryField("Password", true, password, false)
-      ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          _entryField("Email", false, email, false, errorHandlerEmail),
+          _entryField("Password", true, password, false, errorHandlerPassword),
+        ],
+      ),
     );
   }
 
-  Widget _inputErrorMsg (String errorMsg){
-    return Text(
-      errorMsg,
-      style: TextStyle(
-        color: Colors.red,
-        
-      ),
-    );
+  String errorHandlerEmail(String value) {
+    if (value.isEmpty) {
+      return "Por favor insira um email";
+    } else if (!value.contains('@') || !value.contains('.')) {
+      return "Email mal formatado";
+    }
+    return null;
+  }
+
+  String errorHandlerPassword(String value) {
+    if (value.isEmpty) {
+      return "Por favor insira uma password";
+    } else if (value.length < 6) {
+      return "Password inválida";
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+        body: SingleChildScrollView(
             child: Container(
       height: MediaQuery.of(context).size.height,
       child: Stack(
@@ -243,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                 Image.asset(
                   "assets/images/instacook_logo.png",
                   scale: 3,
-                  ),
+                ),
                 _emailPasswordWidget(),
                 SizedBox(
                   height: 20,

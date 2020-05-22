@@ -15,8 +15,9 @@ class _SignUpPageState extends State<SignUpPage> {
   final username = TextEditingController();
   final email = TextEditingController();
   final password = TextEditingController();
-  final AuthService _auth = AuthService(); 
-  String _errorMsg="";
+  final _formKey = GlobalKey<FormState>();
+  final AuthService _auth = AuthService();
+  String _errorMsg = "";
 
   Widget _backButton() {
     return InkWell(
@@ -37,8 +38,8 @@ class _SignUpPageState extends State<SignUpPage> {
         ));
   }
 
-  Widget _entryField(
-      String title, bool isPassword, TextEditingController _controller) {
+  Widget _entryField(String title, bool isPassword,
+      TextEditingController _controller, Function errorHandler) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -51,7 +52,8 @@ class _SignUpPageState extends State<SignUpPage> {
           SizedBox(
             height: 10,
           ),
-          TextField(
+          TextFormField(
+            validator: (value) => errorHandler(value),
             autofocus: false,
             obscureText: isPassword,
             controller: _controller,
@@ -59,6 +61,13 @@ class _SignUpPageState extends State<SignUpPage> {
               border: InputBorder.none,
               fillColor: Colors.grey[200],
               filled: true,
+              errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                  borderSide: BorderSide(color: Colors.grey, width: 1)),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                borderSide: BorderSide(color: Colors.amber[800], width: 2),
+              ),
               enabledBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
                   borderSide: BorderSide(color: Colors.grey, width: 1)),
@@ -85,11 +94,10 @@ class _SignUpPageState extends State<SignUpPage> {
             borderRadius: BorderRadius.circular(7.0),
           ),
           color: Colors.amber[800],
-          onPressed: ()async {
-            if ((email.text.trim()).isNotEmpty &&
-                password.text.isNotEmpty &&
-                username.text.isNotEmpty) {
-              await _auth.registEmailPassword(email.text, password.text, username.text);
+          onPressed: () async {
+            if (_formKey.currentState.validate()) {
+              await _auth.registEmailPassword(
+                  email.text, password.text, username.text);
               main_key.currentState.popAndPushNamed(Routes.mainapp);
             }
           },
@@ -135,33 +143,44 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  // Widget _title() {
-  //   return RichText(
-  //     textAlign: TextAlign.center,
-  //     text: TextSpan(
-  //         text: ' ',
-  //         style: TextStyle(fontSize: 46, fontWeight: FontWeight.w700),
-  //         children: [
-  //           TextSpan(
-  //             text: 'Insta',
-  //             style: TextStyle(color: Colors.black, fontSize: 30),
-  //           ),
-  //           TextSpan(
-  //             text: 'cook',
-  //             style: TextStyle(color: Colors.amber[800], fontSize: 30),
-  //           ),
-  //         ]),
-  //   );
-  // }
-
   Widget _emailPasswordWidget() {
-    return Column(
-      children: <Widget>[
-        _entryField("Username", false, username),
-        _entryField("Email id", false, email),
-        _entryField("Password", true, password),
-      ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          _entryField("Username", false, username, errorHandlerUsername),
+          _entryField("Email id", false, email, errorHandlerEmail),
+          _entryField("Password", true, password, errorHandlerPassword),
+        ],
+      ),
     );
+  }
+
+  String errorHandlerUsername(String value) {
+    if (value.length < 2) {
+      return "Username deve conter pelo menos 2 caracteres";
+    } else if (value.length > 8) {
+      return "Username não deve conter mais de 8 caracteres";
+    }
+    return null;
+  }
+
+  String errorHandlerEmail(String value) {
+    if (value.isEmpty) {
+      return "Por favor insira um email";
+    } else if (!value.contains('@') || !value.contains('.')) {
+      return "Email mal formatado";
+    }
+    return null;
+  }
+
+  String errorHandlerPassword(String value) {
+    if (value.isEmpty) {
+      return "Por favor insira uma password";
+    } else if (value.length < 6) {
+      return "Password inválida";
+    }
+    return null;
   }
 
   @override
@@ -182,7 +201,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Image.asset(
                   "assets/images/instacook_logo.png",
                   scale: 3,
-                  ),
+                ),
                 _emailPasswordWidget(),
                 SizedBox(
                   height: 20,
