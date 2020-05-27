@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:instacook/main.dart';
 import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/recipesService.dart';
+import 'package:instacook/services/userService.dart';
 import 'Widget/bezierContainer.dart';
 import '../router.dart';
 import 'dart:core';
@@ -15,8 +17,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final email = TextEditingController();
   final password = TextEditingController();
-  final AuthService _auth = AuthService();
-
+  final _auth = AuthService();
+  final recipeService _recipeService = recipeService();
+  final userService _userService = userService();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -149,7 +152,8 @@ class _LoginPageState extends State<LoginPage> {
           ),
           color: Colors.blue[600],
           onPressed: () {
-            main_key.currentState.pushNamed(Routes.mainapp);
+            //main_key.currentState.pushNamed(Routes.mainapp);
+            _userService.getUserId('Xf9vba9pYvp56MLfUmfH');
           },
           textColor: Colors.white,
           child: Stack(

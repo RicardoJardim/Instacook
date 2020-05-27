@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:instacook/models/User.dart';
+import 'package:instacook/services/userService.dart';
 
 class AuthService{
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final _userService = userService();
+  User _userLogged;
 
   // Transform firebase user in our User Model
   User _userFromFirebaseUser(FirebaseUser user){
@@ -27,7 +30,7 @@ class AuthService{
     try{
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
-      // guardar o username com o uid na base de dados
+      _userService.insertUser(user.uid, email, username);
       return _userFromFirebaseUser(user);
     }catch(error){
       print(error);

@@ -159,8 +159,8 @@ class _SignUpPageState extends State<SignUpPage> {
   String errorHandlerUsername(String value) {
     if (value.length < 2) {
       return "Username deve conter pelo menos 2 caracteres";
-    } else if (value.length > 8) {
-      return "Username não deve conter mais de 8 caracteres";
+    } else if (value.length > 16) {
+      return "Username não deve conter mais de 16 caracteres";
     }
     return null;
   }
