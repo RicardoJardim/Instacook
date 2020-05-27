@@ -152,8 +152,8 @@ class _LoginPageState extends State<LoginPage> {
           ),
           color: Colors.blue[600],
           onPressed: () {
-            //main_key.currentState.pushNamed(Routes.mainapp);
-            _userService.fetchFirstList();
+            main_key.currentState.pushNamed(Routes.mainapp);
+            //_userService.fetchFirstList();
             //_userService.getUserId('Xf9vba9pYvp56MLfUmfH');
           },
           textColor: Colors.white,
@@ -259,7 +259,7 @@ class _LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 Image.asset(
                   "assets/images/instacook_logo.png",
-                  scale: 3,
+                  scale: 4,
                 ),
                 _emailPasswordWidget(),
                 SizedBox(

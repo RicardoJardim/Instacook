@@ -2,37 +2,41 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:instacook/models/User.dart';
 import 'package:instacook/services/userService.dart';
 
-class AuthService{
-
+class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _userService = userService();
-  User _userLogged;
 
   // Transform firebase user in our User Model
-  User _userFromFirebaseUser(FirebaseUser user){
+  User _userFromFirebaseUser(FirebaseUser user) {
     // ir buscar username com base no uid ou email
-    return user != null ? User(email: user.email, uid: user.uid, username: "Tadeu17"): null;
+    return user != null
+        ? User(email: user.email, uid: user.uid, username: user.email)
+        : null;
   }
 
-  //Sign in Email e Password
-  Future signInEmailPassword(String email, String password)async {
-    try{
-      AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+  //LOGIN
+  Future signInEmailPassword(String email, String password) async {
+    try {
+      AuthResult result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
       FirebaseUser user = result.user;
       return _userFromFirebaseUser(user);
-    }catch(error){
+    } catch (error) {
       print(error);
       return null;
     }
   }
-  //Register
-  Future registEmailPassword(String email, String password, String username)async{
-    try{
-      AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+
+  //REGISTER
+  Future registEmailPassword(
+      String email, String password, String username) async {
+    try {
+      AuthResult result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
       FirebaseUser user = result.user;
       _userService.insertUser(user.uid, email, username);
       return _userFromFirebaseUser(user);
-    }catch(error){
+    } catch (error) {
       print(error);
       return null;
     }
@@ -40,9 +44,9 @@ class AuthService{
 
   //Sign out
   Future signOut() async {
-    try{
+    try {
       await _auth.signOut();
-    }catch(error){
+    } catch (error) {
       print(error);
       return null;
     }

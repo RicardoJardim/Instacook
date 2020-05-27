@@ -200,7 +200,7 @@ class _SignUpPageState extends State<SignUpPage> {
               children: <Widget>[
                 Image.asset(
                   "assets/images/instacook_logo.png",
-                  scale: 3,
+                  scale: 4,
                 ),
                 _emailPasswordWidget(),
                 SizedBox(
