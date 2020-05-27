@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instacook/main.dart';
 import 'package:instacook/services/auth.dart';
-import 'package:instacook/services/recipesService.dart';
 import 'package:instacook/services/userService.dart';
 import 'Widget/bezierContainer.dart';
 import '../router.dart';
@@ -18,7 +17,6 @@ class _LoginPageState extends State<LoginPage> {
   final email = TextEditingController();
   final password = TextEditingController();
   final _auth = AuthService();
-  final recipeService _recipeService = recipeService();
   final userService _userService = userService();
   final _formKey = GlobalKey<FormState>();
 
@@ -29,6 +27,30 @@ class _LoginPageState extends State<LoginPage> {
     email.dispose();
     password.dispose();
     super.dispose();
+  }
+
+  void errorPop(String error) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(error),
+          backgroundColor: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+          elevation: 24,
+        );
+      },
+    );
   }
 
   Widget _entryField(String title, bool isPassword,
@@ -88,13 +110,13 @@ class _LoginPageState extends State<LoginPage> {
           color: Colors.amber[800],
           onPressed: () async {
             if (_formKey.currentState.validate()) {
-              dynamic result =
+              var res =
                   await _auth.signInEmailPassword(email.text, password.text);
-              if (result == null) {
-                print("Error Login");
-              } else {
-                print("EMAIL: " + result.email);
+              print(res);
+              if (res) {
                 main_key.currentState.pushNamed(Routes.mainapp);
+              } else {
+                errorPop("Credenciais erradas");
               }
             }
           },
@@ -152,8 +174,8 @@ class _LoginPageState extends State<LoginPage> {
           ),
           color: Colors.blue[600],
           onPressed: () {
-            //main_key.currentState.pushNamed(Routes.mainapp);
-            _userService.fetchFirstList();
+            main_key.currentState.pushNamed(Routes.mainapp);
+            //_userService.fetchFirstList();
             //_userService.getUserId('Xf9vba9pYvp56MLfUmfH');
           },
           textColor: Colors.white,
@@ -259,7 +281,7 @@ class _LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 Image.asset(
                   "assets/images/instacook_logo.png",
-                  scale: 3,
+                  scale: 4,
                 ),
                 _emailPasswordWidget(),
                 SizedBox(

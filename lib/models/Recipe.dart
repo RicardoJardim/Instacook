@@ -13,6 +13,7 @@ class Recipe{
   String userId;
   List <Map> prods;
   List <Map> steps;
+  DateTime date;
 
   Recipe({
     this.name,
@@ -26,7 +27,8 @@ class Recipe{
     this.privacy,
     this.prods,
     this.steps,
-    this.userId
+    this.userId,
+    this.date
     });
 
   }
