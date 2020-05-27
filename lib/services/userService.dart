@@ -83,26 +83,27 @@ class userService {
         "proUser": false,
         "recipesBook": []
       });
-
-  List<DocumentSnapshot> userList;  
-  DocumentSnapshot _lastDocument;
-
-  Future getAllUserStartPag(int objNum) async {
-      userList = (await connection
-              .collection("user")   
-              .orderBy('username')
-              .limit(objNum)
-              .getDocuments())
-          .documents;
-      for (var item in userList) {
-        print(item["username"]);
-      }
-      _lastDocument = userList[userList.length-1];
       return true;
     } catch (e) {
       return false;
     }
   }
+
+
+List<DocumentSnapshot> userList;  
+DocumentSnapshot _lastDocument;
+
+Future getAllUserStartPag(int objNum) async {
+    userList = (await connection
+            .collection("user")   
+            .orderBy('username')
+            .limit(objNum)
+            .getDocuments())
+        .documents;
+    for (var item in userList) {
+      print(item["username"]);
+    }
+    _lastDocument = userList[userList.length-1];
 }
 
   Future getMoreUsers( int objNum)async {
