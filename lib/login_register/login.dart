@@ -153,7 +153,8 @@ class _LoginPageState extends State<LoginPage> {
           color: Colors.blue[600],
           onPressed: () {
             //main_key.currentState.pushNamed(Routes.mainapp);
-            _userService.getUserId('Xf9vba9pYvp56MLfUmfH');
+            _userService.fetchFirstList();
+            //_userService.getUserId('Xf9vba9pYvp56MLfUmfH');
           },
           textColor: Colors.white,
           child: Stack(

@@ -51,4 +51,23 @@ class userService{
      );
   }
 
+  List<DocumentSnapshot> documentList;  
+  Future fetchFirstList() async {
+    /* try { */
+      documentList = (await Firestore.instance
+              .collection("user")
+              .limit(3)
+              .getDocuments())
+          .documents;
+      for (var item in documentList) {
+        print(item["username"]);
+      }
+      /* movieController.sink.add(documentList);
+    } on SocketException {
+      movieController.sink.addError(SocketException("No Internet Connection"));
+    } catch (e) {
+      print(e.toString());
+      movieController.sink.addError(e); */
+    }
+
 }
