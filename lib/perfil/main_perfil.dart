@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/models/User.dart';
 import 'package:instacook/perfil/change_perfil.dart';
 import 'package:instacook/receitas/see_recipe.dart';
 import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/userService.dart';
 import '../router.dart';
 import '../main.dart';
 
@@ -12,74 +14,14 @@ class MainPerfil extends StatefulWidget {
 }
 
 class _MainPerfilState extends State<MainPerfil> {
-
   final AuthService _auth = AuthService();
+  final _userService = userService();
 
-  static Map getLista2() {
-    var profile = new Map<String, dynamic>();
-
-    profile = {
-      "id": 1,
-      "username": "Diana C. Faria",
-      "pro": false,
-      "photo": 'https://picsum.photos/250?image=9',
-      "email": "dciasojd@hotmail.com",
-      "recipes": [
-        {
-          "id": 1,
-          "name": "Bife de vaca",
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-          "time": "5-10 minutos",
-          "difficulty": "Difícil",
-          "privacy": true
-        },
-        {
-          "id": 2,
-          "name": "Hamburguer de porco",
-          "image":
-              "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
-          "time": "5-10 minutos",
-          "difficulty": "Fácil",
-          "privacy": false
-        },
-        {
-          "id": 3,
-          "name": "Bife de vaca",
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-          "time": "5-10 minutos",
-          "difficulty": "Intermédio",
-          "privacy": false
-        },
-        {
-          "id": 4,
-          "name": "Bife de vaca",
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-          "time": "5-10 minutos",
-          "difficulty": "Difícil",
-          "privacy": true
-        },
-      ],
-      "follow": 28,
-      "followers": 44
-    };
-    return profile;
+  Future<User> getUser() async {
+    var id = await _auth.getCurrentUser();
+    var users = await _userService.getMyUser(id);
+    return users;
   }
-
-  void initState() {
-    profile = getLista2();
-    super.initState();
-  }
-
-  void save() {
-    print("send profile");
-
-    print(profile);
-  }
-
-  static Map<String, dynamic> profile;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +37,7 @@ class _MainPerfilState extends State<MainPerfil> {
               Container(
                   height: 100.0,
                   child: DrawerHeader(
-                    child: Text(profile["username"],
+                    child: Text("Perfil",
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w500)),
                     decoration: BoxDecoration(
@@ -129,7 +71,7 @@ class _MainPerfilState extends State<MainPerfil> {
                       Icon(Icons.forward),
                     ]),
                 subtitle: Text('Terminar a sua sessão'),
-                onTap: ()async {
+                onTap: () async {
                   await _auth.signOut();
                   main_key.currentState
                       .popUntil((r) => r.settings.name == Routes.login);
@@ -138,76 +80,97 @@ class _MainPerfilState extends State<MainPerfil> {
             ],
           ),
         ),
-        body: SafeArea(
-            top: true,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 2),
-                      child: Center(
-                          child: Column(
-                        children: <Widget>[
-                          Container(
-                              height: 120,
-                              width: 120,
-                              child: Stack(fit: StackFit.expand, children: [
-                                ClipOval(
-                                  child: Image.network(
-                                    profile["photo"],
-                                    fit: BoxFit.cover,
-                                    loadingBuilder: (context, child, progress) {
-                                      if (progress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: progress.expectedTotalBytes !=
-                                                  null
-                                              ? progress.cumulativeBytesLoaded /
-                                                  progress.expectedTotalBytes
-                                              : null,
-                                        ),
-                                      );
-                                    },
+        body: FutureBuilder(
+            future: getUser(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return SafeArea(
+                    top: true,
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(top: 2),
+                              child: Center(
+                                  child: Column(
+                                children: <Widget>[
+                                  Container(
+                                      height: 120,
+                                      width: 120,
+                                      child: Stack(
+                                          fit: StackFit.expand,
+                                          children: [
+                                            ClipOval(
+                                              child: Image.network(
+                                                snapshot.data.imgUrl,
+                                                fit: BoxFit.cover,
+                                                loadingBuilder:
+                                                    (context, child, progress) {
+                                                  if (progress == null)
+                                                    return child;
+                                                  return Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      value: progress
+                                                                  .expectedTotalBytes !=
+                                                              null
+                                                          ? progress
+                                                                  .cumulativeBytesLoaded /
+                                                              progress
+                                                                  .expectedTotalBytes
+                                                          : null,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            snapshot.data.proUser
+                                                ? Align(
+                                                    alignment:
+                                                        Alignment.bottomRight,
+                                                    child: Icon(
+                                                      Icons.brightness_5,
+                                                      color: Colors.blue,
+                                                      size: 36,
+                                                    ))
+                                                : Text("")
+                                          ])),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 5.0),
+                                    child: Text(
+                                      snapshot.data.username,
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w500),
+                                    ),
                                   ),
-                                ),
-                                profile["pro"]
-                                    ? Align(
-                                        alignment: Alignment.bottomRight,
-                                        child: Icon(
-                                          Icons.brightness_5,
-                                          color: Colors.blue,
-                                          size: 36,
-                                        ))
-                                    : Text("")
-                              ])),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 5.0),
-                            child: Text(
-                              profile["username"],
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontSize: 30, fontWeight: FontWeight.w500),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4.0),
+                                    child: Text(snapshot.data.followers.length
+                                            .toString() +
+                                        " seguidores - " +
+                                        snapshot.data.follow.length.toString() +
+                                        " a seguir"),
+                                  ),
+                                ],
+                              )),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Text(profile["followers"].toString() +
-                                " seguidores - " +
-                                profile["follow"].toString() +
-                                "a seguir"),
-                          ),
-                        ],
-                      )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 25),
-                      child: GridList(
-                        litems: profile["recipes"],
-                      ),
-                    ),
-                  ],
-                ))));
+                            Padding(
+                              padding: const EdgeInsets.only(top: 25),
+                              child: GridList(
+                                litems: snapshot.data.recipesBook,
+                              ),
+                            ),
+                          ],
+                        )));
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }));
   }
 }
 

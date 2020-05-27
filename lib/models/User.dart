@@ -4,19 +4,17 @@ class User {
   String username;
   String imgUrl;
   bool proUser;
-  List <Map> recipesBook;
-  List <String> followers;
-  List <String> follow;
+  List<dynamic> recipesBook;
+  List<dynamic> followers;
+  List<dynamic> follow;
 
-  User({
-    this.email,
-    this.uid,
-    this.username,
-    this.imgUrl: "",
-    this.follow: null,
-    this.followers: null,
-    this.proUser: false,
-    this.recipesBook: null
-    });
-    
+  User(
+      {this.email,
+      this.uid,
+      this.username,
+      this.imgUrl: "",
+      this.follow,
+      this.followers,
+      this.proUser,
+      this.recipesBook});
 }

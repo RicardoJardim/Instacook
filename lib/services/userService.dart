@@ -1,11 +1,38 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:instacook/models/User.dart';
 
 class userService {
   final Firestore connection = Firestore.instance;
 
-  //connection.collection('coolName').snapshot
+  Future<User> getMyUser(String id) async {
+    User user;
+    await Firestore.instance
+        .collection('user')
+        .where("uid", isEqualTo: id)
+        .getDocuments()
+        .then((event) {
+      if (event.documents.isNotEmpty) {
+        var data = event.documents.single.data;
+        user = User(
+          email: data["email"],
+          username: data["username"],
+          follow: data["follow"],
+          followers: data["followers"],
+          imgUrl: data["imgUrl"],
+          recipesBook: data["recipesBook"],
+          uid: data["uId"],
+          proUser: data["proUser"],
+        );
+      }
+    }).catchError((e) => print("error fetching data: $e"));
+
+    if (user != null) {
+      print(user.proUser);
+      return user;
+    } else {
+      return null;
+    }
+  }
 
   Future<List> getUsers() async {
     List<User> users = List<User>();
@@ -43,7 +70,7 @@ class userService {
     );
   }
 
-  Future insertUser(String uId, String email, String username) async {
+  Future<bool> insertUser(String uId, String email, String username) async {
     try {
       await connection.collection('user').add({
         "uid": uId,
@@ -57,30 +84,9 @@ class userService {
         "recipesBook": []
       });
 
-      return AlertDialog(
-        content: Text("Bem vindo ao InstaCook!"),
-      );
+      return true;
     } catch (e) {
-      return AlertDialog(
-        content: Text("Não foi possivel criar"),
-      );
+      return false;
     }
-  }
-
-  List<DocumentSnapshot> documentList;
-  Future fetchFirstList() async {
-    /* try { */
-    documentList =
-        (await Firestore.instance.collection("user").limit(3).getDocuments())
-            .documents;
-    for (var item in documentList) {
-      print(item["username"]);
-    }
-    /* movieController.sink.add(documentList);
-    } on SocketException {
-      movieController.sink.addError(SocketException("No Internet Connection"));
-    } catch (e) {
-      print(e.toString());
-      movieController.sink.addError(e); */
   }
 }

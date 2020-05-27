@@ -19,6 +19,30 @@ class _SignUpPageState extends State<SignUpPage> {
   final AuthService _auth = AuthService();
   String _errorMsg = "";
 
+  void errorPop(String error) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(error),
+          backgroundColor: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+          elevation: 24,
+        );
+      },
+    );
+  }
+
   Widget _backButton() {
     return InkWell(
         borderRadius: BorderRadius.circular(100),
@@ -96,9 +120,14 @@ class _SignUpPageState extends State<SignUpPage> {
           color: Colors.amber[800],
           onPressed: () async {
             if (_formKey.currentState.validate()) {
-              await _auth.registEmailPassword(
+              var res = await _auth.registEmailPassword(
                   email.text, password.text, username.text);
-              main_key.currentState.popAndPushNamed(Routes.mainapp);
+              print(res);
+              if (res) {
+                main_key.currentState.popAndPushNamed(Routes.mainapp);
+              } else {
+                errorPop("Email invalido");
+              }
             }
           },
           textColor: Colors.white,

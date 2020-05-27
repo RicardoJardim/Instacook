@@ -1,44 +1,41 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:instacook/models/User.dart';
 import 'package:instacook/services/userService.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _userService = userService();
 
-  // Transform firebase user in our User Model
-  User _userFromFirebaseUser(FirebaseUser user) {
-    // ir buscar username com base no uid ou email
-    return user != null
-        ? User(email: user.email, uid: user.uid, username: user.email)
-        : null;
+  Future<String> getCurrentUser() async {
+    var result = await _auth.currentUser();
+    var user = result.uid;
+    return user;
   }
 
   //LOGIN
-  Future signInEmailPassword(String email, String password) async {
+  Future<bool> signInEmailPassword(String email, String password) async {
     try {
       AuthResult result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       FirebaseUser user = result.user;
-      return _userFromFirebaseUser(user);
+      return true;
     } catch (error) {
       print(error);
-      return null;
+      return false;
     }
   }
 
   //REGISTER
-  Future registEmailPassword(
+  Future<bool> registEmailPassword(
       String email, String password, String username) async {
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       FirebaseUser user = result.user;
       _userService.insertUser(user.uid, email, username);
-      return _userFromFirebaseUser(user);
+      return true;
     } catch (error) {
       print(error);
-      return null;
+      return false;
     }
   }
 
