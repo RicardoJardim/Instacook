@@ -12,6 +12,26 @@ class AuthService {
     return user;
   }
 
+  //CHANGE PASSWORD
+  Future<bool> changePassword(String password) async {
+    try {
+      return true;
+    } catch (error) {
+      print(error);
+      return false;
+    }
+  }
+
+  //CHANGE EMAIL
+  Future<bool> changeEmail(String email) async {
+    try {
+      return true;
+    } catch (error) {
+      print(error);
+      return false;
+    }
+  }
+
   //LOGIN
   Future<bool> signInEmailPassword(String email, String password) async {
     try {
