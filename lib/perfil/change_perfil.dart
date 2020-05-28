@@ -1,49 +1,54 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:instacook/models/User.dart';
 import 'package:instacook/perfil/change_pass.dart';
 import 'package:instacook/photo_picker.dart';
+import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/userService.dart';
 
 import '../main.dart';
 import '../router.dart';
 
 class ChangeProfile extends StatefulWidget {
-  ChangeProfile({Key key}) : super(key: key);
+  ChangeProfile({Key key, this.rebuild}) : super(key: key);
 
+  final Function rebuild;
   _ChangeProfileState createState() => _ChangeProfileState();
 }
 
 class _ChangeProfileState extends State<ChangeProfile> {
-  Map getLista2() {
-    var profile = new Map<String, dynamic>();
+  final _auth = AuthService();
+  final _userService = userService();
 
-    profile = {
-      "id": 1,
-      "username": "Diana C. Faria",
-      "pro": false,
-      "photo": 'https://picsum.photos/250?image=9',
-      "email": "dciasojd@hotmail.com",
-    };
-    return profile;
-  }
-
-  void initState() {
-    profile = getLista2();
-    email.text = profile["email"];
-    username.text = profile["username"];
-
-    super.initState();
-  }
-
-  void save() {
-    print("send profile");
-
-    print(profile);
-
-    main_key.currentState.pop(context);
-  }
-
-  Map<String, dynamic> profile;
   final email = TextEditingController();
   final username = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  String _id;
+  File _selectedFile;
+
+  Future<User> getUser() async {
+    _id = await _auth.getCurrentUser();
+    var users = await _userService.getMyUser(_id);
+    email.text = users.email;
+    username.text = users.username;
+    return users;
+  }
+
+  void save(String id) async {
+    print("send profile");
+    Map _map = new Map();
+    _map["email"] = email.text;
+    _map["username"] = username.text;
+    if (_selectedFile != null) {
+      _map["image"] = _selectedFile;
+    }
+
+    await _userService.updateMyUserData(id, _map);
+    main_key.currentState.pop(context);
+    widget.rebuild();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,104 +66,137 @@ class _ChangeProfileState extends State<ChangeProfile> {
                 size: 30,
               ),
               onPressed: () {
-                save();
+                if (_formKey.currentState.validate()) {
+                  save(_id);
+                }
               },
             ),
             // overflow menu
           ],
         ),
-        body: SafeArea(
-            top: true,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 2),
-                      child: Center(
-                          child: Column(
-                        children: <Widget>[
-                          Container(
-                            height: 120,
-                            width: 120,
-                            child: ClipOval(
-                              child: Image.network(
-                                profile["photo"],
-                                fit: BoxFit.cover,
-                                loadingBuilder: (context, child, progress) {
-                                  if (progress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: progress.expectedTotalBytes != null
-                                          ? progress.cumulativeBytesLoaded /
-                                              progress.expectedTotalBytes
-                                          : null,
+        body: FutureBuilder(
+            future: getUser(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return SafeArea(
+                    top: true,
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(top: 2),
+                              child: Center(
+                                  child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    height: 120,
+                                    width: 120,
+                                    child: ClipOval(
+                                      child: _selectedFile != null
+                                          ? Image.file(
+                                              _selectedFile,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.network(
+                                              snapshot.data.imgUrl,
+                                              fit: BoxFit.cover,
+                                              loadingBuilder:
+                                                  (context, child, progress) {
+                                                if (progress == null)
+                                                  return child;
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: progress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? progress
+                                                                .cumulativeBytesLoaded /
+                                                            progress
+                                                                .expectedTotalBytes
+                                                        : null,
+                                                  ),
+                                                );
+                                              },
+                                            ),
                                     ),
-                                  );
+                                  ),
+                                ],
+                              )),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(7.0),
+                              child: InkWell(
+                                onTap: () {
+                                  main_key.currentState.push(MaterialPageRoute(
+                                      builder: (context) => PhotoPicker(
+                                            textTitle: "Alterar foto de perfil",
+                                            sendPicture: (image) {
+                                              setState(() {
+                                                _selectedFile = image;
+                                              });
+                                            },
+                                          )));
                                 },
+                                child: Text(
+                                  "Alterar Foto de Perfil",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.blue),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(7.0),
-                      child: InkWell(
-                        onTap: () {
-                          main_key.currentState.push(MaterialPageRoute(
-                              builder: (context) => PhotoPicker(
-                                    textTitle: "Alterar foto de perfil",
-                                    sendPicture: (image) {
-                                      print(image);
-                                      print("Send to firebase");
-                                    },
-                                  )));
-                        },
-                        child: Text(
-                          "Alterar Foto de Perfil",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.blue),
-                        ),
-                      ),
-                    ),
-                    _entryField("Nome", username),
-                    _entryField("Email", email),
-                    _divider(),
-                    _pro(profile["pro"]),
-                    _divider(),
-                    _sideButton("Modificar Password", Colors.blue, () {
-                      main_key.currentState.push(MaterialPageRoute(
-                          builder: (context) => ChangePassword()));
-                    }),
-                    _divider(),
-                    _sideButton(
-                        "Eliminar Conta", Colors.red, () => eliminarConta()),
-                    _divider(),
-                  ],
-                ))));
+                            _formWidget(),
+                            _divider(),
+                            _pro(snapshot.data.proUser),
+                            _divider(),
+                            _sideButton("Modificar Password", Colors.blue, () {
+                              main_key.currentState.push(MaterialPageRoute(
+                                  builder: (context) => ChangePassword()));
+                            }),
+                            _divider(),
+                            _sideButton("Eliminar Conta", Colors.red,
+                                () => eliminarConta()),
+                            _divider(),
+                          ],
+                        )));
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }));
   }
 
-  Widget _entryField(String title, TextEditingController _controller) {
-    return Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: TextField(
-          obscureText: false,
-          controller: _controller,
-          style: TextStyle(color: Colors.black, fontSize: 18),
-          decoration: InputDecoration(
-            labelText: title,
-            border: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.amber[800], width: 2)),
-            enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2)),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.amber[800], width: 2),
-            ),
-          ),
-        ));
+  Widget _entryField(
+      String title, TextEditingController _controller, Function errorHandler) {
+    return Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                validator: (value) => errorHandler(value),
+                obscureText: false,
+                autofocus: false,
+                focusNode: FocusNode(canRequestFocus: false),
+                controller: _controller,
+                style: TextStyle(color: Colors.black, fontSize: 18),
+                decoration: InputDecoration(
+                  labelText: title,
+                  border: UnderlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.amber[800], width: 2)),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey, width: 2)),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.amber[800], width: 2),
+                  ),
+                ),
+              )
+            ]));
   }
 
   Widget _pro(bool pro) {
@@ -254,6 +292,7 @@ class _ChangeProfileState extends State<ChangeProfile> {
               child: new Text("Sim"),
               onPressed: () {
                 print("Eliminar conta");
+                _userService.deleteMyUserData(_id);
                 Navigator.of(context).pop();
                 main_key.currentState
                     .popUntil((r) => r.settings.name == Routes.login);
@@ -264,5 +303,38 @@ class _ChangeProfileState extends State<ChangeProfile> {
         );
       },
     );
+  }
+
+  Widget _formWidget() {
+    print("sdasd");
+    return Form(
+      autovalidate: true,
+      key: _formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          _entryField("Nome", username, errorHandlerUsername),
+          _entryField("Email", email, errorHandlerEmail),
+        ],
+      ),
+    );
+  }
+
+  String errorHandlerEmail(String value) {
+    if (value.isEmpty) {
+      return "Por favor insira um email";
+    } else if (!value.contains('@') || !value.contains('.')) {
+      return "Email mal formatado";
+    }
+    return null;
+  }
+
+  String errorHandlerUsername(String value) {
+    if (value.length < 6) {
+      return "Username deve conter pelo menos 6 caracteres";
+    } else if (value.length > 16) {
+      return "Username não deve conter mais de 16 caracteres";
+    }
+    return null;
   }
 }

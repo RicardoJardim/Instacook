@@ -174,6 +174,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Widget _emailPasswordWidget() {
     return Form(
+      autovalidate: true,
       key: _formKey,
       child: Column(
         children: <Widget>[
@@ -186,8 +187,8 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   String errorHandlerUsername(String value) {
-    if (value.length < 2) {
-      return "Username deve conter pelo menos 2 caracteres";
+    if (value.length < 6) {
+      return "Username deve conter pelo menos 6 caracteres";
     } else if (value.length > 16) {
       return "Username não deve conter mais de 16 caracteres";
     }

@@ -236,6 +236,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _emailPasswordWidget() {
     return Form(
+      autovalidate: true,
       key: _formKey,
       child: Column(
         children: <Widget>[

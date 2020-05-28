@@ -5,6 +5,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _userService = userService();
 
+  //CURRENT
   Future<String> getCurrentUser() async {
     var result = await _auth.currentUser();
     var user = result.uid;
@@ -48,5 +49,4 @@ class AuthService {
       return null;
     }
   }
-
 }

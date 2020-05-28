@@ -14,7 +14,7 @@ class MainPerfil extends StatefulWidget {
 }
 
 class _MainPerfilState extends State<MainPerfil> {
-  final AuthService _auth = AuthService();
+  final _auth = AuthService();
   final _userService = userService();
 
   Future<User> getUser() async {
@@ -57,8 +57,12 @@ class _MainPerfilState extends State<MainPerfil> {
                 subtitle: Text('Edita aqui o seu perfil'),
                 onTap: () {
                   Navigator.pop(context);
-                  main_key.currentState.push(
-                      MaterialPageRoute(builder: (context) => ChangeProfile()));
+                  main_key.currentState.push(MaterialPageRoute(
+                      builder: (context) => ChangeProfile(
+                            rebuild: () {
+                              setState(() {});
+                            },
+                          )));
                 },
               ),
               ListTile(

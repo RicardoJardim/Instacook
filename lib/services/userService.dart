@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/User.dart';
+import 'package:instacook/services/imageService.dart';
 
 class userService {
   final Firestore connection = Firestore.instance;
+  final _imageService = imageService();
 
+  //MyUSER
   Future<User> getMyUser(String id) async {
     User user;
-    await Firestore.instance
+    await connection
         .collection('user')
         .where("uid", isEqualTo: id)
         .getDocuments()
@@ -27,13 +30,69 @@ class userService {
     }).catchError((e) => print("error fetching data: $e"));
 
     if (user != null) {
-      print(user.proUser);
       return user;
     } else {
       return null;
     }
   }
 
+  Future<bool> updateMyUserData(String id, Map data) async {
+    String _id;
+    await connection
+        .collection('user')
+        .where("uid", isEqualTo: id)
+        .getDocuments()
+        .then((value) {
+      _id = value.documents.single.documentID;
+      print(_id);
+    });
+
+    await connection
+        .collection('user')
+        .document(_id)
+        .updateData({"username": data["username"], "email": data["email"]});
+
+    //FALTA DAR UPDATE NO AUTH
+    if (data["image"] != null) {
+      var _map = await _imageService.uploadImageToFirebase(data["image"], _id);
+
+      if (_map != null) {
+        await connection
+            .collection('user')
+            .document(_id)
+            .updateData({'imgUrl': _map["url"], 'location': _map["location"]});
+      }
+    }
+
+    if (_id != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> deleteMyUserData(String id) async {
+    String _id;
+    await connection
+        .collection('user')
+        .where("uid", isEqualTo: id)
+        .getDocuments()
+        .then((value) {
+      _id = value.documents.single.documentID;
+      print(_id);
+    });
+
+    await connection.collection('user').document(_id).delete();
+
+    //falta alterar no auth
+    if (_id != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  //OTHERS
   Future<List> getUsers() async {
     List<User> users = List<User>();
 
@@ -89,13 +148,12 @@ class userService {
     }
   }
 
+  List<DocumentSnapshot> userList;
+  DocumentSnapshot _lastDocument;
 
-List<DocumentSnapshot> userList;  
-DocumentSnapshot _lastDocument;
-
-Future getAllUserStartPag(int objNum) async {
+  Future getAllUserStartPag(int objNum) async {
     userList = (await connection
-            .collection("user")   
+            .collection("user")
             .orderBy('username')
             .limit(objNum)
             .getDocuments())
@@ -103,24 +161,22 @@ Future getAllUserStartPag(int objNum) async {
     for (var item in userList) {
       print(item["username"]);
     }
-    _lastDocument = userList[userList.length-1];
-}
+    _lastDocument = userList[userList.length - 1];
+  }
 
-  Future getMoreUsers( int objNum)async {
+  Future getMoreUsers(int objNum) async {
     List<DocumentSnapshot> newList = (await connection
-    .collection('user')
-    .orderBy('username')
-    .startAfterDocument(_lastDocument)
-    .limit(objNum)
-    .getDocuments())
-    .documents;
+            .collection('user')
+            .orderBy('username')
+            .startAfterDocument(_lastDocument)
+            .limit(objNum)
+            .getDocuments())
+        .documents;
 
     userList += newList;
 
     for (var item in userList) {
-        print(item["username"]);
-      }
-
+      print(item["username"]);
+    }
   }
-
 }
