@@ -7,6 +7,7 @@ class User {
   List<dynamic> recipesBook;
   List<dynamic> followers;
   List<dynamic> follow;
+  List<dynamic> myrecipes;
 
   User(
       {this.email,
@@ -16,5 +17,6 @@ class User {
       this.follow,
       this.followers,
       this.proUser,
-      this.recipesBook});
+      this.recipesBook,
+      this.myrecipes});
 }

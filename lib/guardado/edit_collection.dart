@@ -3,6 +3,8 @@ import 'package:instacook/guardado/edit_photo.dart';
 import 'package:instacook/guardado/edit_recipes.dart';
 import 'package:instacook/guardado/main.dart';
 import '../main.dart';
+import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/savedService.dart';
 
 class EditCollection extends StatefulWidget {
   EditCollection({Key key, this.id}) : super(key: key);
@@ -12,35 +14,35 @@ class EditCollection extends StatefulWidget {
 }
 
 class _EditCollectionState extends State<EditCollection> {
-  Map getLista2(int id) {
-    var collection = new Map<String, dynamic>();
-
-    collection = {
-      "id": id,
-      "photo":
-          'https://nit.pt/wp-content/uploads/2018/07/95915588dd8f97db9b5bedd24ea068a5-754x394.jpg',
-      "name": "Pregos",
-    };
-    return collection;
+  final _auth = AuthService();
+  final _savedService = SavedService();
+  String _id;
+  Future<Map> getColletion() async {
+    _id = await _auth.getCurrentUser();
+    var litems = await _savedService.getMyBook(_id, widget.id);
+    name.text = litems["name"];
+    return litems;
   }
 
-  void initState() {
-    collection = getLista2(widget.id);
-    name.text = collection["name"];
-    imageUrl = collection["photo"];
-    super.initState();
+  void save() async {
+    if (_formKey.currentState.validate()) {
+      print("save collection");
+      Map map = Map();
+      map["image"] = null;
+      map["delete"] = deleteRecipe;
+      if (imageUrl != null) {
+        map["image"] = imageUrl;
+      }
+      map["name"] = name.text;
+
+      await _savedService.updateColletionImage(_id, widget.id, map);
+      main_key.currentState.pop(context);
+    }
   }
 
-  void save() {
-    print("send collection");
-
-    print(collection);
-
-    main_key.currentState.pop(context);
-  }
-
-  Map<String, dynamic> collection;
   String imageUrl;
+  List deleteRecipe = [];
+
   final name = TextEditingController();
 
   @override
@@ -62,94 +64,136 @@ class _EditCollectionState extends State<EditCollection> {
                 save();
               },
             ),
-            // overflow menu
           ],
         ),
-        body: SafeArea(
-            top: true,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 2),
-                      child: Center(
-                          child: Column(
-                        children: <Widget>[
-                          Container(
-                            height: 120,
-                            width: 120,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: Colors.amber[900], width: 2),
-                            ),
-                            child: ClipOval(
-                              child: Image.network(
-                                imageUrl,
-                                fit: BoxFit.cover,
-                                loadingBuilder: (context, child, progress) {
-                                  if (progress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: progress.expectedTotalBytes != null
-                                          ? progress.cumulativeBytesLoaded /
-                                              progress.expectedTotalBytes
-                                          : null,
+        body: FutureBuilder(
+            future: getColletion(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return SafeArea(
+                    top: true,
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(top: 2),
+                              child: Center(
+                                  child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    height: 120,
+                                    width: 120,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          color: Colors.amber[900], width: 2),
                                     ),
-                                  );
+                                    child: ClipOval(
+                                      child: Image.network(
+                                        imageUrl == null
+                                            ? snapshot.data["imgUrl"]
+                                            : imageUrl,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder:
+                                            (context, child, progress) {
+                                          if (progress == null) return child;
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: progress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? progress
+                                                          .cumulativeBytesLoaded /
+                                                      progress
+                                                          .expectedTotalBytes
+                                                  : null,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(7.0),
+                              child: InkWell(
+                                onTap: () {
+                                  main_key.currentState.push(MaterialPageRoute(
+                                      builder: (context) => EditPhoto(
+                                            id: widget.id,
+                                            recipes: snapshot.data["recipes"],
+                                            img: snapshot.data["imgUrl"],
+                                            name: snapshot.data["name"],
+                                            onClickImage: (str) {
+                                              setState(() {
+                                                imageUrl = str;
+                                              });
+                                            },
+                                          )));
                                 },
+                                child: Text(
+                                  "Alterar Foto do Livro",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.blue),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(7.0),
-                      child: InkWell(
-                        onTap: () {
-                          main_key.currentState.push(MaterialPageRoute(
-                              builder: (context) => EditPhoto(
-                                    id: widget.id,
-                                    onClickImage: (str) {
-                                      setState(() {
-                                        imageUrl = str;
-                                      });
-                                    },
-                                  )));
-                        },
-                        child: Text(
-                          "Alterar Foto do Livro",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.blue),
-                        ),
-                      ),
-                    ),
-                    _entryField("Nome", name),
-                    _divider(),
-                    _sideButton("Modificar Receitas", Colors.blue, () {
-                      main_key.currentState.push(MaterialPageRoute(
-                          builder: (context) => EditRecipes(
-                                id: widget.id,
-                              )));
-                    }),
-                    _divider(),
-                    widget.id != 1
-                        ? _sideButton(
-                            "Eliminar Livro", Colors.red, () => eliminarConta())
-                        : Text(""),
-                    widget.id != 1 ? _divider() : Text(""),
-                  ],
-                ))));
+                            Form(
+                              autovalidate: true,
+                              key: _formKey,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  _entryField("Nome", name, errorHandlerName),
+                                ],
+                              ),
+                            ),
+                            _divider(),
+                            _sideButton("Modificar Receitas", Colors.blue, () {
+                              main_key.currentState.push(MaterialPageRoute(
+                                  builder: (context) => EditRecipes(
+                                      id: widget.id,
+                                      recipes: snapshot.data["recipes"],
+                                      callback: (list) {
+                                        deleteRecipe = list;
+                                        print(deleteRecipe);
+                                      })));
+                            }),
+                            _divider(),
+                            _sideButton("Eliminar Livro", Colors.red,
+                                () => eliminarConta()),
+                            _divider()
+                          ],
+                        )));
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }));
   }
 
-  Widget _entryField(String title, TextEditingController _controller) {
+  final _formKey = GlobalKey<FormState>();
+  String errorHandlerName(String value) {
+    if (value.isEmpty) {
+      return "É obrigatorio ter um nome";
+    } else if (value.length < 2) {
+      return "Minimo de 2 letras";
+    }
+    return null;
+  }
+
+  Widget _entryField(
+      String title, TextEditingController _controller, Function errorHandler) {
     return Padding(
         padding: const EdgeInsets.all(10.0),
-        child: TextField(
+        child: TextFormField(
+          validator: (value) => errorHandler(value),
           obscureText: false,
           controller: _controller,
           style: TextStyle(color: Colors.black, fontSize: 18),
@@ -206,8 +250,7 @@ class _EditCollectionState extends State<EditCollection> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Eliminar Libro"),
-          content:
-              new Text("Deseja eliminar o livro " + collection["name"] + " ?"),
+          content: new Text("Deseja eliminar o livro " + name.text + " ?"),
           backgroundColor: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
@@ -225,6 +268,7 @@ class _EditCollectionState extends State<EditCollection> {
                   Navigator.of(context).pop();
                   main_key.currentState.pop(context);
                   saved_key.currentState.pop(context);
+                  _savedService.deleteColletion(_id, widget.id);
                 }),
           ],
           elevation: 24,

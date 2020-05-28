@@ -19,7 +19,7 @@ class ChangeProfile extends StatefulWidget {
 
 class _ChangeProfileState extends State<ChangeProfile> {
   final _auth = AuthService();
-  final _userService = userService();
+  final _userService = UserService();
 
   final email = TextEditingController();
   final username = TextEditingController();
@@ -45,9 +45,16 @@ class _ChangeProfileState extends State<ChangeProfile> {
       _map["image"] = _selectedFile;
     }
 
-    await _userService.updateMyUserData(id, _map);
+    var res = await _userService.updateMyUserData(id, _map);
+    if (res) {
+      await _auth.changeEmail(_map["email"]);
+    }
     main_key.currentState.pop(context);
     widget.rebuild();
+  }
+
+  void deleteAccount() async {
+    await _auth.deleteAccount();
   }
 
   @override
@@ -291,8 +298,8 @@ class _ChangeProfileState extends State<ChangeProfile> {
             new FlatButton(
               child: new Text("Sim"),
               onPressed: () {
-                print("Eliminar conta");
                 _userService.deleteMyUserData(_id);
+                deleteAccount();
                 Navigator.of(context).pop();
                 main_key.currentState
                     .popUntil((r) => r.settings.name == Routes.login);
@@ -306,14 +313,13 @@ class _ChangeProfileState extends State<ChangeProfile> {
   }
 
   Widget _formWidget() {
-    print("sdasd");
     return Form(
       autovalidate: true,
       key: _formKey,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          _entryField("Nome", username, errorHandlerUsername),
+          _entryField("Username", username, errorHandlerUsername),
           _entryField("Email", email, errorHandlerEmail),
         ],
       ),

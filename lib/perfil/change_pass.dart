@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/services/auth.dart';
 
 import '../main.dart';
 
@@ -9,7 +10,10 @@ class ChangePassword extends StatefulWidget {
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
-  void save() {
+  final _formKey = GlobalKey<FormState>();
+  final _auth = AuthService();
+
+  void save() async {
     String text = "";
 
     if (passwordActual.text == "" ||
@@ -26,6 +30,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
     if (text == "") {
       print(passwordNew.text);
+      await _auth.changePassword(passwordNew.text);
       main_key.currentState.pop(context);
     } else {
       popUp(text);
@@ -53,7 +58,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                 size: 30,
               ),
               onPressed: () {
-                save();
+                if (_formKey.currentState.validate()) {
+                  save();
+                }
               },
             ),
             // overflow menu
@@ -62,18 +69,15 @@ class _ChangePasswordState extends State<ChangePassword> {
         body: SafeArea(
             top: true,
             child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(children: [
-                  _entryField("Password atual", passwordActual),
-                  _entryField("Nova password", passwordNew),
-                  _entryField("Confirmar password", passwordNewTwo),
-                ]))));
+                scrollDirection: Axis.vertical, child: _formWidget())));
   }
 
-  Widget _entryField(String title, TextEditingController _controller) {
+  Widget _entryField(
+      String title, TextEditingController _controller, Function errorHandler) {
     return Padding(
         padding: const EdgeInsets.all(10.0),
-        child: TextField(
+        child: TextFormField(
+          validator: (value) => errorHandler(value),
           obscureText: true,
           controller: _controller,
           style: TextStyle(color: Colors.black, fontSize: 18),
@@ -88,6 +92,31 @@ class _ChangePasswordState extends State<ChangePassword> {
             ),
           ),
         ));
+  }
+
+  Widget _formWidget() {
+    return Form(
+      autovalidate: true,
+      key: _formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          _entryField("Password atual", passwordActual, errorHandlerPassword),
+          _entryField("Nova password", passwordNew, errorHandlerPassword),
+          _entryField(
+              "Confirmar password", passwordNewTwo, errorHandlerPassword),
+        ],
+      ),
+    );
+  }
+
+  String errorHandlerPassword(String value) {
+    if (value.isEmpty) {
+      return "Por favor insira uma password";
+    } else if (value.length < 6) {
+      return "Password inválida";
+    }
+    return null;
   }
 
   void popUp(String content) {

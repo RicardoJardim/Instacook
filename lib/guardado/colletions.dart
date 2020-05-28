@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instacook/receitas/see_recipe.dart';
-
+import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/savedService.dart';
 import '../main.dart';
 import 'edit_collection.dart';
 
@@ -15,6 +16,15 @@ class Colletions extends StatefulWidget {
 }
 
 class _ColletionsState extends State<Colletions> {
+  final _auth = AuthService();
+  final _savedService = SavedService();
+
+  Future<List> createaColletion() async {
+    String _id = await _auth.getCurrentUser();
+    var result = await _savedService.getMyRecipesFromColletion(_id, widget.id);
+    return result;
+  }
+
   static List onSomeEvent2() {
     List<Map> litems = [
       {
@@ -81,64 +91,76 @@ class _ColletionsState extends State<Colletions> {
                 }),
           ],
         ),
-        body: SafeArea(
-            top: true,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 60, left: 15),
-                          child: Text(
-                            widget.colletionName,
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                fontSize: 40, fontWeight: FontWeight.w700),
-                          ),
-                        )),
-                    Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width - 20,
-                          child: TextField(
-                            style: TextStyle(
-                                fontSize: 16.0,
-                                height: 0.7,
-                                color: Colors.black),
-                            onChanged: (text) {
-                              print("Pesquisa: $text");
-                            },
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(
-                                Icons.search,
-                                color: Colors.black,
+        body: FutureBuilder(
+            future: createaColletion(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return SafeArea(
+                    top: true,
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 60, left: 15),
+                                  child: Text(
+                                    widget.colletionName,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                )),
+                            Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width - 20,
+                                  child: TextField(
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        height: 0.7,
+                                        color: Colors.black),
+                                    onChanged: (text) {
+                                      print("Pesquisa: $text");
+                                    },
+                                    decoration: InputDecoration(
+                                      prefixIcon: Icon(
+                                        Icons.search,
+                                        color: Colors.black,
+                                      ),
+                                      enabledBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide: const BorderSide(
+                                            color: Colors.black, width: 1.5),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(30.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.blue, width: 2),
+                                      ),
+                                      hintText: 'Enter a search term',
+                                    ),
+                                  ),
+                                )),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 30),
+                              child: GridList(
+                                litems: snapshot.data,
                               ),
-                              enabledBorder: const OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: const BorderSide(
-                                    color: Colors.black, width: 1.5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(30.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.blue, width: 2),
-                              ),
-                              hintText: 'Enter a search term',
-                            ),
-                          ),
-                        )),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 30),
-                      child: GridList(
-                        litems: onSomeEvent2(),
-                      ),
-                    )
-                  ],
-                ))));
+                            )
+                          ],
+                        )));
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }));
   }
 }
 //GRID VIEW
@@ -257,7 +279,7 @@ class GridItemWidget extends State<GridList> {
       return Center(
           heightFactor: 15,
           child: Text(
-            "Não tem neste momento receitas criadas",
+            "Não tem neste momento receitas guardadas",
             style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
           ));
     }

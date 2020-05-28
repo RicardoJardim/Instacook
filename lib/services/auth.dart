@@ -3,7 +3,7 @@ import 'package:instacook/services/userService.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final _userService = userService();
+  final _userService = UserService();
 
   //CURRENT
   Future<String> getCurrentUser() async {
@@ -15,6 +15,8 @@ class AuthService {
   //CHANGE PASSWORD
   Future<bool> changePassword(String password) async {
     try {
+      var result = await _auth.currentUser();
+      result.updatePassword(password);
       return true;
     } catch (error) {
       print(error);
@@ -25,6 +27,20 @@ class AuthService {
   //CHANGE EMAIL
   Future<bool> changeEmail(String email) async {
     try {
+      var result = await _auth.currentUser();
+      result.updateEmail(email);
+      return true;
+    } catch (error) {
+      print(error);
+      return false;
+    }
+  }
+
+  //DELETE
+  Future<bool> deleteAccount() async {
+    try {
+      var result = await _auth.currentUser();
+      result.delete();
       return true;
     } catch (error) {
       print(error);
@@ -35,9 +51,7 @@ class AuthService {
   //LOGIN
   Future<bool> signInEmailPassword(String email, String password) async {
     try {
-      AuthResult result = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      FirebaseUser user = result.user;
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
       return true;
     } catch (error) {
       print(error);

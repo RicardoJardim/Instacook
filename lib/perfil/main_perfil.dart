@@ -15,7 +15,7 @@ class MainPerfil extends StatefulWidget {
 
 class _MainPerfilState extends State<MainPerfil> {
   final _auth = AuthService();
-  final _userService = userService();
+  final _userService = UserService();
 
   Future<User> getUser() async {
     var id = await _auth.getCurrentUser();
@@ -164,7 +164,7 @@ class _MainPerfilState extends State<MainPerfil> {
                             Padding(
                               padding: const EdgeInsets.only(top: 25),
                               child: GridList(
-                                litems: snapshot.data.recipesBook,
+                                litems: snapshot.data.myrecipes,
                               ),
                             ),
                           ],

@@ -2,70 +2,36 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 
 class EditPhoto extends StatefulWidget {
-  EditPhoto({Key key, this.id, this.onClickImage}) : super(key: key);
+  EditPhoto(
+      {Key key, this.id, this.onClickImage, this.recipes, this.img, this.name})
+      : super(key: key);
   final int id;
   final ValueChanged<String> onClickImage;
-
+  final List recipes;
+  final String img;
+  final String name;
   _EditPhotoState createState() => _EditPhotoState();
 }
 
 class _EditPhotoState extends State<EditPhoto> {
-  Map getLista2(int id) {
-    var collection = new Map<String, dynamic>();
-
-    collection = {
-      "id": id,
-      "photo":
-          'https://nit.pt/wp-content/uploads/2018/07/95915588dd8f97db9b5bedd24ea068a5-754x394.jpg',
-      "name": "Pregos",
-      "recipes": [
-        {
-          "id": 1,
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        },
-        {
-          "id": 2,
-          "image":
-              "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
-        },
-        {
-          "id": 3,
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        },
-        {
-          "id": 4,
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        },
-      ]
-    };
-    return collection;
-  }
-
   void initState() {
-    collection = getLista2(widget.id);
-    urlImage = collection["photo"];
-
+    urlImage = widget.img;
     super.initState();
   }
 
   void save() {
-    print("save photo $urlImage");
     widget.onClickImage(urlImage);
     main_key.currentState.pop(context);
   }
 
   String urlImage;
-  Map<String, dynamic> collection;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           elevation: 0.0,
-          title: Text(collection["name"]),
+          title: Text(widget.name),
           actions: <Widget>[
             IconButton(
               enableFeedback: true,
@@ -79,7 +45,6 @@ class _EditPhotoState extends State<EditPhoto> {
                 save();
               },
             ),
-            // overflow menu
           ],
         ),
         body: SafeArea(
@@ -123,7 +88,7 @@ class _EditPhotoState extends State<EditPhoto> {
                 Padding(
                   padding: const EdgeInsets.only(top: 30),
                   child: GridList(
-                      litems: collection["recipes"],
+                      litems: widget.recipes,
                       onClickImage: (str) {
                         setState(() {
                           urlImage = str;

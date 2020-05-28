@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:instacook/receitas/see_recipe.dart';
-
-import '../main.dart';
+import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/savedService.dart';
 
 class CreateColletion extends StatefulWidget {
-  CreateColletion({
-    Key key,
-    this.onPop,
-  }) : super(key: key);
+  CreateColletion({Key key, this.onPop}) : super(key: key);
 
   final ValueChanged<BuildContext> onPop;
 
@@ -16,6 +12,17 @@ class CreateColletion extends StatefulWidget {
 
 class _CreateColletionState extends State<CreateColletion> {
   final colletionName = TextEditingController();
+  final _auth = AuthService();
+  final _savedService = SavedService();
+
+  Future createaColletion() async {
+    String _id = await _auth.getCurrentUser();
+    var result = await _savedService.addToColletion(_id, colletionName.text);
+    print(colletionName.text);
+    if (result) {
+      widget.onPop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +83,7 @@ class _CreateColletionState extends State<CreateColletion> {
                         onPressed: () {
                           if (colletionName.text != " " &&
                               colletionName.text != "") {
-                            print(colletionName.text);
-                            widget.onPop(context);
+                            createaColletion();
                           }
                         },
                         child: Text(

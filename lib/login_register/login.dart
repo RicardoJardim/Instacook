@@ -17,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final email = TextEditingController();
   final password = TextEditingController();
   final _auth = AuthService();
-  final userService _userService = userService();
+  final _userService = UserService();
   final _formKey = GlobalKey<FormState>();
 
   @override

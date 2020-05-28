@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/User.dart';
 import 'package:instacook/services/imageService.dart';
 
-class userService {
+class UserService {
   final Firestore connection = Firestore.instance;
-  final _imageService = imageService();
+
+  final _imageService = ImageService();
 
   //MyUSER
   Future<User> getMyUser(String id) async {
@@ -17,15 +18,15 @@ class userService {
       if (event.documents.isNotEmpty) {
         var data = event.documents.single.data;
         user = User(
-          email: data["email"],
-          username: data["username"],
-          follow: data["follow"],
-          followers: data["followers"],
-          imgUrl: data["imgUrl"],
-          recipesBook: data["recipesBook"],
-          uid: data["uId"],
-          proUser: data["proUser"],
-        );
+            email: data["email"],
+            username: data["username"],
+            follow: data["follow"],
+            followers: data["followers"],
+            imgUrl: data["imgUrl"],
+            recipesBook: data["recipesBook"],
+            uid: data["uId"],
+            proUser: data["proUser"],
+            myrecipes: data["myrecipes"]);
       }
     }).catchError((e) => print("error fetching data: $e"));
 
@@ -52,9 +53,9 @@ class userService {
         .document(_id)
         .updateData({"username": data["username"], "email": data["email"]});
 
-    //FALTA DAR UPDATE NO AUTH
     if (data["image"] != null) {
-      var _map = await _imageService.uploadImageToFirebase(data["image"], _id);
+      var _map = await _imageService.uploadImageToFirebase(
+          data["image"], "users", _id);
 
       if (_map != null) {
         await connection
@@ -140,7 +141,8 @@ class userService {
         "follow": [],
         "followers": [],
         "proUser": false,
-        "recipesBook": []
+        "recipesBook": [],
+        "myrecipes": []
       });
       return true;
     } catch (e) {

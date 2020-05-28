@@ -36,8 +36,9 @@ class TabNavigatorSaved extends StatelessWidget {
             colletionName: data["title"],
             id: data["id"],
           ),
-      TabRouterSaved.create: (context) =>
-          CreateColletion(onPop: (context) => _pop(context)),
+      TabRouterSaved.create: (context) => CreateColletion(
+            onPop: (context) => _pop(context),
+          ),
     };
   }
 

@@ -2,73 +2,26 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 
 class EditRecipes extends StatefulWidget {
-  EditRecipes({Key key, this.id}) : super(key: key);
+  EditRecipes({Key key, this.id, this.recipes, this.callback})
+      : super(key: key);
   final int id;
-
+  final List recipes;
+  final ValueChanged<List> callback;
   _EditRecipesState createState() => _EditRecipesState();
 }
 
 class _EditRecipesState extends State<EditRecipes> {
-  Map getLista2(int id) {
-    var collection = new Map<String, dynamic>();
-
-    collection = {
-      "id": id,
-      "name": "Pregos",
-      "recipes": [
-        {
-          "id": 1,
-          "name": "Bife de vaca",
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-          "time": "5-10 minutos",
-          "difficulty": "Difícil"
-        },
-        {
-          "id": 2,
-          "name": "Hamburguer de porco",
-          "image":
-              "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
-          "time": "5-10 minutos",
-          "difficulty": "Fácil"
-        },
-        {
-          "id": 3,
-          "name": "Bife de vaca",
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-          "time": "5-10 minutos",
-          "difficulty": "Intermédio"
-        },
-        {
-          "id": 4,
-          "name": "Bife de vaca",
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-          "time": "5-10 minutos",
-          "difficulty": "Difícil"
-        },
-      ]
-    };
-    return collection;
-  }
-
-  void initState() {
-    collection = getLista2(widget.id);
-    super.initState();
-  }
-
   void save() {
     if (removeRecipes.length != 0) {
       removeRecipes.forEach((el) {
         print("remove recipe with id " + el.toString());
       });
     }
+    widget.callback(removeRecipes);
     main_key.currentState.pop(context);
   }
 
   List removeRecipes = [];
-  Map<String, dynamic> collection;
 
   @override
   Widget build(BuildContext context) {
@@ -97,15 +50,13 @@ class _EditRecipesState extends State<EditRecipes> {
             child: Padding(
               padding: const EdgeInsets.only(top: 15),
               child: GridList(
-                  litems: collection["recipes"],
+                  litems: widget.recipes,
                   onClickRecipe: (id) {
                     var aux = removeRecipes;
                     if (removeRecipes.contains(id)) {
                       aux.remove(id);
-                      print("aux: " + aux.toString());
                     } else {
                       aux.add(id);
-                      print("aux: " + aux.toString());
                     }
                     setState(() {
                       removeRecipes = aux;
@@ -122,7 +73,7 @@ class GridList extends StatefulWidget {
   GridList({Key key, this.litems, this.onClickRecipe}) : super(key: key);
 
   final List litems;
-  final ValueChanged<int> onClickRecipe;
+  final ValueChanged<String> onClickRecipe;
 
   @override
   State<StatefulWidget> createState() {
@@ -183,9 +134,7 @@ class GridItemWidget extends State<GridList> {
                                       color: Colors.white,
                                       shape: BoxShape.rectangle,
                                       borderRadius: BorderRadius.all(
-                                          Radius.circular(
-                                              10.0) //         <--- border radius here
-                                          ),
+                                          Radius.circular(10.0)),
                                     ),
                                     child: CheckBoxWidget(
                                       callback: () => widget.onClickRecipe(

@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-class imageService {
+class ImageService {
   final Firestore connection = Firestore.instance;
 
-  Future<Map> uploadImageToFirebase(File image, String id) async {
+  //IMAGENS USERS
+  Future<Map> uploadImageToFirebase(
+      File image, String locationStr, String id) async {
     try {
-      String imageLocation = 'users/image$id.jpg';
+      String imageLocation = '$locationStr/image$id.jpg';
 
       final StorageReference storageReference =
           FirebaseStorage().ref().child(imageLocation);
