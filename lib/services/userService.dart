@@ -161,7 +161,15 @@ class UserService {
         "follow": [],
         "followers": [],
         "proUser": false,
-        "recipesBook": [],
+        "recipesBook": [
+          {
+            "id": 1,
+            "name": "Geral",
+            "imgUrl":
+                "https://meustc.com/wp-content/uploads/2020/01/placeholder-1.png",
+            "recipes": []
+          }
+        ],
       });
       return true;
     } catch (e) {
