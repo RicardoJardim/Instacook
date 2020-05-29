@@ -2,19 +2,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/models/User.dart';
 
+// todas receitas 
+// uma receita
+// receitas por tipo
+// 
+
 class RecipeService {
   final CollectionReference recipesCollection = Firestore.instance.collection('recipe');
 
   // get recipes stream
   Stream<List<Recipe>> get recipes {
-    return recipesCollection.snapshots().map(_brewListFromSnapshot);
+    return recipesCollection.snapshots().map(_recipeListFromSnapshot);
+  }
+
+  Stream<List<Recipe>> getRecipes(String param, String value) {
+    print("banana");
+    return recipesCollection.orderBy("date", descending: true ).snapshots().map(_recipeListFromSnapshot);
   }
 
   // Brew List of snapshot
-  List<Recipe> _brewListFromSnapshot(QuerySnapshot snapshot){
+  List<Recipe> _recipeListFromSnapshot(QuerySnapshot snapshot){
     return snapshot.documents.map((doc){
       return Recipe(
-        id: doc.documentID,
+          id: doc.documentID,
           name: doc.data["name"],
           type: doc.data["type"],
           props: doc.data["props"],
