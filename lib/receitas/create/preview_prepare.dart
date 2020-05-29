@@ -1,5 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/recipesService.dart';
+import 'package:instacook/services/userService.dart';
 import '../../main.dart';
 
 class PreviewPrepare extends StatefulWidget {
@@ -11,6 +14,16 @@ class PreviewPrepare extends StatefulWidget {
 }
 
 class _PreviewPreparelState extends State<PreviewPrepare> {
+  final _auth = AuthService();
+  final _userService = UserService();
+  final _recipeService = RecipeService();
+
+  String _id;
+
+  Future getUser() async {
+    _id = await _auth.getCurrentUser();
+  }
+
   int index = 0;
   ScrollController _controller = ScrollController();
 
@@ -58,8 +71,10 @@ class _PreviewPreparelState extends State<PreviewPrepare> {
                   Navigator.of(context).pop();
                   if (widget.receita["id"] == null) {
                     print("guardar " + widget.receita.toString());
+                    _recipeService.insertRecipe(_id, widget.receita);
                   } else {
                     print("editar " + widget.receita.toString());
+                    _recipeService.insertRecipe(_id, widget.receita);
                   }
                   main_key.currentState.pop(context);
                   main_key.currentState.pop(context);
@@ -77,6 +92,7 @@ class _PreviewPreparelState extends State<PreviewPrepare> {
 
   @override
   Widget build(BuildContext context) {
+    getUser();
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -116,14 +132,14 @@ class _PreviewPreparelState extends State<PreviewPrepare> {
                     scrollDirection: Axis.horizontal,
                     itemCount: widget.receita["steps"].length,
                     itemBuilder: (context, index) {
-                      if (widget.receita["steps"][index]["image"] is String) {
+                      if (widget.receita["steps"][index]["imgUrl"] is String) {
                         return Step(
                           index,
                           widget.receita["steps"].length,
                           widget.receita["steps"][index]["description"],
                           widget.receita["steps"][index]["prods"],
                           null,
-                          widget.receita["steps"][index]["image"],
+                          widget.receita["steps"][index]["imgUrl"],
                         );
                       } else {
                         return Step(
@@ -131,7 +147,7 @@ class _PreviewPreparelState extends State<PreviewPrepare> {
                           widget.receita["steps"].length,
                           widget.receita["steps"][index]["description"],
                           widget.receita["steps"][index]["prods"],
-                          widget.receita["steps"][index]["image"],
+                          widget.receita["steps"][index]["imgUrl"],
                           "",
                         );
                       }

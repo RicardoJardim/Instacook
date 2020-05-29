@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/Recipe.dart';
-import 'package:instacook/models/User.dart';
+import 'package:instacook/services/imageService.dart';
 
 // todas receitas 
 // uma receita
@@ -8,7 +8,88 @@ import 'package:instacook/models/User.dart';
 // 
 
 class RecipeService {
-  final CollectionReference recipesCollection = Firestore.instance.collection('recipe');
+  final CollectionReference recipesCollection =
+      Firestore.instance.collection('recipe');
+
+  final Firestore connection = Firestore.instance;
+  final _imageService = ImageService();
+
+  Future<bool> insertRecipe(String uId, Map data) async {
+    try {
+      String _id;
+      await connection
+          .collection('user')
+          .where("uid", isEqualTo: uId)
+          .getDocuments()
+          .then((value) {
+        _id = value.documents.single.documentID;
+      });
+
+      var result = await connection.collection('recipe').add({
+        "name": data["name"],
+        "type": data["type"],
+        "props": data["props"],
+        "likes": [],
+        "difficulty": data["difficulty"],
+        "description": data["description"],
+        "privacy": data["privacy"],
+        "prods": data["prods"],
+        "userId": _id,
+        "date": new DateTime.now()
+      });
+
+      var steps = data["steps"];
+
+      for (var i = 0; i < data["steps"].length; i++) {
+        if (data["steps"][i]["imgUrl"] != "") {
+          var _map = await _imageService.uploadImageToFirebase(
+              data["steps"][i]["imgUrl"],
+              "ing",
+              result.documentID + i.toString());
+          steps[i]["imgUrl"] = _map["url"];
+          steps[i]["location"] = _map["location"];
+        }
+      }
+
+      await connection
+          .collection('recipe')
+          .document(result.documentID)
+          .updateData({'steps': steps});
+
+      var _map = await _imageService.uploadImageToFirebase(
+          data["imgUrl"], "images", result.documentID);
+
+      await connection
+          .collection('recipe')
+          .document(result.documentID)
+          .updateData({'imgUrl': _map["url"], 'location': _map["location"]});
+
+      addToMyRecipe(uId, result.documentID);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> addToMyRecipe(String id, String name) async {
+    String _id;
+    List list;
+    var result = await connection.collection('user').document(_id).get();
+    list = result.data["myrecipes"];
+
+    list.add(name);
+
+    await connection
+        .collection('user')
+        .document(_id)
+        .updateData({"myrecipes": list});
+
+    if (_id != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   // get recipes stream
   Stream<List<Recipe>> get recipes {
@@ -36,12 +117,11 @@ class RecipeService {
           prods: doc.data["prods"],
           steps: doc.data["steps"],
           userId: doc.data["userId"],
-          date: doc.data["date"]
-        );
+          date: doc.data["date"]);
     }).toList();
   }
 
- /*  _listRecipes(List<DocumentSnapshot> list) =>
+  /*  _listRecipes(List<DocumentSnapshot> list) =>
       list.map((snapshot) => recipesList.add(Recipe(
           id: snapshot.documentID,
           name: snapshot.data["name"],

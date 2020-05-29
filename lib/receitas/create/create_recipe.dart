@@ -25,62 +25,16 @@ class _CreateRecipelState extends State<CreateRecipe> {
       privacy = widget.editRecipe["privacy"];
       dif = widget.editRecipe["difficulty"];
       prods = widget.editRecipe["prods"];
-      stepsRecipe = getSteps(widget.editRecipe["id"]);
+      stepsRecipe = widget.editRecipe["steps"];
       name.text = widget.editRecipe["name"];
       type.text = widget.editRecipe["type"];
       description.text = widget.editRecipe["description"];
       time.text = widget.editRecipe["time"];
       props.text = widget.editRecipe["props"].toString();
-      imageUrl = widget.editRecipe["image"];
+      imageUrl = widget.editRecipe["imgUrl"];
     }
     steps = [1, 2, 3, 4, 5];
     super.initState();
-  }
-
-  List getSteps(int id) {
-    //PEsquisa na bd pelo id
-    return [
-      {
-        "prods": [
-          {"quant": 200, "type": "mg", "prod": "leite"},
-          {"quant": 100, "type": "mg", "prod": "merda"},
-          {"quant": 200, "type": "mg", "prod": "leite"},
-          {"quant": 100, "type": "mg", "prod": "merda"},
-        ],
-        "description":
-            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sdasd asdas d asd asd a a uysgd aksb dkjahs kjdhn akjsdh kjash dkjahwsjkdh akjsdh ksjha kjdah kdjsah kjash ",
-        "image":
-            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
-      },
-      {
-        "prods": [
-          {"quant": 200, "type": "mg", "prod": "leite"},
-          {"quant": 100, "type": "mg", "prod": "merda"},
-        ],
-        "description":
-            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd as dasd ",
-        "image": " ",
-      },
-      {
-        "prods": [
-          {"quant": 500, "type": "mg", "prod": "manteiga"},
-          {"quant": 200, "type": "mg", "prod": "merda"},
-        ],
-        "description":
-            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd as dasdasd as dasdas d",
-        "image":
-            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
-      },
-      {
-        "prods": [
-          {"quant": 800, "type": "mg", "prod": "leadsdite"},
-          {"quant": 700, "type": "mg", "prod": "cxa"},
-        ],
-        "description":
-            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd asda sda  s asd",
-        "image": " ",
-      },
-    ];
   }
 
   Map<String, dynamic> receita;
@@ -248,16 +202,16 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                           receita["name"] = name.text;
                                           if (widget.editRecipe == null &&
                                               _selectedFile != null) {
-                                            receita["image"] = _selectedFile;
+                                            receita["imgUrl"] = _selectedFile;
                                             moveToNext();
                                           } else if (widget.editRecipe !=
                                               null) {
                                             if (_selectedFile != null) {
-                                              receita["image"] = _selectedFile;
+                                              receita["imgUrl"] = _selectedFile;
                                               moveToNext();
                                             } else {
-                                              receita["image"] =
-                                                  receita["image"];
+                                              receita["imgUrl"] =
+                                                  receita["imgUrl"];
                                               moveToNext();
                                             }
                                           }
@@ -580,7 +534,6 @@ class _CreateRecipelState extends State<CreateRecipe> {
   }
 
   Widget _page5() {
-    // ACABAR
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
@@ -781,22 +734,22 @@ class _CreateRecipelState extends State<CreateRecipe> {
 
   Widget getImageForStep(index) {
     if (widget.editRecipe == null) {
-      if (stepsRecipe[index]["image"] == "") {
+      if (stepsRecipe[index]["imgUrl"] == "") {
         return Text("");
       } else {
         return Image.file(
-          stepsRecipe[index]["image"],
+          stepsRecipe[index]["imgUrl"],
           height: 80,
           width: 80,
           fit: BoxFit.cover,
         );
       }
     } else {
-      if (stepsRecipe[index]["image"] == "") {
+      if (stepsRecipe[index]["imgUrl"] == "") {
         return Text("");
-      } else if (stepsRecipe[index]["image"] is String) {
+      } else if (stepsRecipe[index]["imgUrl"] is String) {
         return Image.network(
-          stepsRecipe[index]["image"],
+          stepsRecipe[index]["imgUrl"],
           height: 80,
           width: 80,
           filterQuality: FilterQuality.high,
@@ -814,7 +767,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
         );
       } else {
         return Image.file(
-          stepsRecipe[index]["image"],
+          stepsRecipe[index]["imgUrl"],
           height: 80,
           width: 80,
           fit: BoxFit.cover,
@@ -837,7 +790,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
         );
       } else {
         return Image.network(
-          receita["image"],
+          receita["imgUrl"],
           fit: BoxFit.cover,
           filterQuality: FilterQuality.high,
           loadingBuilder: (context, child, progress) {

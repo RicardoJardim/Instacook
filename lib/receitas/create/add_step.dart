@@ -52,7 +52,7 @@ class _AddSteplState extends State<AddStep> {
                   widget.callback({
                     "description": description.text,
                     "prods": list,
-                    "image": _selectedFile == null ? "" : _selectedFile
+                    "imgUrl": _selectedFile == null ? "" : _selectedFile
                   });
                   main_key.currentState.pop(context);
                 }
