@@ -1,11 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/services/imageService.dart';
-
-// todas receitas
-// uma receita
-// receitas por tipo
-//
+import 'package:instacook/services/userService.dart';
 
 class RecipeService {
   final CollectionReference recipesCollection =
@@ -13,17 +9,11 @@ class RecipeService {
 
   final Firestore connection = Firestore.instance;
   final _imageService = ImageService();
+  final _userService = UserService();
 
   Future<bool> insertRecipe(String uId, Map data) async {
     try {
-      String _id;
-      await connection
-          .collection('user')
-          .where("uid", isEqualTo: uId)
-          .getDocuments()
-          .then((value) {
-        _id = value.documents.single.documentID;
-      });
+      String _id = await _userService.getMyID(uId);
 
       var result = await connection.collection('recipe').add({
         "name": data["name"],

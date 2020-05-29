@@ -242,7 +242,7 @@ class GridItemWidget extends State<GridList> {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
                                       child: Image.network(
-                                        widget.litems[index]["image"],
+                                        widget.litems[index]["imgUrl"],
                                         fit: BoxFit.cover,
                                         filterQuality: FilterQuality.high,
                                         loadingBuilder:

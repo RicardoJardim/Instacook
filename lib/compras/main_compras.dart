@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:instacook/services/auth.dart';
 import 'package:instacook/services/shopService.dart';
 
-GlobalKey<_ListRecepieState> globalKey = GlobalKey();
-
 class MainCompras extends StatefulWidget {
   MainCompras({
     Key key,
@@ -56,7 +54,6 @@ class _MainCompraslState extends State<MainCompras> {
                                       ),
                                     )),
                                 ListRecepie(
-                                  key: globalKey,
                                   elements: snapshot.data,
                                   shopKey: _shopService,
                                 )
@@ -82,13 +79,19 @@ class ListRecepie extends StatefulWidget {
 }
 
 class _ListRecepieState extends State<ListRecepie> {
-  void updateList(String id) async {
+  void deleteSingleList(String id) async {
     if (await widget.shopKey.deleteMyShopItem(id)) {
       widget.elements.removeWhere((item) => item["id"] == id);
       setState(() {
         widget.elements = widget.elements;
       });
     }
+  }
+
+  void updateSingleList(String id, List list) async {
+    print(id);
+    print(list);
+    widget.shopKey.updateMyShop(id, list);
   }
 
   @override
@@ -99,13 +102,16 @@ class _ListRecepieState extends State<ListRecepie> {
         primary: false,
         itemCount: widget.elements.length,
         itemBuilder: (context, index) {
-          return CheckBoxList(
+          return _checkBoxList(
               id: widget.elements[index]["id"],
               title: widget.elements[index]["name"],
               subtitle: widget.elements[index]["props"].toString(),
               elements: widget.elements[index]["prods"],
+              update: (id, list) {
+                updateSingleList(id, list);
+              },
               erase: (id) {
-                updateList(id);
+                deleteSingleList(id);
               });
         },
       );
@@ -118,44 +124,28 @@ class _ListRecepieState extends State<ListRecepie> {
           ));
     }
   }
-}
 
-class CheckBoxList extends StatefulWidget {
-  CheckBoxList({
-    Key key,
-    this.id,
-    this.title,
-    this.subtitle,
-    this.elements,
-    this.erase,
-  }) : super(key: key);
-
-  final List elements;
-  final String id;
-  final String title;
-  final String subtitle;
-  final Function erase;
-
-  @override
-  _CheckBoxListState createState() => _CheckBoxListState();
-}
-
-class _CheckBoxListState extends State<CheckBoxList> {
-  @override
-  Widget build(BuildContext context) {
+  Widget _checkBoxList(
+      {String id,
+      String title,
+      String subtitle,
+      List elements,
+      Function erase,
+      Function update}) {
+    var ele = elements;
     return Column(children: [
       _divider(),
       ListTile(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(widget.title,
+              Text(title,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500)),
               InkWell(
                 borderRadius: BorderRadius.all(Radius.circular(100)),
                 splashColor: Colors.amber[800],
                 onTap: () {
-                  widget.erase(widget.id);
+                  erase(id);
                 },
                 child: Icon(
                   Icons.restore_from_trash,
@@ -165,17 +155,21 @@ class _CheckBoxListState extends State<CheckBoxList> {
               )
             ],
           ),
-          subtitle: Text(widget.subtitle + " porções")),
+          subtitle: Text(subtitle + " porções")),
       ListView.builder(
         shrinkWrap: true,
         primary: false,
-        itemCount: widget.elements.length,
+        itemCount: elements.length,
         itemBuilder: (context, index) {
           return MyCheckBox(
-            quantity: widget.elements[index]["quant"].toString(),
-            product: widget.elements[index]["prod"].toString(),
-            done: widget.elements[index]["done"],
-          );
+              id: index,
+              quantity: elements[index]["quant"].toString(),
+              product: elements[index]["prod"].toString(),
+              done: elements[index]["done"],
+              callback: (ids, value) {
+                ele[ids]["done"] = value;
+                update(id, ele);
+              });
         },
       ),
     ]);
@@ -193,11 +187,14 @@ class _CheckBoxListState extends State<CheckBoxList> {
 }
 
 class MyCheckBox extends StatefulWidget {
-  MyCheckBox({Key key, this.quantity, this.product, this.done})
+  MyCheckBox(
+      {Key key, this.quantity, this.id, this.product, this.done, this.callback})
       : super(key: key);
 
   final String quantity;
   final String product;
+  final int id;
+  final Function callback;
   bool done;
 
   @override
@@ -225,7 +222,7 @@ class _CheckBoxState extends State<MyCheckBox> {
           } else {
             aux = TextDecoration.lineThrough;
           }
-
+          widget.callback(widget.id, newValue);
           setState(() {
             widget.done = newValue;
             decord = aux;
