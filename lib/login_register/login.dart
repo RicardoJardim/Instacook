@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instacook/main.dart';
 import 'package:instacook/services/auth.dart';
@@ -19,6 +20,18 @@ class _LoginPageState extends State<LoginPage> {
   final _auth = AuthService();
   final _userService = UserService();
   final _formKey = GlobalKey<FormState>();
+
+  void afterBuild() async{
+     if(await _auth.checkLogged()){
+      main_key.currentState.pushNamed(Routes.mainapp);
+    }
+  }
+
+   void initState() {
+    super.initState();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => afterBuild());
+  }
 
   @override
   void dispose() {
@@ -174,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           color: Colors.blue[600],
           onPressed: () {
-            main_key.currentState.pushNamed(Routes.mainapp);
+            //main_key.currentState.pushNamed(Routes.mainapp);
             //_userService.fetchFirstList();
             //_userService.getUserId('Xf9vba9pYvp56MLfUmfH');
           },
@@ -264,6 +277,7 @@ class _LoginPageState extends State<LoginPage> {
     }
     return null;
   }
+
 
   @override
   Widget build(BuildContext context) {

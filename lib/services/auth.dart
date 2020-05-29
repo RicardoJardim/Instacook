@@ -7,9 +7,20 @@ class AuthService {
 
   //CURRENT
   Future<String> getCurrentUser() async {
-    var result = await _auth.currentUser();
-    var user = result.uid;
-    return user;
+    try{
+      var result = await _auth.currentUser();
+      var user = result.uid;
+      return user;
+    }catch (e){
+      print(e);
+      return null;
+    }
+  }
+
+  Future<bool> checkLogged()async{
+    FirebaseUser res = await _auth.currentUser();
+    if(res != null) return true;
+    return false;
   }
 
   //CHANGE PASSWORD
@@ -78,6 +89,7 @@ class AuthService {
   Future signOut() async {
     try {
       await _auth.signOut();
+      print(this.getCurrentUser());
     } catch (error) {
       print(error);
       return null;

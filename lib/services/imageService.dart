@@ -7,8 +7,7 @@ class ImageService {
   final Firestore connection = Firestore.instance;
 
   //IMAGENS USERS
-  Future<Map> uploadImageToFirebase(
-      File image, String locationStr, String id) async {
+  Future<Map> uploadImageToFirebase(File image, String locationStr, String id) async {
     try {
       String imageLocation = '$locationStr/image$id.jpg';
 

@@ -3,12 +3,35 @@ import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/models/User.dart';
 
 class RecipeService {
-  final Firestore connection = Firestore.instance;
+  final CollectionReference recipesCollection = Firestore.instance.collection('recipe');
 
-  List<Recipe> recipesList;
-  DocumentSnapshot _lastDocument;
+  // get recipes stream
+  Stream<List<Recipe>> get recipes {
+    return recipesCollection.snapshots().map(_brewListFromSnapshot);
+  }
 
-  _listRecipes(List<DocumentSnapshot> list) =>
+  // Brew List of snapshot
+  List<Recipe> _brewListFromSnapshot(QuerySnapshot snapshot){
+    return snapshot.documents.map((doc){
+      return Recipe(
+        id: doc.documentID,
+          name: doc.data["name"],
+          type: doc.data["type"],
+          props: doc.data["props"],
+          likes: doc.data["likes"],
+          difficulty: doc.data["difficulty"],
+          description: doc.data["description"],
+          imgUrl: doc.data["imgUrl"],
+          privacy: doc.data["privacy"],
+          prods: doc.data["prods"],
+          steps: doc.data["steps"],
+          userId: doc.data["userId"],
+          date: doc.data["date"]
+        );
+    }).toList();
+  }
+
+ /*  _listRecipes(List<DocumentSnapshot> list) =>
       list.map((snapshot) => recipesList.add(Recipe(
           id: snapshot.documentID,
           name: snapshot.data["name"],
@@ -22,18 +45,17 @@ class RecipeService {
           prods: snapshot.data["prods"],
           steps: snapshot.data["steps"],
           userId: snapshot.data["userId"],
-          date: snapshot.data["date"])));
+          date: snapshot.data["date"]))); */
 
-  Future getAllUserStartPag(int objNum) async {
+  /* Future getAllUserStartPag(int objNum) async {
     List<DocumentSnapshot> recipesListQ = (await connection
-            .collection("recipe")
             .orderBy('username')
             .limit(objNum)
             .getDocuments())
         .documents;
     _listRecipes(recipesListQ);
     _lastDocument = recipesListQ[recipesListQ.length - 1];
-  }
+  } */
 
   /*  Future getMoreUsers( int objNum)async {
     List<DocumentSnapshot> newList = (await connection
