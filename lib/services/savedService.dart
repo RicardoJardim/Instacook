@@ -6,42 +6,41 @@ class SavedService {
 
   //LIVROS DE RECEITAS
   Future<List> getMyColletions(String id) async {
-    List list;
-    await connection
-        .collection('user')
-        .where("uid", isEqualTo: id)
-        .getDocuments()
-        .then((event) {
-      if (event.documents.isNotEmpty) {
-        var data = event.documents.single.data;
-        list = data["recipesBook"];
-      }
-    }).catchError((e) => print("error fetching data: $e"));
-
-    if (list != null) {
+    try {
+      List list;
+      await connection
+          .collection('user')
+          .where("uid", isEqualTo: id)
+          .getDocuments()
+          .then((event) {
+        if (event.documents.isNotEmpty) {
+          var data = event.documents.single.data;
+          list = data["recipesBook"];
+        }
+      }).catchError((e) => print("error fetching data: $e"));
       return list;
-    } else {
+    } catch (e) {
       return null;
     }
   }
 
   //RECEITAS PELO MAIS RECENTE LIMIT 10
   Future<List> getMyNews(String id) async {
-    List list;
-    await connection
-        .collection('user')
-        .where("uid", isEqualTo: id)
-        .getDocuments()
-        .then((event) {
-      if (event.documents.isNotEmpty) {
-        var data = event.documents.single.data;
-        list = data["myrecipes"];
-      }
-    }).catchError((e) => print("error fetching data: $e"));
+    try {
+      List list;
+      await connection
+          .collection('user')
+          .where("uid", isEqualTo: id)
+          .getDocuments()
+          .then((event) {
+        if (event.documents.isNotEmpty) {
+          var data = event.documents.single.data;
+          list = data["recipesBook"];
+        }
+      }).catchError((e) => print("error fetching data: $e"));
 
-    if (list != null) {
       return list;
-    } else {
+    } catch (e) {
       return null;
     }
   }

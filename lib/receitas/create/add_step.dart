@@ -15,6 +15,8 @@ class AddStep extends StatefulWidget {
 
 class _AddSteplState extends State<AddStep> {
   final description = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   File _selectedFile;
 
   List list = new List();
@@ -48,13 +50,15 @@ class _AddSteplState extends State<AddStep> {
                 size: 34,
               ),
               onPressed: () {
-                if (description.text != "") {
-                  widget.callback({
-                    "description": description.text,
-                    "prods": list,
-                    "imgUrl": _selectedFile == null ? "" : _selectedFile
-                  });
-                  main_key.currentState.pop(context);
+                if (_formKey.currentState.validate()) {
+                  if (description.text != "") {
+                    widget.callback({
+                      "description": description.text,
+                      "prods": list,
+                      "imgUrl": _selectedFile == null ? "" : _selectedFile
+                    });
+                    main_key.currentState.pop(context);
+                  }
                 }
               },
             ),
@@ -101,7 +105,18 @@ class _AddSteplState extends State<AddStep> {
                             )),
                       ),
                     ),
-                    _entryField("Descrição *", "Descriva o passo", description),
+                    Form(
+                      autovalidate: true,
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          _entryField("Descrição *", "Descriva o passo",
+                              description, errorHandlerValue),
+                        ],
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(top: 15.0),
                       child: Center(
@@ -161,14 +176,12 @@ class _AddSteplState extends State<AddStep> {
     );
   }
 
-  Widget _entryField(
-    String title,
-    String example,
-    TextEditingController _controller,
-  ) {
+  Widget _entryField(String title, String example,
+      TextEditingController _controller, Function errorHandler) {
     return Padding(
         padding: const EdgeInsets.all(10.0),
-        child: TextField(
+        child: TextFormField(
+          validator: (value) => errorHandler(value),
           autofocus: false,
           focusNode: FocusNode(canRequestFocus: false),
           controller: _controller,
@@ -199,6 +212,15 @@ class _AddSteplState extends State<AddStep> {
         fit: BoxFit.cover,
       );
     }
+  }
+
+  String errorHandlerValue(String value) {
+    if (value.isEmpty) {
+      return "Campo obrigatório";
+    } else if (value.length < 1) {
+      return "Campo obrigatório";
+    }
+    return null;
   }
 }
 

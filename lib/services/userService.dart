@@ -7,6 +7,22 @@ class UserService {
 
   final _imageService = ImageService();
 
+  Future<String> getMyID(String id) async {
+    try {
+      String _id;
+      await connection
+          .collection('user')
+          .where("uid", isEqualTo: id)
+          .getDocuments()
+          .then((value) {
+        _id = value.documents.single.documentID;
+      });
+      return _id;
+    } catch (e) {
+      return null;
+    }
+  }
+
   //MyUSER
   Future<User> getMyUser(String id) async {
     User user;
@@ -18,15 +34,15 @@ class UserService {
       if (event.documents.isNotEmpty) {
         var data = event.documents.single.data;
         user = User(
-            email: data["email"],
-            username: data["username"],
-            follow: data["follow"],
-            followers: data["followers"],
-            imgUrl: data["imgUrl"],
-            recipesBook: data["recipesBook"],
-            uid: data["uId"],
-            proUser: data["proUser"],
-            myrecipes: data["myrecipes"]);
+          email: data["email"],
+          username: data["username"],
+          follow: data["follow"],
+          followers: data["followers"],
+          imgUrl: data["imgUrl"],
+          recipesBook: data["recipesBook"],
+          uid: data["uId"],
+          proUser: data["proUser"],
+        );
       }
     }).catchError((e) => print("error fetching data: $e"));
 
@@ -73,22 +89,21 @@ class UserService {
   }
 
   Future<bool> deleteMyUserData(String id) async {
-    String _id;
-    await connection
-        .collection('user')
-        .where("uid", isEqualTo: id)
-        .getDocuments()
-        .then((value) {
-      _id = value.documents.single.documentID;
-      print(_id);
-    });
+    try {
+      String _id;
+      await connection
+          .collection('user')
+          .where("uid", isEqualTo: id)
+          .getDocuments()
+          .then((value) {
+        _id = value.documents.single.documentID;
+        print(_id);
+      });
 
-    await connection.collection('user').document(_id).delete();
+      await connection.collection('user').document(_id).delete();
 
-    //falta alterar no auth
-    if (_id != null) {
       return true;
-    } else {
+    } catch (e) {
       return false;
     }
   }
@@ -142,7 +157,6 @@ class UserService {
         "followers": [],
         "proUser": false,
         "recipesBook": [],
-        "myrecipes": []
       });
       return true;
     } catch (e) {

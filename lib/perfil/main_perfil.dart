@@ -164,7 +164,7 @@ class _MainPerfilState extends State<MainPerfil> {
                             Padding(
                               padding: const EdgeInsets.only(top: 25),
                               child: GridList(
-                                litems: snapshot.data.myrecipes,
+                                litems: snapshot.data.recipesBook,
                               ),
                             ),
                           ],

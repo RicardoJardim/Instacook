@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/services/imageService.dart';
 
-// todas receitas 
+// todas receitas
 // uma receita
 // receitas por tipo
-// 
+//
 
 class RecipeService {
   final CollectionReference recipesCollection =
@@ -64,29 +64,8 @@ class RecipeService {
           .document(result.documentID)
           .updateData({'imgUrl': _map["url"], 'location': _map["location"]});
 
-      addToMyRecipe(uId, result.documentID);
       return true;
     } catch (e) {
-      return false;
-    }
-  }
-
-  Future<bool> addToMyRecipe(String id, String name) async {
-    String _id;
-    List list;
-    var result = await connection.collection('user').document(_id).get();
-    list = result.data["myrecipes"];
-
-    list.add(name);
-
-    await connection
-        .collection('user')
-        .document(_id)
-        .updateData({"myrecipes": list});
-
-    if (_id != null) {
-      return true;
-    } else {
       return false;
     }
   }
@@ -98,12 +77,15 @@ class RecipeService {
 
   Stream<List<Recipe>> getRecipes(String param, String value) {
     print("banana");
-    return recipesCollection.orderBy("date", descending: true ).snapshots().map(_recipeListFromSnapshot);
+    return recipesCollection
+        .orderBy("date", descending: true)
+        .snapshots()
+        .map(_recipeListFromSnapshot);
   }
 
   // Brew List of snapshot
-  List<Recipe> _recipeListFromSnapshot(QuerySnapshot snapshot){
-    return snapshot.documents.map((doc){
+  List<Recipe> _recipeListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
       return Recipe(
           id: doc.documentID,
           name: doc.data["name"],

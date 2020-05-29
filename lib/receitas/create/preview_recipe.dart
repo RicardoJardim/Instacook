@@ -73,14 +73,15 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                   "Guardar",
                   style: TextStyle(fontSize: 16),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   Navigator.of(context).pop();
+
                   if (widget.receita["id"] == null) {
                     print("guardar " + widget.receita.toString());
                     _recipeService.insertRecipe(_id, widget.receita);
                   } else {
                     print("editar " + widget.receita.toString());
-                    _recipeService.insertRecipe(_id, widget.receita);
+                    //_recipeService.insertRecipe(_id, widget.receita);
                   }
                   main_key.currentState.pop(context);
                   main_key.currentState.pop(context);

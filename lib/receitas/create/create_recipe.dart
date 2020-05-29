@@ -43,6 +43,10 @@ class _CreateRecipelState extends State<CreateRecipe> {
   double progvalue = 0.20;
   ScrollController _controller = ScrollController();
 
+  final _formKey1 = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
+  final _formKey3 = GlobalKey<FormState>();
+
   _animateToIndex(i) =>
       _controller.animateTo(MediaQuery.of(context).size.width * i,
           duration: Duration(seconds: 1), curve: Curves.fastOutSlowIn);
@@ -198,44 +202,51 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                   if (indexs != (steps.length)) {
                                     switch (indexs) {
                                       case 0:
-                                        if (name.text != "") {
-                                          receita["name"] = name.text;
-                                          if (widget.editRecipe == null &&
-                                              _selectedFile != null) {
-                                            receita["imgUrl"] = _selectedFile;
-                                            moveToNext();
-                                          } else if (widget.editRecipe !=
-                                              null) {
-                                            if (_selectedFile != null) {
+                                        if (_formKey1.currentState.validate()) {
+                                          if (name.text != "") {
+                                            receita["name"] = name.text;
+                                            if (widget.editRecipe == null &&
+                                                _selectedFile != null) {
                                               receita["imgUrl"] = _selectedFile;
                                               moveToNext();
-                                            } else {
-                                              receita["imgUrl"] =
-                                                  receita["imgUrl"];
-                                              moveToNext();
+                                            } else if (widget.editRecipe !=
+                                                null) {
+                                              if (_selectedFile != null) {
+                                                receita["imgUrl"] =
+                                                    _selectedFile;
+                                                moveToNext();
+                                              } else {
+                                                receita["imgUrl"] =
+                                                    receita["imgUrl"];
+                                                moveToNext();
+                                              }
                                             }
                                           }
                                         }
                                         break;
                                       case 1:
-                                        if (type.text != "" &&
-                                            description.text != "") {
-                                          receita["type"] = type.text;
-                                          receita["description"] =
-                                              description.text;
-                                          receita["privacy"] = privacy;
-                                          moveToNext();
+                                        if (_formKey2.currentState.validate()) {
+                                          if (type.text != "" &&
+                                              description.text != "") {
+                                            receita["type"] = type.text;
+                                            receita["description"] =
+                                                description.text;
+                                            receita["privacy"] = privacy;
+                                            moveToNext();
+                                          }
                                         }
                                         break;
                                       case 2:
-                                        if (props.text != "" &&
-                                            time.text != "" &&
-                                            dif != "") {
-                                          receita["time"] = time.text;
-                                          receita["props"] =
-                                              int.parse(props.text);
-                                          receita["difficulty"] = dif;
-                                          moveToNext();
+                                        if (_formKey3.currentState.validate()) {
+                                          if (props.text != "" &&
+                                              time.text != "" &&
+                                              dif != "") {
+                                            receita["time"] = time.text;
+                                            receita["props"] =
+                                                int.parse(props.text);
+                                            receita["difficulty"] = dif;
+                                            moveToNext();
+                                          }
                                         }
                                         break;
                                       case 3:
@@ -280,7 +291,18 @@ class _CreateRecipelState extends State<CreateRecipe> {
   Widget _page1() {
     return Column(
       children: <Widget>[
-        _entryField("Nome da receita", "Bolo de Banana", name),
+        Form(
+          autovalidate: true,
+          key: _formKey1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              _entryField(
+                  "Nome da receita", "Bolo de Banana", name, errorHandlerValue),
+            ],
+          ),
+        ),
         SizedBox(
           height: 10,
         ),
@@ -335,8 +357,20 @@ class _CreateRecipelState extends State<CreateRecipe> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _entryField("Tipo de Receita", "Carne", type),
-          _entryField("Descrição", "Esta receita ....", description),
+          Form(
+            autovalidate: true,
+            key: _formKey2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                _entryField(
+                    "Tipo de Receita", "Carne", type, errorHandlerValue),
+                _entryField("Descrição", "Esta receita ....", description,
+                    errorHandlerValue),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(left: 10.0, top: 15),
             child: Row(
@@ -384,12 +418,19 @@ class _CreateRecipelState extends State<CreateRecipe> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _entryField("Proporções", "1 pessoa", props,
-              inputType: TextInputType.number),
-          _entryField(
-            "Tempo de Preparação",
-            "5-10 minutos",
-            time,
+          Form(
+            autovalidate: true,
+            key: _formKey3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                _entryField("Proporções", "1 pessoa", props, errorHandlerNumber,
+                    inputType: TextInputType.number),
+                _entryField("Tempo de Preparação", "5-10 minutos", time,
+                    errorHandlerValue),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 10.0, top: 20),
@@ -707,12 +748,29 @@ class _CreateRecipelState extends State<CreateRecipe> {
     );
   }
 
-  Widget _entryField(
-      String title, String example, TextEditingController _controller,
+  String errorHandlerValue(String value) {
+    if (value.isEmpty || value.length < 2) {
+      return "Campo obrigatório";
+    }
+    return null;
+  }
+
+  String errorHandlerNumber(String value) {
+    if (value.isEmpty) {
+      return "Campo obrigatório";
+    } else if (double.tryParse(value) == null) {
+      return "Só é valido numeros";
+    }
+    return null;
+  }
+
+  Widget _entryField(String title, String example,
+      TextEditingController _controller, Function errorHandler,
       {inputType: TextInputType.text}) {
     return Padding(
         padding: const EdgeInsets.all(10.0),
-        child: TextField(
+        child: TextFormField(
+          validator: (value) => errorHandler(value),
           keyboardType: inputType,
           autofocus: false,
           focusNode: FocusNode(canRequestFocus: false),

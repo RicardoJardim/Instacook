@@ -3,6 +3,8 @@ import 'package:instacook/feed/people.dart';
 import 'package:instacook/receitas/create/create_recipe.dart';
 import 'package:instacook/receitas/prepare_recipe.dart';
 import 'package:instacook/receitas/save_recipe.dart';
+import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/shopService.dart';
 import 'Widget/ButtonsContainer.dart';
 import '../main.dart';
 
@@ -21,6 +23,9 @@ class SeeRecipe extends StatefulWidget {
 }
 
 class _SeeRecipelState extends State<SeeRecipe> {
+  final _auth = AuthService();
+  final _shopService = ShopService();
+
   Map getLista2(int id) {
     var receita = new Map<String, dynamic>();
 
@@ -92,8 +97,15 @@ class _SeeRecipelState extends State<SeeRecipe> {
             ),
             new FlatButton(
               child: new Text("Sim"),
-              onPressed: () {
-                print(ingredients_key.currentState.widget.litems);
+              onPressed: () async {
+                String _id = await _auth.getCurrentUser();
+                Map data = {
+                  "name": receita["name"],
+                  "props": ingredients_key.currentState.widget.props,
+                  "prods": ingredients_key.currentState.widget.litems,
+                };
+                print(data);
+                await _shopService.insertShop(_id, data);
                 Navigator.of(context).pop();
               },
             ),
