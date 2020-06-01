@@ -4,7 +4,9 @@ import 'package:instacook/receitas/create/create_recipe.dart';
 import 'package:instacook/receitas/prepare_recipe.dart';
 import 'package:instacook/receitas/save_recipe.dart';
 import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/recipesService.dart';
 import 'package:instacook/services/shopService.dart';
+import 'package:instacook/services/userService.dart';
 import 'Widget/ButtonsContainer.dart';
 import '../main.dart';
 
@@ -25,53 +27,36 @@ class SeeRecipe extends StatefulWidget {
 class _SeeRecipelState extends State<SeeRecipe> {
   final _auth = AuthService();
   final _shopService = ShopService();
+  final _recipeService = RecipeService();
+  final _userService = UserService();
+  var uId;
+  Future<Map> getRecipe() async {
+    //widget.id
+    var recipe = await _recipeService.getSingleRecipe("pqbdR1eCNIm9hN3fzvrU");
+    var user = await _userService.getUserRecipe(recipe.userId);
+    String _id = await _auth.getCurrentUser();
+    uId = await _userService.getMyID(_id);
 
-  Map getLista2(int id) {
-    var receita = new Map<String, dynamic>();
+    nameRecipe = recipe.name;
 
-    receita = {
-      "id": id,
-      "name": "Hamburguer de Frango",
-      "props": 2,
-      "likes": 1020,
-      "time": "5-10 minutos",
-      "type": "carnes",
-      "difficulty": "Difícil",
-      "privacy": true,
-      "description":
-          "O Lorem Ipsum é um texto modelo da indústria tipográfica e de impressão. O Lorem Ipsum tem vindo a ser o texto padrão usado por estas indústrias desde o ano de 1500, quando uma misturou os caracteres de um texto para criar um espécime de livro. Este texto não só sobreviveu 5 séculos, mas também o salto para a tipografia electrónica, mantendo-se essencialmente inalterada. Foi popularizada nos anos 60 com a disponibilização das folhas de Letraset, que continham passagens com Lorem Ipsum, e mais recentemente com os programas de publicação como o Aldus PageMaker que incluem versões do Lorem Ipsum",
-      "image":
-          "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg",
-      "prods": [
-        {"quant": 200, "type": "mg", "prod": "leite"},
-        {"quant": 100, "type": "mg", "prod": "merda"},
-        {"quant": 50, "type": "mg", "prod": "merda"},
-        {"quant": 0.5, "type": "mg", "prod": "merda"},
-      ],
-      "user": {
-        "id": 1,
-        "username": "Ricardo Lucas",
-        "pro": true,
-        "image":
-            "https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg",
+    for (var i = 0; i < recipe.likes.length; i++) {
+      if (recipe.likes[i] == uId) {
+        liked = true;
       }
-    };
-    return receita;
-  }
+    }
 
-  bool getLiked(int id) {
-    return true;
-  }
+    for (var i = 0; i < recipe.saved.length; i++) {
+      if (recipe.saved[i] == uId) {
+        saved = true;
+      }
+    }
 
-  bool getSaved(int id) {
-    return false;
+    Map map = {"recipe": recipe, "user": user};
+    return map;
   }
 
   @override
   void initState() {
-    receita = getLista2(widget.id);
-    liked = getLiked(widget.id);
-    saved = getSaved(widget.id);
     backgroundColor = Colors.amber[600];
     super.initState();
   }
@@ -100,7 +85,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
               onPressed: () async {
                 String _id = await _auth.getCurrentUser();
                 Map data = {
-                  "name": receita["name"],
+                  "name": nameRecipe,
                   "props": ingredients_key.currentState.widget.props,
                   "prods": ingredients_key.currentState.widget.litems,
                 };
@@ -116,220 +101,129 @@ class _SeeRecipelState extends State<SeeRecipe> {
     );
   }
 
-  Map<String, dynamic> receita = new Map<String, dynamic>();
-  bool liked;
-  bool saved;
+  String nameRecipe;
+  bool liked = false;
+  bool saved = false;
   Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: AppBar(
-          backgroundColor: backgroundColor,
-          elevation: 0,
-          leading: IconButton(
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              Icons.keyboard_arrow_left,
-              color: Colors.black,
-              size: 50,
-            ),
-            onPressed: () => main_key.currentState.pop(context),
-          ),
-          actions: <Widget>[
-            widget.mine
-                ? IconButton(
+    return FutureBuilder(
+        future: getRecipe(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
+                backgroundColor: backgroundColor,
+                appBar: AppBar(
+                  backgroundColor: backgroundColor,
+                  elevation: 0,
+                  leading: IconButton(
                     padding: EdgeInsets.zero,
                     icon: Icon(
-                      Icons.settings,
+                      Icons.keyboard_arrow_left,
                       color: Colors.black,
-                      size: 30,
+                      size: 50,
                     ),
-                    onPressed: () {
-                      main_key.currentState.push(MaterialPageRoute(
-                          builder: (context) => CreateRecipe(
-                                editRecipe: receita,
-                              )));
-                    })
-                : Text(""),
-          ],
-        ),
-        body: SafeArea(
-            top: true,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(children: [
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.only(top: 5, right: 90, left: 15),
-                        child: Text(
-                          receita["name"],
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              fontSize: 35, fontWeight: FontWeight.w700),
-                        ),
-                      )),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Container(
-                        height: 300,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(8, 8), //(x,y)
-                              blurRadius: 10.0,
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(25),
-                            child: Image.network(
-                              receita["image"],
-                              fit: BoxFit.cover,
-                              width: MediaQuery.of(context).size.width,
-                              filterQuality: FilterQuality.high,
-                              loadingBuilder: (context, child, progress) {
-                                if (progress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: progress.expectedTotalBytes != null
-                                        ? progress.cumulativeBytesLoaded /
-                                            progress.expectedTotalBytes
-                                        : null,
-                                  ),
-                                );
-                              },
-                            ))),
+                    onPressed: () => main_key.currentState.pop(context),
                   ),
-                  Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          receita["likes"].toString(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 14),
-                        ),
-                        Text(
-                          " pessoas gostaram desta receita",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        !widget.mine
-                            ? Padding(
-                                padding: const EdgeInsets.only(left: 15),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(15),
-                                  onTap: () {
-                                    if (liked) {
-                                      print("TIRAR LIKE NA RECEITA");
-                                      setState(() {
-                                        receita["likes"]--;
-                                        liked = false;
-                                      });
-                                    } else {
-                                      print("DAR LIKE NA RECEITA");
-                                      setState(() {
-                                        receita["likes"]++;
-                                        liked = true;
-                                      });
-                                    }
-                                  },
-                                  child: liked
-                                      ? Icon(
-                                          Icons.favorite,
-                                          size: 34,
-                                        )
-                                      : Icon(
-                                          Icons.favorite_border,
-                                          size: 34,
-                                        ),
+                  actions: <Widget>[
+                    widget.mine
+                        ? IconButton(
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              Icons.settings,
+                              color: Colors.black,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              main_key.currentState.push(MaterialPageRoute(
+                                  builder: (context) => CreateRecipe(
+                                        editRecipe:
+                                            snapshot.data["recipe"].toMap(),
+                                      )));
+                            })
+                        : Text(""),
+                  ],
+                ),
+                body: SafeArea(
+                    top: true,
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(children: [
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 5, right: 90, left: 15),
+                                child: Text(
+                                  snapshot.data["recipe"].name,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.w700),
                                 ),
-                              )
-                            : Text(""),
-                        !widget.mine
-                            ? Padding(
-                                padding: const EdgeInsets.only(left: 15),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(15),
-                                  onTap: () {
-                                    if (saved) {
-                                      print("TIRAR DOS GUARDADOS");
-                                      setState(() {
-                                        saved = false;
-                                      });
-                                    } else {
-                                      main_key.currentState
-                                          .push(MaterialPageRoute(
-                                              builder: (context) => SaveRecipe(
-                                                    recipeId: widget.id,
-                                                    onSave: (saveds) {
-                                                      setState(() {
-                                                        saved = saveds;
-                                                      });
-                                                      if (saved) {
-                                                        print(
-                                                            "GUARDAR DOS GUARDADOS " +
-                                                                widget.id
-                                                                    .toString());
-                                                      }
-                                                    },
-                                                  )));
-                                    }
-                                  },
-                                  child: saved
-                                      ? Icon(
-                                          Icons.bookmark,
-                                          size: 34,
-                                        )
-                                      : Icon(
-                                          Icons.bookmark_border,
-                                          size: 34,
-                                        ),
+                              )),
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Container(
+                                height: 300,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      offset: Offset(8, 8), //(x,y)
+                                      blurRadius: 10.0,
+                                    ),
+                                  ],
                                 ),
-                              )
-                            : Text("")
-                      ]),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Row(
-                      children: [
-                        Stack(children: [
-                          InkWell(
-                              borderRadius: BorderRadius.circular(15),
-                              onTap: () {
-                                if (widget.goProfile) {
-                                  main_key.currentState.push(MaterialPageRoute(
-                                      builder: (context) => People(
-                                            id: receita["user"]["id"],
-                                            onPop: (context) => main_key
-                                                .currentState
-                                                .pop(context),
-                                          )));
-                                }
-                              },
-                              child: CircleAvatar(
-                                  radius: 22,
-                                  backgroundImage:
-                                      NetworkImage(receita["user"]["image"]))),
-                          receita["user"]["pro"]
-                              ? Positioned(
-                                  right: -3,
-                                  bottom: -3,
-                                  child: InkWell(
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(25),
+                                    child: Image.network(
+                                      snapshot.data["recipe"].imgUrl,
+                                      fit: BoxFit.cover,
+                                      width: MediaQuery.of(context).size.width,
+                                      filterQuality: FilterQuality.high,
+                                      loadingBuilder:
+                                          (context, child, progress) {
+                                        if (progress == null) return child;
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            value: progress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? progress
+                                                        .cumulativeBytesLoaded /
+                                                    progress.expectedTotalBytes
+                                                : null,
+                                          ),
+                                        );
+                                      },
+                                    ))),
+                          ),
+                          LikedSaved(
+                              liked: liked,
+                              likes: snapshot.data["recipe"].likes,
+                              saved: saved,
+                              mine: widget.mine,
+                              id: snapshot.data["recipe"].id,
+                              service: _recipeService,
+                              userId: uId),
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Row(
+                              children: [
+                                Stack(children: [
+                                  InkWell(
                                       borderRadius: BorderRadius.circular(15),
                                       onTap: () {
                                         if (widget.goProfile) {
                                           main_key.currentState
                                               .push(MaterialPageRoute(
                                                   builder: (context) => People(
-                                                        id: receita["user"]
-                                                            ["id"],
+                                                        id: snapshot
+                                                            .data["user"].id,
                                                         onPop: (context) =>
                                                             main_key
                                                                 .currentState
@@ -337,184 +231,234 @@ class _SeeRecipelState extends State<SeeRecipe> {
                                                       )));
                                         }
                                       },
-                                      child: Icon(
-                                        Icons.brightness_5,
-                                        color: Colors.blue,
-                                        size: 20,
-                                      )))
-                              : Text("")
-                        ]),
-                        Padding(
-                            padding: const EdgeInsets.only(left: 8.0, top: 15),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(15),
-                              onTap: () {
-                                if (widget.goProfile) {
-                                  main_key.currentState.push(MaterialPageRoute(
-                                      builder: (context) => People(
-                                            id: receita["user"]["id"],
-                                            onPop: (context) => main_key
-                                                .currentState
-                                                .pop(context),
-                                          )));
-                                }
+                                      child: CircleAvatar(
+                                          radius: 22,
+                                          backgroundImage: NetworkImage(
+                                              snapshot.data["user"].imgUrl))),
+                                  snapshot.data["user"].proUser
+                                      ? Positioned(
+                                          right: -3,
+                                          bottom: -3,
+                                          child: InkWell(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              onTap: () {
+                                                if (widget.goProfile) {
+                                                  main_key.currentState.push(
+                                                      MaterialPageRoute(
+                                                          builder:
+                                                              (context) =>
+                                                                  People(
+                                                                    id: snapshot
+                                                                        .data[
+                                                                            "user"]
+                                                                        .id,
+                                                                    onPop: (context) =>
+                                                                        main_key
+                                                                            .currentState
+                                                                            .pop(context),
+                                                                  )));
+                                                }
+                                              },
+                                              child: Icon(
+                                                Icons.brightness_5,
+                                                color: Colors.blue,
+                                                size: 20,
+                                              )))
+                                      : Text("")
+                                ]),
+                                Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, top: 15),
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(15),
+                                      onTap: () {
+                                        if (widget.goProfile) {
+                                          main_key.currentState
+                                              .push(MaterialPageRoute(
+                                                  builder: (context) => People(
+                                                        id: snapshot
+                                                            .data["user"].id,
+                                                        onPop: (context) =>
+                                                            main_key
+                                                                .currentState
+                                                                .pop(context),
+                                                      )));
+                                        }
+                                      },
+                                      child: Text(
+                                        snapshot.data["user"].username,
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Text(
+                              snapshot.data["recipe"].description,
+                              style: TextStyle(fontSize: 16),
+                              textAlign: TextAlign.justify,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.access_time,
+                                      color: Colors.black,
+                                      size: 30,
+                                    ),
+                                    Text(
+                                      "  " + snapshot.data["recipe"].time,
+                                      style: TextStyle(fontSize: 16),
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.local_offer,
+                                      color: Colors.black,
+                                      size: 30,
+                                    ),
+                                    Text(
+                                      "  " + snapshot.data["recipe"].type,
+                                      style: TextStyle(fontSize: 16),
+                                    )
+                                  ],
+                                ),
+                                Row(children: <Widget>[
+                                  Icon(
+                                    Icons.assessment,
+                                    color: Colors.black,
+                                    size: 30,
+                                  ),
+                                  Text(
+                                    snapshot.data["recipe"].difficulty,
+                                    style: TextStyle(fontSize: 16),
+                                  )
+                                ])
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                                child: FlatButton(
+                              padding:
+                                  const EdgeInsets.only(top: 10, bottom: 10),
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(color: Colors.black),
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              color: backgroundColor,
+                              onPressed: () {
+                                addIngredients();
                               },
-                              child: Text(
-                                receita["user"]["username"],
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w600),
+                              textColor: Colors.black,
+                              child: Container(
+                                width: 200,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      'Adicionar ',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                    Icon(
+                                      Icons.event_available,
+                                      color: Colors.black,
+                                      size: 24,
+                                    ),
+                                  ],
+                                ),
                               ),
                             )),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Text(
-                      receita["description"],
-                      style: TextStyle(fontSize: 16),
-                      textAlign: TextAlign.justify,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.access_time,
-                              color: Colors.black,
-                              size: 30,
-                            ),
-                            Text(
-                              "  " + receita["time"],
-                              style: TextStyle(fontSize: 16),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.local_offer,
-                              color: Colors.black,
-                              size: 30,
-                            ),
-                            Text(
-                              "  " + receita["type"],
-                              style: TextStyle(fontSize: 16),
-                            )
-                          ],
-                        ),
-                        Row(children: <Widget>[
-                          Icon(
-                            Icons.assessment,
-                            color: Colors.black,
-                            size: 30,
                           ),
-                          Text(
-                            receita["difficulty"],
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ])
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                        child: FlatButton(
-                      padding: const EdgeInsets.only(top: 10, bottom: 10),
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      color: backgroundColor,
-                      onPressed: () {
-                        addIngredients();
-                      },
-                      textColor: Colors.black,
-                      child: Container(
-                        width: 200,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              'Adicionar ',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w400),
-                            ),
-                            Icon(
-                              Icons.event_available,
-                              color: Colors.black,
-                              size: 24,
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
-                  ),
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.only(top: 10, right: 90, left: 15),
-                        child: Text(
-                          "Ingredientes",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              fontSize: 35, fontWeight: FontWeight.w700),
-                        ),
-                      )),
-                  IngredientsList(
-                    key: ingredients_key,
-                    litems: receita["prods"],
-                    props: receita["props"],
-                    backgroundColor: backgroundColor,
-                  ),
-                  Stack(alignment: AlignmentDirectional.center, children: [
-                    ButtonsContainer(func: () {
-                      if (widget.mine) {
-                        setState(() {
-                          saved = true;
-                        });
-                      }
-                      main_key.currentState.push(MaterialPageRoute(
-                          builder: (context) => PrepareRecipe(
-                                id: receita["id"],
-                                saved: saved,
-                              ))); //        id: widget.id,
-                    }),
-                    InkWell(
-                        onTap: () {
-                          if (widget.mine) {
-                            setState(() {
-                              saved = true;
-                            });
-                          }
-                          main_key.currentState.push(MaterialPageRoute(
-                              builder: (context) => PrepareRecipe(
-                                    id: receita["id"],
-                                    saved: saved,
-                                  )));
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(
-                              Icons.local_dining,
-                              size: 30,
-                            ),
-                            Text(
-                              "Preparar",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ))
-                  ])
-                ]))));
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 10, right: 90, left: 15),
+                                child: Text(
+                                  "Ingredientes",
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              )),
+                          IngredientsList(
+                            key: ingredients_key,
+                            litems: snapshot.data["recipe"].prods,
+                            props: snapshot.data["recipe"].props,
+                            backgroundColor: backgroundColor,
+                          ),
+                          Stack(
+                              alignment: AlignmentDirectional.center,
+                              children: [
+                                ButtonsContainer(func: () {
+                                  if (widget.mine) {
+                                    setState(() {
+                                      saved = true;
+                                    });
+                                  }
+                                  main_key.currentState.push(MaterialPageRoute(
+                                      builder: (context) => PrepareRecipe(
+                                            id: snapshot.data["recipe"].id,
+                                            saved: saved,
+                                          ))); //        id: widget.id,
+                                }),
+                                InkWell(
+                                    onTap: () {
+                                      if (widget.mine) {
+                                        setState(() {
+                                          saved = true;
+                                        });
+                                      }
+                                      main_key.currentState.push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PrepareRecipe(
+                                                    id: snapshot
+                                                        .data["recipe"].id,
+                                                    saved: saved,
+                                                  )));
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.local_dining,
+                                          size: 30,
+                                        ),
+                                        Text(
+                                          "Preparar",
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      ],
+                                    ))
+                              ])
+                        ]))));
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
   }
 }
 
@@ -642,5 +586,130 @@ class ListItemWidget extends State<IngredientsList> {
             style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
           ));
     }
+  }
+}
+
+class LikedSaved extends StatefulWidget {
+  LikedSaved(
+      {Key key,
+      this.likes,
+      this.liked,
+      this.saved,
+      this.mine,
+      this.service,
+      this.id,
+      this.userId})
+      : super(key: key);
+
+  List likes;
+  bool liked;
+  bool saved;
+  final bool mine;
+  final String id;
+  final String userId;
+  final RecipeService service;
+
+  @override
+  State<StatefulWidget> createState() {
+    return LikedSavedState();
+  }
+}
+
+class LikedSavedState extends State<LikedSaved> {
+  int number;
+  @override
+  void initState() {
+    number = widget.likes.length;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            number.toString(),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          Text(
+            " pessoas gostaram desta receita",
+            style: TextStyle(fontSize: 14),
+          ),
+          !widget.mine
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(15),
+                    onTap: () async {
+                      if (widget.liked) {
+                        widget.service
+                            .removeLikeRecipe(widget.id, widget.userId);
+                        setState(() {
+                          number--;
+                          widget.liked = false;
+                        });
+                      } else {
+                        widget.service.addLikeRecipe(widget.id, widget.userId);
+                        setState(() {
+                          number++;
+                          widget.liked = true;
+                        });
+                      }
+                    },
+                    child: widget.liked
+                        ? Icon(
+                            Icons.favorite,
+                            size: 34,
+                          )
+                        : Icon(
+                            Icons.favorite_border,
+                            size: 34,
+                          ),
+                  ),
+                )
+              : Text(""),
+          !widget.mine
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(15),
+                    onTap: () {
+                      if (widget.saved) {
+                        widget.service
+                            .removeSavedRecipe(widget.id, widget.userId);
+                        setState(() {
+                          widget.saved = false;
+                        });
+                      } else {
+                        main_key.currentState.push(MaterialPageRoute(
+                            builder: (context) => SaveRecipe(
+                                  recipeId: widget.id,
+                                  onSave: (saveds) {
+                                    setState(() {
+                                      widget.saved = saveds;
+                                    });
+                                    if (widget.saved) {
+                                      print(
+                                          "GUARDAR DOS GUARDADOS " + widget.id);
+                                    }
+                                  },
+                                )));
+                      }
+                    },
+                    child: widget.saved
+                        ? Icon(
+                            Icons.bookmark,
+                            size: 34,
+                          )
+                        : Icon(
+                            Icons.bookmark_border,
+                            size: 34,
+                          ),
+                  ),
+                )
+              : Text("")
+        ]);
   }
 }

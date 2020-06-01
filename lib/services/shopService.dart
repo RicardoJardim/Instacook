@@ -11,17 +11,14 @@ class ShopService {
       for (var i = 0; i < data["prods"].length; i++) {
         data["prods"][i]["done"] = false;
       }
-      var result = await connection.collection('shop').add({
+      await connection.collection('shop').add({
         "name": data["name"],
         "props": data["props"],
         "prods": data["prods"],
         "userId": _id,
         "date": new DateTime.now()
       });
-      await connection
-          .collection('shop')
-          .document(result.documentID)
-          .updateData({"id": result.documentID});
+
       return true;
     } catch (e) {
       print(e);
@@ -64,7 +61,7 @@ class ShopService {
           list.add({
             "name": f.data["name"],
             "prods": f.data["prods"],
-            "id": f.data["id"],
+            "id": f.documentID,
             "props": f.data["props"]
           });
         });

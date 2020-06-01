@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instacook/services/userService.dart';
 
 class SavedService {
   final Firestore connection = Firestore.instance;
+  final _userService = UserService();
 
   //LIVROS DE RECEITAS
   Future<List> getMyColletions(String id) async {
@@ -156,7 +158,7 @@ class SavedService {
   }
 
   //CRIAR LIVRO DE RECEITA
-  Future<bool> addToColletion(String id, String name) async {
+  Future<bool> addColletion(String id, String name) async {
     try {
       String _id;
       List list;
@@ -183,6 +185,27 @@ class SavedService {
           .document(_id)
           .updateData({"recipesBook": list});
       return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> addToColletion(String id, String recipeId, int bookId) async {
+    try {
+      var result = await connection.collection('user').document(id).get();
+      List list = result.data["recipesBook"];
+
+      for (var i = 0; i < list.length; i++) {
+        if (list[i]["id"] == bookId) {
+          list[i]["recipes"].add(recipeId);
+          await connection
+              .collection('user')
+              .document(id)
+              .updateData({"recipesBook": list});
+          return true;
+        }
+      }
+      return false;
     } catch (e) {
       return false;
     }

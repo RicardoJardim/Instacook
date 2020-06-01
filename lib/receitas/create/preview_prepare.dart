@@ -70,15 +70,19 @@ class _PreviewPreparelState extends State<PreviewPrepare> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   if (widget.receita["id"] == null) {
-                    print("guardar " + widget.receita.toString());
+                    print("guardar ");
                     _recipeService.insertRecipe(_id, widget.receita);
+                    main_key.currentState.pop(context);
+                    main_key.currentState.pop(context);
+                    main_key.currentState.pop(context);
                   } else {
-                    print("editar " + widget.receita.toString());
-                    // _recipeService.insertRecipe(_id, widget.receita);
+                    print("editar ");
+                    _recipeService.updateRecipe(_id, widget.receita);
+                    main_key.currentState.pop(context);
+                    main_key.currentState.pop(context);
+                    main_key.currentState.pop(context);
+                    main_key.currentState.pop(context);
                   }
-                  main_key.currentState.pop(context);
-                  main_key.currentState.pop(context);
-                  main_key.currentState.pop(context);
                 },
                 textColor: Colors.green,
               ),

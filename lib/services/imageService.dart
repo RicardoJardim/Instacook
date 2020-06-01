@@ -6,13 +6,34 @@ import 'package:firebase_storage/firebase_storage.dart';
 class ImageService {
   final Firestore connection = Firestore.instance;
 
-  //IMAGENS USERS
-  Future<Map> uploadImageToFirebase(File image, String locationStr, String id) async {
+  //INSERIR IMAGENS
+  Future<Map> uploadImageToFirebase(
+      File image, String locationStr, String id) async {
     try {
       String imageLocation = '$locationStr/image$id.jpg';
 
       final StorageReference storageReference =
           FirebaseStorage().ref().child(imageLocation);
+      final StorageUploadTask uploadTask = storageReference.putFile(image);
+      await uploadTask.onComplete;
+
+      Map map = await _addPathToDatabase(imageLocation);
+      return map;
+    } catch (e) {
+      print(e.message);
+      return null;
+    }
+  }
+
+  Future<Map> updateImageToFirebase(
+      File image, String locationStr, String id) async {
+    try {
+      String imageLocation = '$locationStr/image$id.jpg';
+
+      final StorageReference storageReference =
+          FirebaseStorage().ref().child(imageLocation);
+      await storageReference.delete();
+
       final StorageUploadTask uploadTask = storageReference.putFile(image);
       await uploadTask.onComplete;
 

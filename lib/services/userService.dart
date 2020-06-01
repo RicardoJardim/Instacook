@@ -35,6 +35,7 @@ class UserService {
         if (event.documents.isNotEmpty) {
           var data = event.documents.single.data;
           user = User(
+            id: event.documents.single.documentID,
             email: data["email"],
             username: data["username"],
             follow: data["follow"],
@@ -105,27 +106,21 @@ class UserService {
     }
   }
 
-  //OTHERS
-  Future<List> getUsers() async {
+  Future<User> getUserRecipe(String id) async {
     try {
-      List<User> users = List<User>();
-
-      connection
-          .collection('user')
-          .snapshots()
-          .listen((data) => data.documents.forEach((user) => {
-                users.add(User(
-                  username: user["username"],
-                  imgUrl: user["imgUrl"],
-                  uid: user["uId"],
-                  proUser: user["pro"],
-                ))
-              }));
-
-      for (var user in users) {
-        print(user.username);
-      }
-      return users;
+      var result = await connection.collection('user').document(id).get();
+      var data = result.data;
+      return User(
+        id: result.documentID,
+        email: "",
+        username: data["username"],
+        follow: [],
+        followers: [],
+        imgUrl: data["imgUrl"],
+        recipesBook: [],
+        uid: "",
+        proUser: data["proUser"],
+      );
     } catch (e) {
       return null;
     }
@@ -136,6 +131,7 @@ class UserService {
       var result = await connection.collection('user').document(id).get();
       var data = result.data;
       return User(
+        id: result.documentID,
         email: data["email"],
         username: data["username"],
         follow: data["follow"],
@@ -143,7 +139,7 @@ class UserService {
         imgUrl: data["imgUrl"],
         recipesBook: data["recipesBook"],
         uid: data["uId"],
-        proUser: data["pro"],
+        proUser: data["proUser"],
       );
     } catch (e) {
       return null;
@@ -174,6 +170,33 @@ class UserService {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  //OTHERS
+  Future<List> getUsers() async {
+    try {
+      List<User> users = List<User>();
+
+      connection
+          .collection('user')
+          .snapshots()
+          .listen((data) => data.documents.forEach((user) => {
+                users.add(User(
+                  id: user.documentID,
+                  username: user["username"],
+                  imgUrl: user["imgUrl"],
+                  uid: user["uId"],
+                  proUser: user["proUser"],
+                ))
+              }));
+
+      for (var user in users) {
+        print(user.username);
+      }
+      return users;
+    } catch (e) {
+      return null;
     }
   }
 

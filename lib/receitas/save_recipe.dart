@@ -1,52 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/recipesService.dart';
+import 'package:instacook/services/savedService.dart';
+import 'package:instacook/services/userService.dart';
 import '../main.dart';
 
 class SaveRecipe extends StatefulWidget {
   SaveRecipe({Key key, this.recipeId, this.onSave}) : super(key: key);
 
-  final int recipeId;
+  final String recipeId;
   final ValueChanged<bool> onSave;
 
   _SaveRecipelState createState() => _SaveRecipelState();
 }
 
 class _SaveRecipelState extends State<SaveRecipe> {
-  static List onSomeEvent() {
-    List<Map> litems = [
-      {
-        "id": 5,
-        "name": "Geral",
-        "image":
-            "https://restaurants.mu/blog-admin/wp-content/uploads/2019/05/1.jpg"
-      },
-      {
-        "id": 1,
-        "name": "Pregos",
-        "image":
-            "https://nit.pt/wp-content/uploads/2018/07/95915588dd8f97db9b5bedd24ea068a5-754x394.jpg"
-      },
-      {
-        "id": 2,
-        "name": "Peixes",
-        "image":
-            "https://s2.glbimg.com/sGfe5ndqXQ_LPvFNH24x0akv0NE=/300x375/e.glbimg.com/og/ed/f/original/2014/02/03/cc22api_184.jpg"
-      },
-      {
-        "id": 3,
-        "name": "Pizzas",
-        "image": "https://www.delonghi.com/Global/recipes/multifry/3.jpg"
-      },
-      {
-        "id": 4,
-        "name": "Carnes",
-        "image":
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTpgNdlNQQ2rGCZhwTe16Dc3axujG2UtE_4Q8R77Y0LSrG58Zjf&usqp=CAU"
-      },
-    ];
+  final _auth = AuthService();
+  final _savedService = SavedService();
+  final _recipesService = RecipeService();
+  final _userService = UserService();
+
+  String _id;
+  String iD;
+  Future<List> getColletions() async {
+    _id = await _auth.getCurrentUser();
+    iD = await _userService.getMyID(_id);
+
+    var litems = await _savedService.getMyColletions(_id);
     return litems;
   }
 
-  static List<Map> litems = onSomeEvent();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,11 +48,36 @@ class _SaveRecipelState extends State<SaveRecipe> {
             },
           ),
         ),
-        body: Center(
-            child: SwipeList(
-                litems: litems,
-                recipeId: widget.recipeId,
-                onSave: (saved) => widget.onSave(saved))));
+        body: FutureBuilder(
+            future: getColletions(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Center(
+                    child: SwipeList(
+                        litems: snapshot.data,
+                        recipeId: widget.recipeId,
+                        onSave: (bool saved, int collid) async {
+                          widget.onSave(saved);
+                          var check = await _savedService.addToColletion(
+                              iD, widget.recipeId, collid);
+                          print(check);
+                          var dou = await _recipesService.addSavedRecipe(
+                              widget.recipeId, iD);
+                          if (dou) {
+                            main_key.currentState.pop(context);
+                          }
+
+                          print("save recipe id " +
+                              widget.recipeId +
+                              " on collection " +
+                              collid.toString());
+                        }));
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }));
   }
 }
 
@@ -78,8 +86,8 @@ class SwipeList extends StatefulWidget {
       : super(key: key);
 
   final List litems;
-  final int recipeId;
-  final ValueChanged<bool> onSave;
+  final String recipeId;
+  final Function onSave;
 
   @override
   State<StatefulWidget> createState() {
@@ -89,12 +97,7 @@ class SwipeList extends StatefulWidget {
 
 class ListItemWidget extends State<SwipeList> {
   void save(int id) {
-    main_key.currentState.pop(context);
-    print("save recipe id " +
-        widget.recipeId.toString() +
-        " on collection " +
-        id.toString());
-    widget.onSave(true);
+    widget.onSave(true, id);
   }
 
   @override
@@ -131,7 +134,7 @@ class ListItemWidget extends State<SwipeList> {
                                 Border.all(color: Colors.amber[900], width: 2)),
                         child: ClipOval(
                           child: Image.network(
-                            widget.litems[index]["image"],
+                            widget.litems[index]["imgUrl"],
                             fit: BoxFit.cover,
                             loadingBuilder: (context, child, progress) {
                               if (progress == null) return child;

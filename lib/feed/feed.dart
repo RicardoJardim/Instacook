@@ -137,13 +137,12 @@ class _MainReceitalState extends State<MainReceita> {
                 globalKey.currentState.goUp();
               },
               child: Padding(
-                padding:EdgeInsets.fromLTRB(0, 10, 0, 0),
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                 child: Image.asset(
                   "assets/images/instacook_logo.png",
                   scale: 7,
-                  ),
-              )
-              ),
+                ),
+              )),
           actions: <Widget>[
             // action button
             IconButton(
@@ -403,10 +402,6 @@ class ListItemWidget extends State<SwipeList> {
                                   if (widget.litems[index]["me"]["saved"]) {
                                     print("TIRAR DOS GUARDADOS " +
                                         widget.litems[index]["id"].toString());
-                                    setState(() {
-                                      widget.litems[index]["me"]["saved"] =
-                                          false;
-                                    });
                                   } else {
                                     main_key.currentState
                                         .push(MaterialPageRoute(
@@ -414,10 +409,6 @@ class ListItemWidget extends State<SwipeList> {
                                                   recipeId: widget.litems[index]
                                                       ["id"],
                                                   onSave: (saved) {
-                                                    setState(() {
-                                                      widget.litems[index]["me"]
-                                                          ["saved"] = saved;
-                                                    });
                                                     if (saved) {
                                                       print(
                                                           "GUARDAR DOS GUARDADOS " +

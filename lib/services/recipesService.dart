@@ -20,10 +20,12 @@ class RecipeService {
         "type": data["type"],
         "props": data["props"],
         "likes": [],
+        "saved": [],
         "difficulty": data["difficulty"],
         "description": data["description"],
         "privacy": data["privacy"],
         "prods": data["prods"],
+        "time": data["time"],
         "userId": _id,
         "date": new DateTime.now()
       });
@@ -60,6 +62,140 @@ class RecipeService {
     }
   }
 
+  Future<bool> updateRecipe(String uId, Map data) async {
+    try {
+      await connection.collection('recipe').document(data["id"]).updateData({
+        "name": data["name"],
+        "type": data["type"],
+        "props": data["props"],
+        "difficulty": data["difficulty"],
+        "description": data["description"],
+        "privacy": data["privacy"],
+        "prods": data["prods"],
+        "time": data["time"],
+        "date": new DateTime.now()
+      });
+
+      var steps = data["steps"];
+
+      /*  for (var i = 0; i < data["steps"].length; i++) {
+        if (data["steps"][i]["imgUrl"] != "" &&
+            data["steps"][i]["imgUrl"].startWith("http") == false) {
+          var _map = await _imageService.uploadImageToFirebase(
+              data["steps"][i]["imgUrl"],
+              "ing",
+              result.documentID + i.toString());
+          steps[i]["imgUrl"] = _map["url"];
+          steps[i]["location"] = _map["location"];
+        }
+      } */
+
+      await connection
+          .collection('recipe')
+          .document(data["id"])
+          .updateData({'steps': steps});
+
+      String aux = data["imgUrl"];
+      print(" asdasd " + aux.substring(0, 4));
+
+      if (aux.substring(0, 4) != "http") {
+        var _map = await _imageService.updateImageToFirebase(
+            data["imgUrl"], "images", data["id"]);
+
+        await connection
+            .collection('recipe')
+            .document(data["id"])
+            .updateData({'imgUrl': _map["url"], 'location': _map["location"]});
+      }
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+//pqbdR1eCNIm9hN3fzvrU
+  Future<Recipe> getSingleRecipe(String id) async {
+    try {
+      var result = await connection.collection('recipe').document(id).get();
+      var data = result.data;
+
+      return Recipe(
+          id: result.documentID,
+          name: data["name"],
+          type: data["type"],
+          props: data["props"],
+          likes: data["likes"],
+          saved: data["saved"],
+          difficulty: data["difficulty"],
+          description: data["description"],
+          imgUrl: data["imgUrl"],
+          time: data["time"],
+          privacy: data["privacy"],
+          prods: data["prods"],
+          steps: data["steps"],
+          userId: data["userId"],
+          date: data["date"]);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Recipe> getSingleSteps(String id) async {
+    try {
+      var result = await connection.collection('recipe').document(id).get();
+      var data = result.data;
+
+      return Recipe(id: result.documentID, steps: data["steps"]);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<bool> addLikeRecipe(String id, String uId) async {
+    try {
+      await connection.collection('recipe').document(id).updateData({
+        'likes': FieldValue.arrayUnion([uId])
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> removeLikeRecipe(String id, String uId) async {
+    try {
+      await connection.collection('recipe').document(id).updateData({
+        'likes': FieldValue.arrayRemove([uId])
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> addSavedRecipe(String id, String uId) async {
+    try {
+      await connection.collection('recipe').document(id).updateData({
+        'saved': FieldValue.arrayUnion([uId])
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> removeSavedRecipe(String id, String uId) async {
+    try {
+      await connection.collection('recipe').document(id).updateData({
+        'saved': FieldValue.arrayRemove([uId])
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   // get recipes stream
   Stream<List<Recipe>> get recipes {
     return recipesCollection.snapshots().map(_recipeListFromSnapshot);
@@ -82,6 +218,7 @@ class RecipeService {
           type: doc.data["type"],
           props: doc.data["props"],
           likes: doc.data["likes"],
+          saved: doc.data["saved"],
           difficulty: doc.data["difficulty"],
           description: doc.data["description"],
           imgUrl: doc.data["imgUrl"],

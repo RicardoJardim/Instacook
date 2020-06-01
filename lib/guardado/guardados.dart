@@ -28,15 +28,6 @@ class _MainGuardadoState extends State<MainGuardado> {
     return litems;
   }
 
-/*       {
-        "id": 1,
-        "name": "Bife de vaca",
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        "time": "5-10 minutos",
-        "difficulty": "Difícil"
-      }, */
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
