@@ -70,10 +70,11 @@ class _AddIngridientlState extends State<AddIngridient> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    _entryField("Ingrediente", "Agua", ingr, errorHandlerValue),
-                    _entryField("Quantidade", "500", quant, errorHandlerValue,
+                    _entryField(
+                        "Ingrediente *", "Agua", ingr, errorHandlerValue),
+                    _entryField("Quantidade *", "500", quant, errorHandlerValue,
                         inputType: TextInputType.number),
-                    _entryField("Unidade", "mL", unit, errorHandlerValue)
+                    _entryField("Unidade *", "mL", unit, errorHandlerValue)
                   ],
                 ),
               ),

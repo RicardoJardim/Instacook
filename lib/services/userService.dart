@@ -7,6 +7,7 @@ class UserService {
 
   final _imageService = ImageService();
 
+  //MyDocumentId
   Future<String> getMyID(String id) async {
     try {
       String _id;
@@ -54,6 +55,7 @@ class UserService {
     }
   }
 
+  //MyUpdate
   Future<bool> updateMyUserData(String id, Map data) async {
     try {
       String _id;
@@ -86,6 +88,7 @@ class UserService {
     }
   }
 
+  //MyDelete
   Future<bool> deleteMyUserData(String id) async {
     try {
       String _id;
@@ -106,6 +109,7 @@ class UserService {
     }
   }
 
+  //UserFromRecipe
   Future<User> getUserRecipe(String id) async {
     try {
       var result = await connection.collection('user').document(id).get();
@@ -126,19 +130,17 @@ class UserService {
     }
   }
 
-  Future<User> getUserId(String id) async {
+  //GetUserById
+  Future<User> getUserById(String id) async {
     try {
       var result = await connection.collection('user').document(id).get();
       var data = result.data;
       return User(
         id: result.documentID,
-        email: data["email"],
         username: data["username"],
         follow: data["follow"],
         followers: data["followers"],
         imgUrl: data["imgUrl"],
-        recipesBook: data["recipesBook"],
-        uid: data["uId"],
         proUser: data["proUser"],
       );
     } catch (e) {
@@ -146,6 +148,7 @@ class UserService {
     }
   }
 
+  //MyCreate
   Future<bool> insertUser(String uId, String email, String username) async {
     try {
       await connection.collection('user').add({
@@ -173,6 +176,31 @@ class UserService {
     }
   }
 
+  //FOLLOW
+  Future<bool> followUser(String id, String uId) async {
+    try {
+      await connection.collection('user').document(id).updateData({
+        'followers': FieldValue.arrayUnion([uId])
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  //UNFOLLOW
+  Future<bool> unfollowUser(String id, String uId) async {
+    try {
+      await connection.collection('user').document(id).updateData({
+        'followers': FieldValue.arrayRemove([uId])
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  //-----------------
   //OTHERS
   Future<List> getUsers() async {
     try {
@@ -181,14 +209,14 @@ class UserService {
       connection
           .collection('user')
           .snapshots()
-          .listen((data) => data.documents.forEach((user) => {
+          .listen((data) => data.documents.forEach((user) {
                 users.add(User(
                   id: user.documentID,
                   username: user["username"],
                   imgUrl: user["imgUrl"],
                   uid: user["uId"],
                   proUser: user["proUser"],
-                ))
+                ));
               }));
 
       for (var user in users) {

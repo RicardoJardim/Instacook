@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/services/imageService.dart';
@@ -11,50 +13,47 @@ class RecipeService {
   final _imageService = ImageService();
   final _userService = UserService();
 
-  Future<bool> insertRecipe(String uId, Map data) async {
+  Future<bool> insertRecipe(String uId, Recipe data) async {
     try {
       String _id = await _userService.getMyID(uId);
 
       var result = await connection.collection('recipe').add({
-        "name": data["name"],
-        "type": data["type"],
-        "props": data["props"],
+        "name": data.name,
+        "type": data.type,
+        "props": data.props,
         "likes": [],
         "saved": [],
-        "difficulty": data["difficulty"],
-        "description": data["description"],
-        "privacy": data["privacy"],
-        "prods": data["prods"],
-        "time": data["time"],
+        "difficulty": data.difficulty,
+        "description": data.description,
+        "privacy": data.privacy,
+        "prods": data.prods,
+        "time": data.time,
         "userId": _id,
         "date": new DateTime.now()
       });
 
-      var steps = data["steps"];
+      var steps = data.steps;
 
-      for (var i = 0; i < data["steps"].length; i++) {
-        if (data["steps"][i]["imgUrl"] != "") {
+      for (var i = 0; i < data.steps.length; i++) {
+        if (data.steps[i]["imgUrl"] != "") {
           var _map = await _imageService.uploadImageToFirebase(
-              data["steps"][i]["imgUrl"],
-              "ing",
-              result.documentID + i.toString());
+              data.steps[i]["imgUrl"], "ing", result.documentID + i.toString());
           steps[i]["imgUrl"] = _map["url"];
           steps[i]["location"] = _map["location"];
         }
       }
 
-      await connection
-          .collection('recipe')
-          .document(result.documentID)
-          .updateData({'steps': steps});
-
       var _map = await _imageService.uploadImageToFirebase(
-          data["imgUrl"], "images", result.documentID);
+          data.imgUrl, "images", result.documentID);
 
       await connection
           .collection('recipe')
           .document(result.documentID)
-          .updateData({'imgUrl': _map["url"], 'location': _map["location"]});
+          .updateData({
+        'steps': steps,
+        'imgUrl': _map["url"],
+        'location': _map["location"]
+      });
 
       return true;
     } catch (e) {
@@ -62,51 +61,42 @@ class RecipeService {
     }
   }
 
-  Future<bool> updateRecipe(String uId, Map data) async {
+  Future<bool> updateRecipe(String uId, Recipe data) async {
     try {
-      await connection.collection('recipe').document(data["id"]).updateData({
-        "name": data["name"],
-        "type": data["type"],
-        "props": data["props"],
-        "difficulty": data["difficulty"],
-        "description": data["description"],
-        "privacy": data["privacy"],
-        "prods": data["prods"],
-        "time": data["time"],
-        "date": new DateTime.now()
-      });
+      var steps = data.steps;
 
-      var steps = data["steps"];
-
-      /*  for (var i = 0; i < data["steps"].length; i++) {
-        if (data["steps"][i]["imgUrl"] != "" &&
-            data["steps"][i]["imgUrl"].startWith("http") == false) {
+      for (var i = 0; i < data.steps.length; i++) {
+        if (data.steps[i]["imgUrl"] != "" && data.steps[i]["imgUrl"] is File) {
           var _map = await _imageService.uploadImageToFirebase(
-              data["steps"][i]["imgUrl"],
-              "ing",
-              result.documentID + i.toString());
+              data.steps[i]["imgUrl"], "ing", data.id + i.toString());
           steps[i]["imgUrl"] = _map["url"];
           steps[i]["location"] = _map["location"];
         }
-      } */
+      }
 
-      await connection
-          .collection('recipe')
-          .document(data["id"])
-          .updateData({'steps': steps});
-
-      String aux = data["imgUrl"];
-      print(" asdasd " + aux.substring(0, 4));
-
-      if (aux.substring(0, 4) != "http") {
+      if (data.imgUrl is File) {
+        print("send");
         var _map = await _imageService.updateImageToFirebase(
-            data["imgUrl"], "images", data["id"]);
+            data.imgUrl, "images", data.id);
 
         await connection
             .collection('recipe')
-            .document(data["id"])
+            .document(data.id)
             .updateData({'imgUrl': _map["url"], 'location': _map["location"]});
       }
+
+      await connection.collection('recipe').document(data.id).updateData({
+        "name": data.name,
+        "type": data.type,
+        "props": data.props,
+        "difficulty": data.difficulty,
+        "description": data.description,
+        "privacy": data.privacy,
+        "prods": data.prods,
+        "time": data.time,
+        'steps': steps,
+        "date": new DateTime.now()
+      });
 
       return true;
     } catch (e) {
@@ -133,7 +123,6 @@ class RecipeService {
           time: data["time"],
           privacy: data["privacy"],
           prods: data["prods"],
-          steps: data["steps"],
           userId: data["userId"],
           date: data["date"]);
     } catch (e) {
@@ -193,6 +182,32 @@ class RecipeService {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<List<Recipe>> getRecipesByUserId(String id) async {
+    try {
+      List<Recipe> recipes = List<Recipe>();
+
+      await connection
+          .collection('recipe')
+          .where("userId", isEqualTo: id)
+          .orderBy("date", descending: true)
+          .getDocuments()
+          .then((QuerySnapshot snapshot) {
+        snapshot.documents.forEach((f) {
+          recipes.add(new Recipe(
+              name: f.data["name"],
+              id: f.documentID,
+              imgUrl: f.data["imgUrl"],
+              time: f.data["time"],
+              difficulty: f.data["difficulty"]));
+        });
+      });
+
+      return recipes;
+    } catch (e) {
+      return null;
     }
   }
 

@@ -255,11 +255,11 @@ class GridList extends StatefulWidget {
 class GridItemWidget extends State<GridList> {
   Future<List> getNewest() async {
     String _id = await widget.auth.getCurrentUser();
-    var litems = await widget.savedService.getMyNews(_id);
+    var litems = [];
     return litems;
   }
 
-  void seeRecipe(int id) {
+  void seeRecipe(String id) {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
               id: id,

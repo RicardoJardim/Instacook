@@ -32,7 +32,13 @@ class ImageService {
 
       final StorageReference storageReference =
           FirebaseStorage().ref().child(imageLocation);
-      await storageReference.delete();
+
+      await storageReference.getDownloadURL().then((value) async {
+        print("Existe");
+        await storageReference.delete();
+      }, onError: (value) async {
+        print("NAO EXISTE");
+      });
 
       final StorageUploadTask uploadTask = storageReference.putFile(image);
       await uploadTask.onComplete;

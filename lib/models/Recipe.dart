@@ -10,7 +10,7 @@ class Recipe {
   String difficulty;
   bool privacy;
   String description;
-  String imgUrl;
+  dynamic imgUrl;
   String userId;
   List prods;
   List steps;
@@ -32,24 +32,4 @@ class Recipe {
       this.time,
       this.userId,
       this.date});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'name': this.name,
-      'type': this.type,
-      'props': this.props,
-      'likes': this.likes,
-      "saved": this.saved,
-      "difficulty": this.difficulty,
-      "description": this.description,
-      "imgUrl": this.imgUrl,
-      "id": this.id,
-      "privacy": this.privacy,
-      "prods": this.prods,
-      "steps": this.steps,
-      "time": this.time,
-      "userId": this.userId,
-      "date": this.date
-    };
-  }
 }

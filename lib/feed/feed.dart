@@ -206,7 +206,7 @@ class ListItemWidget extends State<SwipeList> {
     );
   }
 
-  void seeRecipe(int id) {
+  void seeRecipe(String id) {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
               id: id,
@@ -247,8 +247,7 @@ class ListItemWidget extends State<SwipeList> {
                                         new Map<String, dynamic>();
 
                                     data["route"] = TabRouterFeed.people;
-                                    data["id"] =
-                                        widget.litems[index]["user"]["id"];
+                                    data["id"] = "yUPKDm8IwnvgNKeAOSYG";
 
                                     widget.goPeople(data);
                                   },
@@ -312,7 +311,8 @@ class ListItemWidget extends State<SwipeList> {
                       InkWell(
                         borderRadius: BorderRadius.circular(25),
                         onTap: () {
-                          seeRecipe(widget.litems[index]["id"]);
+                          //widget.litems[index]["id"]
+                          seeRecipe("pqbdR1eCNIm9hN3fzvrU");
                         },
                         child: Padding(
                             padding: const EdgeInsets.all(5.0),

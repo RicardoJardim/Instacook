@@ -17,8 +17,7 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
   final _recipeService = RecipeService();
   var uId;
   Future<Recipe> getSteps() async {
-    //widget.id
-    return await _recipeService.getSingleSteps("pqbdR1eCNIm9hN3fzvrU");
+    return await _recipeService.getSingleSteps(widget.id);
   }
 
   void addGuardar() {
@@ -46,6 +45,7 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
               onPressed: () {
                 print("Gaurdar receita");
                 Navigator.of(context).pop();
+                main_key.currentState.pop(context);
                 main_key.currentState.pop(context);
                 main_key.currentState.push(MaterialPageRoute(
                     builder: (context) => SaveRecipe(

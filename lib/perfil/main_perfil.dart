@@ -193,7 +193,7 @@ class GridList extends StatefulWidget {
 }
 
 class GridItemWidget extends State<GridList> {
-  void seeRecipe(int id) {
+  void seeRecipe(String id) {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
               id: id,

@@ -18,7 +18,7 @@ class SeeRecipe extends StatefulWidget {
     this.mine: false,
   }) : super(key: key);
 
-  final int id;
+  final String id;
   final bool goProfile;
   final bool mine;
   _SeeRecipelState createState() => _SeeRecipelState();
@@ -31,8 +31,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
   final _userService = UserService();
   var uId;
   Future<Map> getRecipe() async {
-    //widget.id
-    var recipe = await _recipeService.getSingleRecipe("pqbdR1eCNIm9hN3fzvrU");
+    var recipe = await _recipeService.getSingleRecipe(widget.id);
     var user = await _userService.getUserRecipe(recipe.userId);
     String _id = await _auth.getCurrentUser();
     uId = await _userService.getMyID(_id);
@@ -86,8 +85,8 @@ class _SeeRecipelState extends State<SeeRecipe> {
                 String _id = await _auth.getCurrentUser();
                 Map data = {
                   "name": nameRecipe,
-                  "props": ingredients_key.currentState.widget.props,
-                  "prods": ingredients_key.currentState.widget.litems,
+                  "props": _ingredients_key.currentState.widget.props,
+                  "prods": _ingredients_key.currentState.widget.litems,
                 };
                 print(data);
                 await _shopService.insertShop(_id, data);
@@ -138,8 +137,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                             onPressed: () {
                               main_key.currentState.push(MaterialPageRoute(
                                   builder: (context) => CreateRecipe(
-                                        editRecipe:
-                                            snapshot.data["recipe"].toMap(),
+                                        editRecipe: snapshot.data["recipe"],
                                       )));
                             })
                         : Text(""),
@@ -206,6 +204,9 @@ class _SeeRecipelState extends State<SeeRecipe> {
                               liked: liked,
                               likes: snapshot.data["recipe"].likes,
                               saved: saved,
+                              onSave: (saves) {
+                                saved = saves;
+                              },
                               mine: widget.mine,
                               id: snapshot.data["recipe"].id,
                               service: _recipeService,
@@ -399,7 +400,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                                 ),
                               )),
                           IngredientsList(
-                            key: ingredients_key,
+                            key: _ingredients_key,
                             litems: snapshot.data["recipe"].prods,
                             props: snapshot.data["recipe"].props,
                             backgroundColor: backgroundColor,
@@ -460,9 +461,9 @@ class _SeeRecipelState extends State<SeeRecipe> {
           }
         });
   }
-}
 
-final GlobalKey<ListItemWidget> ingredients_key = GlobalKey();
+  final GlobalKey<ListItemWidget> _ingredients_key = GlobalKey();
+}
 
 class IngredientsList extends StatefulWidget {
   IngredientsList({Key key, this.litems, this.props, this.backgroundColor})
@@ -598,6 +599,7 @@ class LikedSaved extends StatefulWidget {
       this.mine,
       this.service,
       this.id,
+      this.onSave,
       this.userId})
       : super(key: key);
 
@@ -608,6 +610,7 @@ class LikedSaved extends StatefulWidget {
   final String id;
   final String userId;
   final RecipeService service;
+  Function onSave;
 
   @override
   State<StatefulWidget> createState() {
@@ -679,9 +682,11 @@ class LikedSavedState extends State<LikedSaved> {
                       if (widget.saved) {
                         widget.service
                             .removeSavedRecipe(widget.id, widget.userId);
+
                         setState(() {
                           widget.saved = false;
                         });
+                        widget.onSave(widget.saved);
                       } else {
                         main_key.currentState.push(MaterialPageRoute(
                             builder: (context) => SaveRecipe(
@@ -690,10 +695,7 @@ class LikedSavedState extends State<LikedSaved> {
                                     setState(() {
                                       widget.saved = saveds;
                                     });
-                                    if (widget.saved) {
-                                      print(
-                                          "GUARDAR DOS GUARDADOS " + widget.id);
-                                    }
+                                    widget.onSave(widget.saved);
                                   },
                                 )));
                       }

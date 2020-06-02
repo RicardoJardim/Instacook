@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/models/User.dart';
 import 'package:instacook/receitas/Widget/ButtonsContainer.dart';
 import 'package:instacook/receitas/create/preview_prepare.dart';
@@ -11,7 +12,7 @@ import '../../main.dart';
 class PreviewRecipe extends StatefulWidget {
   PreviewRecipe({Key key, this.receita}) : super(key: key);
 
-  final Map receita;
+  final Recipe receita;
   _PreviewRecipelState createState() => _PreviewRecipelState();
 }
 
@@ -43,7 +44,7 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Finalizar receita"),
-          content: new Text(widget.receita["id"] != null
+          content: new Text(widget.receita.id != null
               ? "Deseja guardar a receita editada?"
               : "Deseja guardar a receita criada?"),
           backgroundColor: Colors.white,
@@ -76,7 +77,7 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                 onPressed: () async {
                   Navigator.of(context).pop();
 
-                  if (widget.receita["id"] == null) {
+                  if (widget.receita.id == null) {
                     print("guardar ");
                     _recipeService.insertRecipe(_id, widget.receita);
                     main_key.currentState.pop(context);
@@ -146,7 +147,7 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                                 padding: const EdgeInsets.only(
                                     top: 5, right: 90, left: 15),
                                 child: Text(
-                                  widget.receita["name"],
+                                  widget.receita.name,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       fontSize: 35,
@@ -171,15 +172,15 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                                 ),
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(25),
-                                    child: widget.receita["imgUrl"] is String ==
+                                    child: widget.receita.imgUrl is String ==
                                             false
                                         ? Image.file(
-                                            widget.receita["imgUrl"],
+                                            widget.receita.imgUrl,
                                             fit: BoxFit.cover,
                                             filterQuality: FilterQuality.high,
                                           )
                                         : Image.network(
-                                            widget.receita["imgUrl"],
+                                            widget.receita.imgUrl,
                                             fit: BoxFit.cover,
                                             filterQuality: FilterQuality.high,
                                             loadingBuilder:
@@ -264,7 +265,7 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                           Padding(
                             padding: const EdgeInsets.all(15.0),
                             child: Text(
-                              widget.receita["description"],
+                              widget.receita.description,
                               style: TextStyle(fontSize: 16),
                               textAlign: TextAlign.justify,
                             ),
@@ -282,7 +283,7 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                                       size: 30,
                                     ),
                                     Text(
-                                      "  " + widget.receita["time"],
+                                      "  " + widget.receita.time,
                                       style: TextStyle(fontSize: 16),
                                     )
                                   ],
@@ -295,7 +296,7 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                                       size: 30,
                                     ),
                                     Text(
-                                      "  " + widget.receita["type"],
+                                      "  " + widget.receita.type,
                                       style: TextStyle(fontSize: 16),
                                     )
                                   ],
@@ -307,7 +308,7 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                                     size: 30,
                                   ),
                                   Text(
-                                    "  " + widget.receita["difficulty"],
+                                    "  " + widget.receita.difficulty,
                                     style: TextStyle(fontSize: 16),
                                   )
                                 ])
@@ -362,8 +363,8 @@ class _PreviewRecipelState extends State<PreviewRecipe> {
                                 ),
                               )),
                           IngredientsList(
-                            litems: widget.receita["prods"],
-                            props: widget.receita["props"],
+                            litems: widget.receita.prods,
+                            props: widget.receita.props,
                             backgroundColor: backgroundColor,
                           ),
                           Stack(
