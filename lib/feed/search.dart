@@ -44,6 +44,24 @@ class _SearchState extends State<Search> {
         "image":
             "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
       },
+      {
+        "id": 5,
+        "category": "Bebidas",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
+      {
+        "id": 6,
+        "category": "Sobremesa",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
+      {
+        "id": 7,
+        "category": "Vegetariano",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
     ];
     return litems;
   }
@@ -55,7 +73,7 @@ class _SearchState extends State<Search> {
       colors1 = Colors.amber[800];
       colors2 = Colors.grey[900];
     } else {
-      globalKey2.currentState.goUp();
+      newItems = event();
       colors2 = Colors.amber[800];
       colors1 = Colors.grey[900];
     }
