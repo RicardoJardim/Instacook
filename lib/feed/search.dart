@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../router.dart';
 
-GlobalKey<GridItemWidget> globalKey = GlobalKey();
+GlobalKey<GrodListFoodItemWidget> globalKey = GlobalKey();
+GlobalKey<GrodListPeopleItemWidget> globalKey2 = GlobalKey();
 
 class Search extends StatefulWidget {
   Search({
@@ -47,53 +48,24 @@ class _SearchState extends State<Search> {
     return litems;
   }
 
-  static List event() {
-    List<Map> items = [
-      {
-        "id": 1,
-        "username": "Ricardo",
-        "pro": true,
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-      },
-      {
-        "id": 2,
-        "username": "Lucas",
-        "pro": false,
-        "image":
-            "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
-      },
-      {
-        "id": 3,
-        "username": "Jardim",
-        "pro": true,
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-      },
-    ];
-    return items;
-  }
-
   void setNewState(bool food, bool isFoods) {
-    var newItems, colors1, colors2;
+    var colors1, colors2;
     if (food) {
-      newItems = onSomeEvent();
+      globalKey.currentState.goUp();
       colors1 = Colors.amber[800];
       colors2 = Colors.grey[900];
     } else {
-      newItems = event();
+      globalKey2.currentState.goUp();
       colors2 = Colors.amber[800];
       colors1 = Colors.grey[900];
     }
     setState(() {
-      litems = newItems;
       color1 = colors1;
       color2 = colors2;
       isFood = isFoods;
     });
   }
 
-  List<Map> litems = onSomeEvent();
   Color color2 = Colors.grey[900];
   Color color1 = Colors.amber[800];
   bool isFood = true;
@@ -198,12 +170,17 @@ class _SearchState extends State<Search> {
                         ])),
                     Padding(
                       padding: const EdgeInsets.only(top: 30),
-                      child: GridList(
-                        key: globalKey,
-                        litems: litems,
-                        isFood: isFood,
-                        onPush: widget.onPush,
-                      ),
+                      child: !isFood
+                          ? GridListPeople(
+                              key: globalKey2,
+                              litems: [],
+                              onPush: widget.onPush,
+                            )
+                          : GrodListFood(
+                              key: globalKey,
+                              litems: onSomeEvent(),
+                              onPush: widget.onPush,
+                            ),
                     )
                   ],
                 ))));
@@ -212,24 +189,22 @@ class _SearchState extends State<Search> {
 
 //GRID VIEW
 
-class GridList extends StatefulWidget {
-  GridList({
+class GrodListFood extends StatefulWidget {
+  GrodListFood({
     Key key,
     this.litems,
-    this.isFood,
     this.onPush,
   }) : super(key: key);
 
-  final bool isFood;
   final List litems;
   final ValueChanged<Map<String, dynamic>> onPush;
   @override
   State<StatefulWidget> createState() {
-    return GridItemWidget();
+    return GrodListFoodItemWidget();
   }
 }
 
-class GridItemWidget extends State<GridList> {
+class GrodListFoodItemWidget extends State<GrodListFood> {
   ScrollController _scrollController = new ScrollController();
 
   void goUp() {
@@ -240,167 +215,193 @@ class GridItemWidget extends State<GridList> {
     );
   }
 
-  //double itemHeight = 8.0;
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+        controller: _scrollController,
+        shrinkWrap: true,
+        primary: false,
+        itemCount: widget.litems.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, childAspectRatio: 0.9),
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            child: Column(
+              children: <Widget>[
+                index % 2 != 1
+                    ? SizedBox(
+                        height: 0,
+                      )
+                    : SizedBox(
+                        height: 45,
+                      ),
+                Container(
+                  height: 175,
+                  width: 300,
+                  child: InkWell(
+                      borderRadius: BorderRadius.circular(25),
+                      onTap: () {
+                        Map<String, dynamic> data = new Map<String, dynamic>();
+
+                        data["route"] = TabRouterFeed.details;
+                        data["id"] = widget.litems[index]["id"];
+                        widget.onPush(data);
+                      },
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              height: 140,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(
+                                  widget.litems[index]["image"],
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                  loadingBuilder: (context, child, progress) {
+                                    if (progress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: progress.expectedTotalBytes !=
+                                                null
+                                            ? progress.cumulativeBytesLoaded /
+                                                progress.expectedTotalBytes
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5, left: 2),
+                              child: Text(
+                                widget.litems[index]["category"],
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey[800]),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ])),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+}
+
+//GRID VIEW
+
+class GridListPeople extends StatefulWidget {
+  GridListPeople({
+    Key key,
+    this.litems,
+    this.onPush,
+  }) : super(key: key);
+
+  final List litems;
+  final ValueChanged<Map<String, dynamic>> onPush;
+  @override
+  State<StatefulWidget> createState() {
+    return GrodListPeopleItemWidget();
+  }
+}
+
+class GrodListPeopleItemWidget extends State<GridListPeople> {
+  ScrollController _scrollController = new ScrollController();
+
+  void goUp() {
+    _scrollController.animateTo(
+      0.0,
+      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.isFood) {
-      return GridView.builder(
-          controller: _scrollController,
-          shrinkWrap: true,
-          primary: false,
-          itemCount: widget.litems.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, childAspectRatio: 0.9),
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.0),
-              child: Column(
-                children: <Widget>[
-                  index % 2 != 1
-                      ? SizedBox(
-                          height: 0,
-                        )
-                      : SizedBox(
-                          height: 45,
-                        ),
-                  Container(
-                    height: 175,
-                    width: 300,
-                    child: InkWell(
-                        borderRadius: BorderRadius.circular(25),
-                        onTap: () {
-                          Map<String, dynamic> data =
-                              new Map<String, dynamic>();
+    return GridView.builder(
+        controller: _scrollController,
+        shrinkWrap: true,
+        primary: false,
+        itemCount: widget.litems.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, childAspectRatio: 0.88),
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            child: Column(
+              children: <Widget>[
+                index % 2 != 1
+                    ? SizedBox(
+                        height: 0,
+                      )
+                    : SizedBox(
+                        height: 45,
+                      ),
+                Container(
+                  height: 175,
+                  width: 300,
+                  child: InkWell(
+                      borderRadius: BorderRadius.circular(25),
+                      onTap: () {
+                        Map<String, dynamic> data = new Map<String, dynamic>();
 
-                          data["route"] = TabRouterFeed.details;
-                          data["id"] = widget.litems[index]["id"];
-                          widget.onPush(data);
-                        },
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                height: 140,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.network(
-                                    widget.litems[index]["image"],
-                                    fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.high,
-                                    loadingBuilder: (context, child, progress) {
-                                      if (progress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: progress.expectedTotalBytes !=
-                                                  null
-                                              ? progress.cumulativeBytesLoaded /
-                                                  progress.expectedTotalBytes
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                  ),
+                        data["route"] = TabRouterFeed.people;
+                        data["id"] = widget.litems[index]["id"];
+                        widget.onPush(data);
+                      },
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              height: 140,
+                              width: 140,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(200),
+                                child: Image.network(
+                                  widget.litems[index]["image"],
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                  loadingBuilder: (context, child, progress) {
+                                    if (progress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: progress.expectedTotalBytes !=
+                                                null
+                                            ? progress.cumulativeBytesLoaded /
+                                                progress.expectedTotalBytes
+                                            : null,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 5, left: 2),
-                                child: Text(
-                                  widget.litems[index]["category"],
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey[800]),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5, left: 2),
+                              child: Text(
+                                widget.litems[index]["username"],
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey[800]),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
-                            ])),
-                  ),
-                ],
-              ),
-            );
-          });
-    } else {
-      return GridView.builder(
-          controller: _scrollController,
-          shrinkWrap: true,
-          primary: false,
-          itemCount: widget.litems.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, childAspectRatio: 0.88),
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.0),
-              child: Column(
-                children: <Widget>[
-                  index % 2 != 1
-                      ? SizedBox(
-                          height: 0,
-                        )
-                      : SizedBox(
-                          height: 45,
-                        ),
-                  Container(
-                    height: 175,
-                    width: 300,
-                    child: InkWell(
-                        borderRadius: BorderRadius.circular(25),
-                        onTap: () {
-                          Map<String, dynamic> data =
-                              new Map<String, dynamic>();
-
-                          data["route"] = TabRouterFeed.people;
-                          data["id"] = widget.litems[index]["id"];
-                          widget.onPush(data);
-                        },
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                height: 140,
-                                width: 140,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(200),
-                                  child: Image.network(
-                                    widget.litems[index]["image"],
-                                    fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.high,
-                                    loadingBuilder: (context, child, progress) {
-                                      if (progress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: progress.expectedTotalBytes !=
-                                                  null
-                                              ? progress.cumulativeBytesLoaded /
-                                                  progress.expectedTotalBytes
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 5, left: 2),
-                                child: Text(
-                                  widget.litems[index]["username"],
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey[800]),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                              ),
-                            ])),
-                  ),
-                ],
-              ),
-            );
-          });
-    }
+                            ),
+                          ])),
+                ),
+              ],
+            ),
+          );
+        });
   }
 }
