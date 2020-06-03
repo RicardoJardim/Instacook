@@ -13,6 +13,7 @@ class _AddIngridientlState extends State<AddIngridient> {
   final ingr = TextEditingController();
   final quant = TextEditingController();
   final unit = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -44,13 +45,15 @@ class _AddIngridientlState extends State<AddIngridient> {
                 size: 34,
               ),
               onPressed: () {
-                if (ingr.text != "") {
-                  widget.callback({
-                    "quant": int.parse(quant.text),
-                    "prod": ingr.text,
-                    "type": unit.text
-                  });
-                  main_key.currentState.pop(context);
+                if (_formKey.currentState.validate()) {
+                  if (ingr.text != "") {
+                    widget.callback({
+                      "quant": int.parse(quant.text),
+                      "prod": ingr.text,
+                      "type": unit.text
+                    });
+                    main_key.currentState.pop(context);
+                  }
                 }
               },
             ),
@@ -59,27 +62,34 @@ class _AddIngridientlState extends State<AddIngridient> {
         body: SafeArea(
             top: true,
             child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
+              scrollDirection: Axis.vertical,
+              child: Form(
+                autovalidate: true,
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    _entryField("Ingrediente", "Agua", ingr),
-                    _entryField("Quantidade", "500", quant),
-                    _entryField("Unidade", "mL", unit)
+                    _entryField(
+                        "Ingrediente *", "Agua", ingr, errorHandlerValue),
+                    _entryField("Quantidade *", "500", quant, errorHandlerValue,
+                        inputType: TextInputType.number),
+                    _entryField("Unidade *", "mL", unit, errorHandlerValue)
                   ],
-                ))));
+                ),
+              ),
+            )));
   }
 
-  Widget _entryField(
-    String title,
-    String example,
-    TextEditingController _controller,
-  ) {
+  Widget _entryField(String title, String example,
+      TextEditingController _controller, Function errorHandler,
+      {inputType: TextInputType.text}) {
     return Padding(
         padding: const EdgeInsets.all(10.0),
-        child: TextField(
+        child: TextFormField(
+          validator: (value) => errorHandler(value),
           autofocus: false,
+          keyboardType: inputType,
           controller: _controller,
           style: TextStyle(color: Colors.black, fontSize: 18),
           decoration: InputDecoration(
@@ -94,5 +104,14 @@ class _AddIngridientlState extends State<AddIngridient> {
             ),
           ),
         ));
+  }
+
+  String errorHandlerValue(String value) {
+    if (value.isEmpty) {
+      return "Campo obrigatório";
+    } else if (value.length < 1) {
+      return "Campo obrigatório";
+    }
+    return null;
   }
 }

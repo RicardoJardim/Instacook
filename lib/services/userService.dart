@@ -7,17 +7,36 @@ class UserService {
 
   final _imageService = ImageService();
 
+  //MyDocumentId
+  Future<String> getMyID(String id) async {
+    try {
+      String _id;
+      await connection
+          .collection('user')
+          .where("uid", isEqualTo: id)
+          .getDocuments()
+          .then((value) {
+        _id = value.documents.single.documentID;
+      });
+      return _id;
+    } catch (e) {
+      return null;
+    }
+  }
+
   //MyUSER
   Future<User> getMyUser(String id) async {
-    User user;
-    await connection
-        .collection('user')
-        .where("uid", isEqualTo: id)
-        .getDocuments()
-        .then((event) {
-      if (event.documents.isNotEmpty) {
-        var data = event.documents.single.data;
-        user = User(
+    try {
+      User user;
+      await connection
+          .collection('user')
+          .where("uid", isEqualTo: id)
+          .getDocuments()
+          .then((event) {
+        if (event.documents.isNotEmpty) {
+          var data = event.documents.single.data;
+          user = User(
+            id: event.documents.single.documentID,
             email: data["email"],
             username: data["username"],
             follow: data["follow"],
@@ -26,110 +45,110 @@ class UserService {
             recipesBook: data["recipesBook"],
             uid: data["uId"],
             proUser: data["proUser"],
-            myrecipes: data["myrecipes"]);
-      }
-    }).catchError((e) => print("error fetching data: $e"));
+          );
+        }
+      }).catchError((e) => print("error fetching data: $e"));
 
-    if (user != null) {
       return user;
-    } else {
+    } catch (e) {
       return null;
     }
   }
 
+  //MyUpdate
   Future<bool> updateMyUserData(String id, Map data) async {
-    String _id;
-    await connection
-        .collection('user')
-        .where("uid", isEqualTo: id)
-        .getDocuments()
-        .then((value) {
-      _id = value.documents.single.documentID;
-      print(_id);
-    });
+    try {
+      String _id;
+      await connection
+          .collection('user')
+          .where("uid", isEqualTo: id)
+          .getDocuments()
+          .then((value) {
+        _id = value.documents.single.documentID;
+        print(_id);
+      });
 
-    await connection
-        .collection('user')
-        .document(_id)
-        .updateData({"username": data["username"], "email": data["email"]});
+      await connection
+          .collection('user')
+          .document(_id)
+          .updateData({"username": data["username"], "email": data["email"]});
 
-    if (data["image"] != null) {
-      var _map = await _imageService.uploadImageToFirebase(
-          data["image"], "users", _id);
+      if (data["image"] != null) {
+        var _map = await _imageService.uploadImageToFirebase(
+            data["image"], "users", _id);
 
-      if (_map != null) {
-        await connection
-            .collection('user')
-            .document(_id)
-            .updateData({'imgUrl': _map["url"], 'location': _map["location"]});
+        if (_map != null) {
+          await connection.collection('user').document(_id).updateData(
+              {'imgUrl': _map["url"], 'location': _map["location"]});
+        }
       }
-    }
-
-    if (_id != null) {
       return true;
-    } else {
+    } catch (e) {
       return false;
     }
   }
 
+  //MyDelete
   Future<bool> deleteMyUserData(String id) async {
-    String _id;
-    await connection
-        .collection('user')
-        .where("uid", isEqualTo: id)
-        .getDocuments()
-        .then((value) {
-      _id = value.documents.single.documentID;
-      print(_id);
-    });
+    try {
+      String _id;
+      await connection
+          .collection('user')
+          .where("uid", isEqualTo: id)
+          .getDocuments()
+          .then((value) {
+        _id = value.documents.single.documentID;
+        print(_id);
+      });
 
-    await connection.collection('user').document(_id).delete();
+      await connection.collection('user').document(_id).delete();
 
-    //falta alterar no auth
-    if (_id != null) {
       return true;
-    } else {
+    } catch (e) {
       return false;
     }
   }
 
-  //OTHERS
-  Future<List> getUsers() async {
-    List<User> users = List<User>();
-
-    connection
-        .collection('user')
-        .snapshots()
-        .listen((data) => data.documents.forEach((user) => {
-              users.add(User(
-                username: user["username"],
-                imgUrl: user["imgUrl"],
-                uid: user["uId"],
-                proUser: user["pro"],
-              ))
-            }));
-
-    for (var user in users) {
-      print(user.username);
+  //UserFromRecipe
+  Future<User> getUserRecipe(String id) async {
+    try {
+      var result = await connection.collection('user').document(id).get();
+      var data = result.data;
+      return User(
+        id: result.documentID,
+        email: "",
+        username: data["username"],
+        follow: [],
+        followers: [],
+        imgUrl: data["imgUrl"],
+        recipesBook: [],
+        uid: "",
+        proUser: data["proUser"],
+      );
+    } catch (e) {
+      return null;
     }
-    return users;
   }
 
-  Future<User> getUserId(String id) async {
-    var result = await connection.collection('user').document(id).get();
-    var data = result.data;
-    return User(
-      email: data["email"],
-      username: data["username"],
-      follow: data["follow"],
-      followers: data["followers"],
-      imgUrl: data["imgUrl"],
-      recipesBook: data["recipesBook"],
-      uid: data["uId"],
-      proUser: data["pro"],
-    );
+  //GetUserById
+  Future<User> getUserById(String id) async {
+    try {
+      var result = await connection.collection('user').document(id).get();
+      var data = result.data;
+      return User(
+        id: result.documentID,
+        username: data["username"],
+        follow: data["follow"],
+        followers: data["followers"],
+        imgUrl: data["imgUrl"],
+        proUser: data["proUser"],
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
+  //MyCreate
   Future<bool> insertUser(String uId, String email, String username) async {
     try {
       await connection.collection('user').add({
@@ -141,12 +160,71 @@ class UserService {
         "follow": [],
         "followers": [],
         "proUser": false,
-        "recipesBook": [],
-        "myrecipes": []
+        "recipesBook": [
+          {
+            "id": 1,
+            "name": "Geral",
+            "imgUrl":
+                "https://meustc.com/wp-content/uploads/2020/01/placeholder-1.png",
+            "recipes": []
+          }
+        ],
       });
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  //FOLLOW
+  Future<bool> followUser(String id, String uId) async {
+    try {
+      await connection.collection('user').document(id).updateData({
+        'followers': FieldValue.arrayUnion([uId])
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  //UNFOLLOW
+  Future<bool> unfollowUser(String id, String uId) async {
+    try {
+      await connection.collection('user').document(id).updateData({
+        'followers': FieldValue.arrayRemove([uId])
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  //-----------------
+  //OTHERS
+  Future<List> getUsers() async {
+    try {
+      List<User> users = List<User>();
+
+      connection
+          .collection('user')
+          .snapshots()
+          .listen((data) => data.documents.forEach((user) {
+                users.add(User(
+                  id: user.documentID,
+                  username: user["username"],
+                  imgUrl: user["imgUrl"],
+                  uid: user["uId"],
+                  proUser: user["proUser"],
+                ));
+              }));
+
+      for (var user in users) {
+        print(user.username);
+      }
+      return users;
+    } catch (e) {
+      return null;
     }
   }
 

@@ -1,36 +1,35 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Recipe{
-
+class Recipe {
   String id;
   String name;
   String type;
   int props;
   List likes;
+  List saved;
   String difficulty;
   bool privacy;
   String description;
-  String imgUrl;
+  dynamic imgUrl;
   String userId;
   List prods;
   List steps;
   Timestamp date;
-
-  Recipe({
-    this.name,
-    this.type,
-    this.props,
-    this.likes,
-    this.difficulty,
-    this.description,
-    this.imgUrl,
-    this.id,
-    this.privacy,
-    this.prods,
-    this.steps,
-    this.userId,
-    this.date
-    });
-
-  }
+  String time;
+  Recipe(
+      {this.name,
+      this.type,
+      this.props,
+      this.likes,
+      this.saved,
+      this.difficulty,
+      this.description,
+      this.imgUrl,
+      this.id,
+      this.privacy,
+      this.prods,
+      this.steps,
+      this.time,
+      this.userId,
+      this.date});
+}

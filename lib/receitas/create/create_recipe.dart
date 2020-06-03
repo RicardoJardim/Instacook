@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/photo_picker.dart';
 import 'package:instacook/receitas/create/add_ingre.dart';
 import 'package:instacook/receitas/create/add_step.dart';
@@ -11,7 +12,7 @@ import '../../main.dart';
 class CreateRecipe extends StatefulWidget {
   CreateRecipe({Key key, this.editRecipe}) : super(key: key);
 
-  final Map editRecipe;
+  final Recipe editRecipe;
   _CreateRecipelState createState() => _CreateRecipelState();
 }
 
@@ -19,75 +20,33 @@ class _CreateRecipelState extends State<CreateRecipe> {
   @override
   void initState() {
     if (widget.editRecipe == null) {
-      receita = new Map<String, dynamic>();
+      receita = new Recipe();
     } else {
       receita = widget.editRecipe;
-      privacy = widget.editRecipe["privacy"];
-      dif = widget.editRecipe["difficulty"];
-      prods = widget.editRecipe["prods"];
-      stepsRecipe = getSteps(widget.editRecipe["id"]);
-      name.text = widget.editRecipe["name"];
-      type.text = widget.editRecipe["type"];
-      description.text = widget.editRecipe["description"];
-      time.text = widget.editRecipe["time"];
-      props.text = widget.editRecipe["props"].toString();
-      imageUrl = widget.editRecipe["image"];
+      privacy = widget.editRecipe.privacy;
+      dif = widget.editRecipe.difficulty;
+      prods = widget.editRecipe.prods;
+      stepsRecipe = widget.editRecipe.steps;
+      name.text = widget.editRecipe.name;
+      type.text = widget.editRecipe.type;
+      description.text = widget.editRecipe.description;
+      time.text = widget.editRecipe.time;
+      props.text = widget.editRecipe.props.toString();
+      imageUrl = widget.editRecipe.imgUrl;
     }
     steps = [1, 2, 3, 4, 5];
     super.initState();
   }
 
-  List getSteps(int id) {
-    //PEsquisa na bd pelo id
-    return [
-      {
-        "prods": [
-          {"quant": 200, "type": "mg", "prod": "leite"},
-          {"quant": 100, "type": "mg", "prod": "merda"},
-          {"quant": 200, "type": "mg", "prod": "leite"},
-          {"quant": 100, "type": "mg", "prod": "merda"},
-        ],
-        "description":
-            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sdasd asdas d asd asd a a uysgd aksb dkjahs kjdhn akjsdh kjash dkjahwsjkdh akjsdh ksjha kjdah kdjsah kjash ",
-        "image":
-            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
-      },
-      {
-        "prods": [
-          {"quant": 200, "type": "mg", "prod": "leite"},
-          {"quant": 100, "type": "mg", "prod": "merda"},
-        ],
-        "description":
-            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd as dasd ",
-        "image": " ",
-      },
-      {
-        "prods": [
-          {"quant": 500, "type": "mg", "prod": "manteiga"},
-          {"quant": 200, "type": "mg", "prod": "merda"},
-        ],
-        "description":
-            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd as dasdasd as dasdas d",
-        "image":
-            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
-      },
-      {
-        "prods": [
-          {"quant": 800, "type": "mg", "prod": "leadsdite"},
-          {"quant": 700, "type": "mg", "prod": "cxa"},
-        ],
-        "description":
-            " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd asda sda  s asd",
-        "image": " ",
-      },
-    ];
-  }
-
-  Map<String, dynamic> receita;
+  Recipe receita;
   List steps;
   int indexs = 0;
   double progvalue = 0.20;
   ScrollController _controller = ScrollController();
+
+  final _formKey1 = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
+  final _formKey3 = GlobalKey<FormState>();
 
   _animateToIndex(i) =>
       _controller.animateTo(MediaQuery.of(context).size.width * i,
@@ -244,53 +203,58 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                   if (indexs != (steps.length)) {
                                     switch (indexs) {
                                       case 0:
-                                        if (name.text != "") {
-                                          receita["name"] = name.text;
-                                          if (widget.editRecipe == null &&
-                                              _selectedFile != null) {
-                                            receita["image"] = _selectedFile;
-                                            moveToNext();
-                                          } else if (widget.editRecipe !=
-                                              null) {
-                                            if (_selectedFile != null) {
-                                              receita["image"] = _selectedFile;
+                                        if (_formKey1.currentState.validate()) {
+                                          if (name.text != "") {
+                                            receita.name = name.text;
+                                            if (widget.editRecipe == null &&
+                                                _selectedFile != null) {
+                                              receita.imgUrl = _selectedFile;
                                               moveToNext();
-                                            } else {
-                                              receita["image"] =
-                                                  receita["image"];
-                                              moveToNext();
+                                            } else if (widget.editRecipe !=
+                                                null) {
+                                              if (_selectedFile != null) {
+                                                receita.imgUrl = _selectedFile;
+                                                moveToNext();
+                                              } else {
+                                                receita.imgUrl = receita.imgUrl;
+                                                moveToNext();
+                                              }
                                             }
                                           }
                                         }
                                         break;
                                       case 1:
-                                        if (type.text != "" &&
-                                            description.text != "") {
-                                          receita["type"] = type.text;
-                                          receita["description"] =
-                                              description.text;
-                                          receita["privacy"] = privacy;
-                                          moveToNext();
+                                        if (_formKey2.currentState.validate()) {
+                                          if (type.text != "" &&
+                                              description.text != "") {
+                                            receita.type = type.text;
+                                            receita.description =
+                                                description.text;
+                                            receita.privacy = privacy;
+                                            moveToNext();
+                                          }
                                         }
                                         break;
                                       case 2:
-                                        if (props.text != "" &&
-                                            time.text != "" &&
-                                            dif != "") {
-                                          receita["time"] = time.text;
-                                          receita["props"] =
-                                              int.parse(props.text);
-                                          receita["difficulty"] = dif;
-                                          moveToNext();
+                                        if (_formKey3.currentState.validate()) {
+                                          if (props.text != "" &&
+                                              time.text != "" &&
+                                              dif != "") {
+                                            receita.time = time.text;
+                                            receita.props =
+                                                int.parse(props.text);
+                                            receita.difficulty = dif;
+                                            moveToNext();
+                                          }
                                         }
                                         break;
                                       case 3:
-                                        receita["prods"] = prods;
+                                        receita.prods = prods;
                                         moveToNext();
                                         break;
                                       case 4:
                                         if (stepsRecipe.length != 0) {
-                                          receita["steps"] = stepsRecipe;
+                                          receita.steps = stepsRecipe;
                                           setState(() {
                                             progvalue += 0.20;
                                           });
@@ -326,7 +290,18 @@ class _CreateRecipelState extends State<CreateRecipe> {
   Widget _page1() {
     return Column(
       children: <Widget>[
-        _entryField("Nome da receita", "Bolo de Banana", name),
+        Form(
+          autovalidate: true,
+          key: _formKey1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              _entryField("Nome da receita *", "Bolo de Banana", name,
+                  errorHandlerValue),
+            ],
+          ),
+        ),
         SizedBox(
           height: 10,
         ),
@@ -339,7 +314,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
               Padding(
                 padding: const EdgeInsets.only(left: 10.0),
                 child: Text(
-                  "Adicionar foto da receita",
+                  "Adicionar foto da receita *",
                   style: TextStyle(fontSize: 18, color: Colors.grey[600]),
                 ),
               ),
@@ -381,8 +356,20 @@ class _CreateRecipelState extends State<CreateRecipe> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _entryField("Tipo de Receita", "Carne", type),
-          _entryField("Descrição", "Esta receita ....", description),
+          Form(
+            autovalidate: true,
+            key: _formKey2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                _entryField(
+                    "Tipo de Receita *", "Carne", type, errorHandlerValue),
+                _entryField("Descrição *", "Esta receita ....", description,
+                    errorHandlerValue),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(left: 10.0, top: 15),
             child: Row(
@@ -393,7 +380,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "Privacidade",
+                      "Privacidade *",
                       style: TextStyle(
                           fontSize: 18,
                           color: Colors.grey[600],
@@ -430,16 +417,24 @@ class _CreateRecipelState extends State<CreateRecipe> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _entryField("Proporções", "1 pessoa", props,
-              inputType: TextInputType.number),
-          _entryField(
-            "Tempo de Preparação",
-            "5-10 minutos",
-            time,
+          Form(
+            autovalidate: true,
+            key: _formKey3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                _entryField(
+                    "Proporções *", "1 pessoa", props, errorHandlerNumber,
+                    inputType: TextInputType.number),
+                _entryField("Tempo de Preparação *", "5-10 minutos", time,
+                    errorHandlerValue),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 10.0, top: 20),
-            child: Text("Dificuldade",
+            child: Text("Dificuldade *",
                 style: TextStyle(
                     fontSize: 18,
                     color: Colors.grey[600],
@@ -450,7 +445,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
               child: DiffButtons(
                 init: widget.editRecipe == null
                     ? ""
-                    : widget.editRecipe["difficulty"],
+                    : widget.editRecipe.difficulty,
                 callback: (str) {
                   dif = str;
                 },
@@ -580,14 +575,13 @@ class _CreateRecipelState extends State<CreateRecipe> {
   }
 
   Widget _page5() {
-    // ACABAR
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text("Passos",
+            Text("Passos *",
                 style: TextStyle(
                     fontSize: 18,
                     color: Colors.grey[600],
@@ -754,12 +748,29 @@ class _CreateRecipelState extends State<CreateRecipe> {
     );
   }
 
-  Widget _entryField(
-      String title, String example, TextEditingController _controller,
+  String errorHandlerValue(String value) {
+    if (value.isEmpty || value.length < 2) {
+      return "Campo obrigatório";
+    }
+    return null;
+  }
+
+  String errorHandlerNumber(String value) {
+    if (value.isEmpty) {
+      return "Campo obrigatório";
+    } else if (double.tryParse(value) == null) {
+      return "Só é valido numeros";
+    }
+    return null;
+  }
+
+  Widget _entryField(String title, String example,
+      TextEditingController _controller, Function errorHandler,
       {inputType: TextInputType.text}) {
     return Padding(
         padding: const EdgeInsets.all(10.0),
-        child: TextField(
+        child: TextFormField(
+          validator: (value) => errorHandler(value),
           keyboardType: inputType,
           autofocus: false,
           focusNode: FocusNode(canRequestFocus: false),
@@ -781,22 +792,22 @@ class _CreateRecipelState extends State<CreateRecipe> {
 
   Widget getImageForStep(index) {
     if (widget.editRecipe == null) {
-      if (stepsRecipe[index]["image"] == "") {
+      if (stepsRecipe[index]["imgUrl"] == "") {
         return Text("");
       } else {
         return Image.file(
-          stepsRecipe[index]["image"],
+          stepsRecipe[index]["imgUrl"],
           height: 80,
           width: 80,
           fit: BoxFit.cover,
         );
       }
     } else {
-      if (stepsRecipe[index]["image"] == "") {
+      if (stepsRecipe[index]["imgUrl"] == "") {
         return Text("");
-      } else if (stepsRecipe[index]["image"] is String) {
+      } else if (stepsRecipe[index]["imgUrl"] is String) {
         return Image.network(
-          stepsRecipe[index]["image"],
+          stepsRecipe[index]["imgUrl"],
           height: 80,
           width: 80,
           filterQuality: FilterQuality.high,
@@ -814,7 +825,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
         );
       } else {
         return Image.file(
-          stepsRecipe[index]["image"],
+          stepsRecipe[index]["imgUrl"],
           height: 80,
           width: 80,
           fit: BoxFit.cover,
@@ -837,7 +848,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
         );
       } else {
         return Image.network(
-          receita["image"],
+          receita.imgUrl,
           fit: BoxFit.cover,
           filterQuality: FilterQuality.high,
           loadingBuilder: (context, child, progress) {

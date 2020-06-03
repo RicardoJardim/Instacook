@@ -164,7 +164,7 @@ class _MainPerfilState extends State<MainPerfil> {
                             Padding(
                               padding: const EdgeInsets.only(top: 25),
                               child: GridList(
-                                litems: snapshot.data.myrecipes,
+                                litems: snapshot.data.recipesBook,
                               ),
                             ),
                           ],
@@ -193,7 +193,7 @@ class GridList extends StatefulWidget {
 }
 
 class GridItemWidget extends State<GridList> {
-  void seeRecipe(int id) {
+  void seeRecipe(String id) {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
               id: id,
@@ -242,7 +242,7 @@ class GridItemWidget extends State<GridList> {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
                                       child: Image.network(
-                                        widget.litems[index]["image"],
+                                        widget.litems[index]["imgUrl"],
                                         fit: BoxFit.cover,
                                         filterQuality: FilterQuality.high,
                                         loadingBuilder:

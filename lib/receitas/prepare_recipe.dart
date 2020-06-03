@@ -1,72 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/receitas/save_recipe.dart';
+import 'package:instacook/services/recipesService.dart';
 
 import '../main.dart';
 
 class PrepareRecipe extends StatefulWidget {
   PrepareRecipe({Key key, this.id, this.saved}) : super(key: key);
 
-  final int id;
+  final String id;
   final bool saved;
   _PrepareRecipelState createState() => _PrepareRecipelState();
 }
 
 class _PrepareRecipelState extends State<PrepareRecipe> {
-  Map getLista2(int id) {
-    var receita = new Map<String, dynamic>();
-
-    receita = {
-      "id": id,
-      "steps": [
-        {
-          "prods": [
-            {"quant": 200, "type": "mg", "prod": "leite"},
-            {"quant": 100, "type": "mg", "prod": "merda"},
-            {"quant": 200, "type": "mg", "prod": "leite"},
-            {"quant": 100, "type": "mg", "prod": "merda"},
-          ],
-          "description":
-              " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sdasd asdas d asd asd a a uysgd aksb dkjahs kjdhn akjsdh kjash dkjahwsjkdh akjsdh ksjha kjdah kdjsah kjash ",
-          "image":
-              "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
-        },
-        {
-          "prods": [
-            {"quant": 200, "type": "mg", "prod": "leite"},
-            {"quant": 100, "type": "mg", "prod": "merda"},
-          ],
-          "description":
-              " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd as dasd ",
-          "image": " ",
-        },
-        {
-          "prods": [
-            {"quant": 500, "type": "mg", "prod": "manteiga"},
-            {"quant": 200, "type": "mg", "prod": "merda"},
-          ],
-          "description":
-              " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd as dasdasd as dasdas d",
-          "image":
-              "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg"
-        },
-        {
-          "prods": [
-            {"quant": 800, "type": "mg", "prod": "leadsdite"},
-            {"quant": 700, "type": "mg", "prod": "cxa"},
-          ],
-          "description":
-              " Aihhdiuhasidh diahsdih iudh asidh iusuhd iash diha sda sd asda sda  s asd",
-          "image": " ",
-        },
-      ]
-    };
-    return receita;
-  }
-
-  @override
-  void initState() {
-    receita = getLista2(widget.id);
-    super.initState();
+  final _recipeService = RecipeService();
+  var uId;
+  Future<Recipe> getSteps() async {
+    return await _recipeService.getSingleSteps(widget.id);
   }
 
   void addGuardar() {
@@ -95,13 +46,13 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
                 print("Gaurdar receita");
                 Navigator.of(context).pop();
                 main_key.currentState.pop(context);
+                main_key.currentState.pop(context);
                 main_key.currentState.push(MaterialPageRoute(
                     builder: (context) => SaveRecipe(
                           recipeId: widget.id,
                           onSave: (saved) {
                             if (saved) {
-                              print("GUARDAR DOS GUARDADOS " +
-                                  widget.id.toString());
+                              print("GUARDAR DOS GUARDADOS " + widget.id);
                             }
                           },
                         )));
@@ -114,7 +65,6 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
     );
   }
 
-  Map<String, dynamic> receita = new Map<String, dynamic>();
   bool saved;
   int index = 0;
   ScrollController _controller = ScrollController();
@@ -125,92 +75,103 @@ class _PrepareRecipelState extends State<PrepareRecipe> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          leading: IconButton(
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              Icons.keyboard_arrow_left,
-              color: Colors.black,
-              size: 50,
-            ),
-            onPressed: () => main_key.currentState.pop(context),
-          ),
-        ),
-        body: SafeArea(
-            top: true,
-            child: Column(children: [
-              Container(
-                height: MediaQuery.of(context).size.height - 170,
-                child: ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    controller: _controller,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: receita["steps"].length,
-                    itemBuilder: (context, index) {
-                      return Step(
-                        index,
-                        receita["steps"].length,
-                        receita["steps"][index]["description"],
-                        receita["steps"][index]["prods"],
-                        image: receita["steps"][index]["image"],
-                      );
-                    }),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      FlatButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.all(15),
-                        splashColor: Colors.white,
-                        color: Colors.black,
-                        onPressed: () {
-                          if (index != 0) {
-                            index--;
-                            _animateToIndex(index);
-                          }
-                        },
-                        child: Center(
-                            child: Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.white,
-                          size: 40,
-                        )),
+    return FutureBuilder(
+        future: getSteps(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
+                appBar: AppBar(
+                  elevation: 0,
+                  leading: IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.keyboard_arrow_left,
+                      color: Colors.black,
+                      size: 50,
+                    ),
+                    onPressed: () => main_key.currentState.pop(context),
+                  ),
+                ),
+                body: SafeArea(
+                    top: true,
+                    child: Column(children: [
+                      Container(
+                        height: MediaQuery.of(context).size.height - 170,
+                        child: ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            controller: _controller,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: snapshot.data.steps.length,
+                            itemBuilder: (context, index) {
+                              return Step(
+                                index,
+                                snapshot.data.steps.length,
+                                snapshot.data.steps[index]["description"],
+                                snapshot.data.steps[index]["prods"],
+                                image: snapshot.data.steps[index]["imgUrl"],
+                              );
+                            }),
                       ),
-                      FlatButton(
-                        padding: EdgeInsets.all(15),
-                        shape: CircleBorder(),
-                        color: Colors.black,
-                        splashColor: Colors.white,
-                        onPressed: () {
-                          if (index != (receita["steps"].length - 1)) {
-                            index++;
-                            _animateToIndex(index);
-                          } else {
-                            if (!widget.saved) {
-                              addGuardar();
-                            } else {
-                              main_key.currentState.pop(context);
-                              main_key.currentState.pop(context);
-                            }
-                          }
-                        },
-                        child: Center(
-                          child: Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              FlatButton(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(15),
+                                splashColor: Colors.white,
+                                color: Colors.black,
+                                onPressed: () {
+                                  if (index != 0) {
+                                    index--;
+                                    _animateToIndex(index);
+                                  }
+                                },
+                                child: Center(
+                                    child: Icon(
+                                  Icons.arrow_back_ios,
+                                  color: Colors.white,
+                                  size: 40,
+                                )),
+                              ),
+                              FlatButton(
+                                padding: EdgeInsets.all(15),
+                                shape: CircleBorder(),
+                                color: Colors.black,
+                                splashColor: Colors.white,
+                                onPressed: () {
+                                  if (index !=
+                                      (snapshot.data.steps.length - 1)) {
+                                    index++;
+                                    _animateToIndex(index);
+                                  } else {
+                                    if (!widget.saved) {
+                                      addGuardar();
+                                    } else {
+                                      main_key.currentState.pop(context);
+                                      main_key.currentState.pop(context);
+                                    }
+                                  }
+                                },
+                                child: Center(
+                                  child: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.white,
+                                    size: 40,
+                                  ),
+                                ),
+                              )
+                            ]),
                       )
-                    ]),
-              )
-            ])));
+                    ])));
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
   }
 }
 
@@ -270,21 +231,25 @@ class Step extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            child: Image.network(
-                              image,
-                              filterQuality: FilterQuality.high,
-                              loadingBuilder: (context, child, progress) {
-                                if (progress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: progress.expectedTotalBytes != null
-                                        ? progress.cumulativeBytesLoaded /
-                                            progress.expectedTotalBytes
-                                        : null,
-                                  ),
-                                );
-                              },
-                            )),
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(25),
+                                child: Image.network(
+                                  image,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                  loadingBuilder: (context, child, progress) {
+                                    if (progress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: progress.expectedTotalBytes !=
+                                                null
+                                            ? progress.cumulativeBytesLoaded /
+                                                progress.expectedTotalBytes
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ))),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(12.0),

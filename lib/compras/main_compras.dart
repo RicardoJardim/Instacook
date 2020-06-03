@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/shopService.dart';
 
 class MainCompras extends StatefulWidget {
   MainCompras({
@@ -8,116 +10,88 @@ class MainCompras extends StatefulWidget {
   _MainCompraslState createState() => _MainCompraslState();
 }
 
-/*
-{
-  "receitas x":[
-    {
-      nome:"dasd",
-      props: "2",
-      prods:[  
-        {
-          quant:"12",
-          prod: "x"
-        },
-        {
-          quant:"12",
-          prod: "x"
-        },
-      ]
-    }
-  ]
-}
-*/
-
 class _MainCompraslState extends State<MainCompras> {
-  static List getLista2() {
-    var receita = new List<Map<String, dynamic>>();
+  final _auth = AuthService();
+  final _shopService = ShopService();
 
-    receita = [
-      {
-        "id": 1,
-        "nome": "Pizza de Frango",
-        "props": 2,
-        "prods": [
-          {"quant": "250 mg", "prod": "leite", "done": true},
-          {"quant": "300 mg", "prod": "merda", "done": true},
-          {"quant": "300 mg", "prod": "merda", "done": false},
-          {"quant": "300 mg", "prod": "merda", "done": true},
-        ]
-      },
-      {
-        "id": 2,
-        "nome": "Pizza de Camarao",
-        "props": 3,
-        "prods": [
-          {"quant": "250 mg", "prod": "leite", "done": true},
-          {"quant": "300 mg", "prod": "merda", "done": true},
-        ]
-      },
-      {
-        "id": 3,
-        "nome": "Pizza de Aborora",
-        "props": 3,
-        "prods": [
-          {"quant": "250 mg", "prod": "leite", "done": false},
-          {"quant": "300 mg", "prod": "merda", "done": false},
-        ]
-      }
-    ];
-    return receita;
+  Future<List> getShoppingList() async {
+    String _id = await _auth.getCurrentUser();
+    var litems = await _shopService.getMyShops(_id);
+    if (litems == null) {
+      litems = [];
+    }
+    return litems;
   }
-
-  static List<Map<String, dynamic>> receitas = getLista2();
 
   @override
   Widget build(BuildContext context) {
-    getLista2();
     return Scaffold(
-        body: SafeArea(
-            top: true,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 80, left: 5),
-                              child: Text(
-                                "Lista de Compras",
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    fontSize: 40, fontWeight: FontWeight.w700),
-                              ),
-                            )),
-                        ListRecepie(
-                          elements: receitas,
-                        )
-                      ],
-                    )))));
+        body: FutureBuilder(
+            future: getShoppingList(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return SafeArea(
+                    top: true,
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 80, left: 5),
+                                      child: Text(
+                                        "Lista de Compras",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: 40,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                    )),
+                                ListRecepie(
+                                  elements: snapshot.data,
+                                  shopKey: _shopService,
+                                )
+                              ],
+                            ))));
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }));
   }
 }
 
 class ListRecepie extends StatefulWidget {
-  ListRecepie({Key key, this.elements}) : super(key: key);
+  ListRecepie({Key key, this.elements, this.shopKey}) : super(key: key);
 
   List elements;
+  final ShopService shopKey;
+
   @override
   _ListRecepieState createState() => _ListRecepieState();
 }
 
 class _ListRecepieState extends State<ListRecepie> {
-  void updateList(int id) {
-    widget.elements.removeWhere((item) => item["id"] == id);
+  void deleteSingleList(String id) async {
+    if (await widget.shopKey.deleteMyShopItem(id)) {
+      widget.elements.removeWhere((item) => item["id"] == id);
+      setState(() {
+        widget.elements = widget.elements;
+      });
+    }
+  }
 
-    setState(() {
-      widget.elements = widget.elements;
-    });
+  void updateSingleList(String id, List list) async {
+    print(id);
+    print(list);
+    widget.shopKey.updateMyShop(id, list);
   }
 
   @override
@@ -128,13 +102,16 @@ class _ListRecepieState extends State<ListRecepie> {
         primary: false,
         itemCount: widget.elements.length,
         itemBuilder: (context, index) {
-          return CheckBoxList(
+          return _checkBoxList(
               id: widget.elements[index]["id"],
-              title: widget.elements[index]["nome"],
+              title: widget.elements[index]["name"],
               subtitle: widget.elements[index]["props"].toString(),
               elements: widget.elements[index]["prods"],
+              update: (id, list) {
+                updateSingleList(id, list);
+              },
               erase: (id) {
-                updateList(id);
+                deleteSingleList(id);
               });
         },
       );
@@ -147,39 +124,28 @@ class _ListRecepieState extends State<ListRecepie> {
           ));
     }
   }
-}
 
-class CheckBoxList extends StatefulWidget {
-  CheckBoxList(
-      {Key key, this.id, this.title, this.subtitle, this.elements, this.erase})
-      : super(key: key);
-
-  final List elements;
-  final int id;
-  final String title;
-  final String subtitle;
-  final Function erase;
-
-  @override
-  _CheckBoxListState createState() => _CheckBoxListState();
-}
-
-class _CheckBoxListState extends State<CheckBoxList> {
-  @override
-  Widget build(BuildContext context) {
+  Widget _checkBoxList(
+      {String id,
+      String title,
+      String subtitle,
+      List elements,
+      Function erase,
+      Function update}) {
+    var ele = elements;
     return Column(children: [
       _divider(),
       ListTile(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(widget.title,
+              Text(title,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500)),
               InkWell(
                 borderRadius: BorderRadius.all(Radius.circular(100)),
                 splashColor: Colors.amber[800],
                 onTap: () {
-                  widget.erase(widget.id);
+                  erase(id);
                 },
                 child: Icon(
                   Icons.restore_from_trash,
@@ -189,16 +155,21 @@ class _CheckBoxListState extends State<CheckBoxList> {
               )
             ],
           ),
-          subtitle: Text(widget.subtitle + " porções")),
+          subtitle: Text(subtitle + " porções")),
       ListView.builder(
         shrinkWrap: true,
         primary: false,
-        itemCount: widget.elements.length,
+        itemCount: elements.length,
         itemBuilder: (context, index) {
           return MyCheckBox(
-              quantity: widget.elements[index]["quant"],
-              product: widget.elements[index]["prod"],
-              done: widget.elements[index]["done"]);
+              id: index,
+              quantity: elements[index]["quant"].toString(),
+              product: elements[index]["prod"].toString(),
+              done: elements[index]["done"],
+              callback: (ids, value) {
+                ele[ids]["done"] = value;
+                update(id, ele);
+              });
         },
       ),
     ]);
@@ -216,11 +187,14 @@ class _CheckBoxListState extends State<CheckBoxList> {
 }
 
 class MyCheckBox extends StatefulWidget {
-  MyCheckBox({Key key, this.quantity, this.product, this.done})
+  MyCheckBox(
+      {Key key, this.quantity, this.id, this.product, this.done, this.callback})
       : super(key: key);
 
   final String quantity;
   final String product;
+  final int id;
+  final Function callback;
   bool done;
 
   @override
@@ -229,6 +203,7 @@ class MyCheckBox extends StatefulWidget {
 
 class _CheckBoxState extends State<MyCheckBox> {
   TextDecoration decord;
+
   @override
   Widget build(BuildContext context) {
     if (widget.done) {
@@ -247,6 +222,7 @@ class _CheckBoxState extends State<MyCheckBox> {
           } else {
             aux = TextDecoration.lineThrough;
           }
+          widget.callback(widget.id, newValue);
           setState(() {
             widget.done = newValue;
             decord = aux;

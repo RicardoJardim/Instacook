@@ -17,7 +17,7 @@ class _CreateColletionState extends State<CreateColletion> {
 
   Future createaColletion() async {
     String _id = await _auth.getCurrentUser();
-    var result = await _savedService.addToColletion(_id, colletionName.text);
+    var result = await _savedService.addColletion(_id, colletionName.text);
     print(colletionName.text);
     if (result) {
       widget.onPop(context);

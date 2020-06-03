@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:instacook/receitas/see_recipe.dart';
+import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/recipesService.dart';
+import 'package:instacook/services/userService.dart';
 
 import '../main.dart';
 
@@ -11,207 +14,179 @@ class People extends StatefulWidget {
   }) : super(key: key);
 
   final ValueChanged<BuildContext> onPop;
-  final int id;
+  final String id;
   _PeopleState createState() => _PeopleState();
 }
 
 class _PeopleState extends State<People> {
-  static Map getLista2() {
-    var profile = new Map<String, dynamic>();
+  final _userService = UserService();
+  final _auth = AuthService();
+  final _recipeService = RecipeService();
 
-    profile = {
-      "id": 1,
-      "username": "RicardoL",
-      "pro": false,
-      "photo": 'https://picsum.photos/250?image=9',
-      "recipes": [
-        {
-          "id": 1,
-          "name": "Bife de vaca",
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-          "time": "5-10 minutos",
-          "difficulty": "Difícil"
-        },
-        {
-          "id": 2,
-          "name": "Hamburguer de porco",
-          "image":
-              "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
-          "time": "5-10 minutos",
-          "difficulty": "Fácil"
-        },
-        {
-          "id": 3,
-          "name": "Bife de vaca",
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-          "time": "5-10 minutos",
-          "difficulty": "Intermédio"
-        },
-        {
-          "id": 4,
-          "name": "Bife de vaca",
-          "image":
-              "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-          "time": "5-10 minutos",
-          "difficulty": "Difícil"
-        },
-      ],
-      "follow": 28,
-      "followers": 44
+  Future<Map> getUser() async {
+    uId = await _userService.getMyID(await _auth.getCurrentUser());
+    Map _map = {
+      "user": await _userService.getUserById(widget.id),
+      "recipes": await _recipeService.getRecipesByUserId(widget.id)
     };
-    return profile;
+
+    for (var i = 0; i < _map["user"].followers.length; i++) {
+      if (_map["user"].followers[i] == uId) {
+        subcribed = true;
+      }
+    }
+    followers = _map["user"].followers.length;
+    return _map;
   }
 
-  void initState() {
-    profile = getLista2();
-    subcribed = false;
-    super.initState();
-  }
-
-  static Map<String, dynamic> profile;
-  static bool subcribed;
-
+  bool subcribed = false;
+  int followers = 0;
+  String uId;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          leading: IconButton(
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              Icons.keyboard_arrow_left,
-              color: Colors.black,
-              size: 50,
-            ),
-            onPressed: () => widget.onPop(context),
-          ),
-        ),
-        body: SafeArea(
-            top: true,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 2),
-                      child: Center(
-                          child: Column(
-                        children: <Widget>[
-                          Container(
-                              height: 120,
-                              width: 120,
-                              child: Stack(children: [
-                                ClipOval(
-                                  child: Image.network(
-                                    profile["photo"],
-                                    fit: BoxFit.cover,
-                                    loadingBuilder: (context, child, progress) {
-                                      if (progress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: progress.expectedTotalBytes !=
-                                                  null
-                                              ? progress.cumulativeBytesLoaded /
-                                                  progress.expectedTotalBytes
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                profile["pro"]
-                                    ? Align(
-                                        alignment: Alignment.bottomRight,
-                                        child: Icon(
-                                          Icons.brightness_5,
-                                          color: Colors.blue,
-                                          size: 36,
-                                        ))
-                                    : Text("")
-                              ])),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 5.0),
-                            child: Text(
-                              profile["username"],
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontSize: 30, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Text(profile["followers"].toString() +
-                                " seguidores - " +
-                                profile["follow"].toString() +
-                                " a seguir"),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: _submitButton(),
-                          ),
-                        ],
-                      )),
+    return FutureBuilder(
+        future: getUser(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
+                appBar: AppBar(
+                  elevation: 0,
+                  leading: IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.keyboard_arrow_left,
+                      color: Colors.black,
+                      size: 50,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 30),
-                      child: GridList(
-                        litems: profile["recipes"],
-                      ),
-                    )
-                  ],
-                ))));
+                    onPressed: () => widget.onPop(context),
+                  ),
+                ),
+                body: SafeArea(
+                    top: true,
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(top: 2),
+                              child: Center(
+                                  child: Column(
+                                children: <Widget>[
+                                  Container(
+                                      height: 120,
+                                      width: 120,
+                                      child: Stack(children: [
+                                        ClipOval(
+                                          child: Image.network(
+                                            snapshot.data["user"].imgUrl,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder:
+                                                (context, child, progress) {
+                                              if (progress == null)
+                                                return child;
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  value: progress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? progress
+                                                              .cumulativeBytesLoaded /
+                                                          progress
+                                                              .expectedTotalBytes
+                                                      : null,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        snapshot.data["user"].proUser
+                                            ? Align(
+                                                alignment:
+                                                    Alignment.bottomRight,
+                                                child: Icon(
+                                                  Icons.brightness_5,
+                                                  color: Colors.blue,
+                                                  size: 36,
+                                                ))
+                                            : Text("")
+                                      ])),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 5.0),
+                                    child: Text(
+                                      snapshot.data["user"].username,
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: _submitButton(snapshot
+                                        .data["user"].follow.length
+                                        .toString()),
+                                  ),
+                                ],
+                              )),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 30),
+                              child: GridList(
+                                litems: snapshot.data["recipes"],
+                              ),
+                            )
+                          ],
+                        ))));
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
   }
 
-  Widget _submitButton() {
-    if (!subcribed) {
-      return RaisedButton(
-        elevation: 2,
-        splashColor: Colors.amber,
-        padding:
-            const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 60),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(100),
-        ),
-        color: Colors.amber[800],
-        onPressed: () {
-          setState(() {
-            subcribed = true;
-            profile["followers"]++;
-          });
-        },
-        textColor: Colors.white,
-        child: Text(
-          'Seguir',
-          style: TextStyle(
-              fontSize: 16, color: Colors.white, fontWeight: FontWeight.w400),
-        ),
-      );
-    } else {
-      return RaisedButton(
-        elevation: 2,
-        splashColor: Colors.amber[800],
-        padding:
-            const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 60),
-        shape: RoundedRectangleBorder(
-          side: BorderSide(color: Colors.amber[800]),
-          borderRadius: BorderRadius.circular(100),
-        ),
-        color: Colors.white,
-        onPressed: () {
-          setState(() {
-            subcribed = false;
-            profile["followers"]--;
-          });
-        },
-        textColor: Colors.amber[800],
-        child: Text(
-          'Não Seguir',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-        ),
-      );
-    }
+  Widget _submitButton(String follow) {
+    return Column(
+      children: <Widget>[
+        Text(followers.toString() + " seguidores - " + follow + " a seguir"),
+        Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: RaisedButton(
+              elevation: 2,
+              splashColor: !subcribed ? Colors.amber : Colors.amber[800],
+              padding: const EdgeInsets.only(
+                  top: 10, bottom: 10, left: 60, right: 60),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(color: Colors.amber[800]),
+                borderRadius: BorderRadius.circular(100),
+              ),
+              color: !subcribed ? Colors.amber[800] : Colors.white,
+              onPressed: () {
+                if (!subcribed) {
+                  _userService.followUser(widget.id, uId);
+                  setState(() {
+                    subcribed = true;
+                    followers++;
+                  });
+                } else {
+                  _userService.unfollowUser(widget.id, uId);
+                  setState(() {
+                    subcribed = false;
+                    followers--;
+                  });
+                }
+              },
+              child: Text(
+                !subcribed ? 'Seguir' : 'Não Seguir',
+                style: TextStyle(
+                    fontSize: 16,
+                    color: !subcribed ? Colors.white : Colors.amber[800],
+                    fontWeight: FontWeight.w400),
+              ),
+            ))
+      ],
+    );
   }
 }
 //GRID VIEW
@@ -232,7 +207,7 @@ class GridList extends StatefulWidget {
 
 class GridItemWidget extends State<GridList> {
   //double itemHeight = 8.0;
-  void seeRecipe(int id) {
+  void seeRecipe(String id) {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
               id: id,
@@ -267,7 +242,7 @@ class GridItemWidget extends State<GridList> {
                     child: InkWell(
                         borderRadius: BorderRadius.circular(25),
                         onTap: () {
-                          seeRecipe(widget.litems[index]["id"]);
+                          seeRecipe(widget.litems[index].id);
                         },
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -278,7 +253,7 @@ class GridItemWidget extends State<GridList> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(20),
                                   child: Image.network(
-                                    widget.litems[index]["image"],
+                                    widget.litems[index].imgUrl,
                                     fit: BoxFit.cover,
                                     filterQuality: FilterQuality.high,
                                     loadingBuilder: (context, child, progress) {
@@ -299,7 +274,7 @@ class GridItemWidget extends State<GridList> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 5, left: 2),
                                 child: Text(
-                                  widget.litems[index]["name"],
+                                  widget.litems[index].name,
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600),
@@ -310,9 +285,9 @@ class GridItemWidget extends State<GridList> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 5, left: 2),
                                 child: Text(
-                                  widget.litems[index]["time"] +
+                                  widget.litems[index].time +
                                       " - " +
-                                      widget.litems[index]["difficulty"],
+                                      widget.litems[index].difficulty,
                                   style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w500,

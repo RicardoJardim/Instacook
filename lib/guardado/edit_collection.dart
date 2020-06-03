@@ -165,9 +165,11 @@ class _EditCollectionState extends State<EditCollection> {
                                       })));
                             }),
                             _divider(),
-                            _sideButton("Eliminar Livro", Colors.red,
-                                () => eliminarConta()),
-                            _divider()
+                            widget.id != 1
+                                ? _sideButton("Eliminar Livro", Colors.red,
+                                    () => eliminarLivro())
+                                : Text(""),
+                            widget.id != 1 ? _divider() : Text("")
                           ],
                         )));
               } else {
@@ -243,7 +245,7 @@ class _EditCollectionState extends State<EditCollection> {
     );
   }
 
-  void eliminarConta() {
+  void eliminarLivro() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
