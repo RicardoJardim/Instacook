@@ -1,7 +1,7 @@
 class User {
   final String email;
   final String uid;
-  final String id;
+  String id;
   String username;
   String imgUrl;
   bool proUser;

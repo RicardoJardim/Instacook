@@ -200,63 +200,29 @@ class UserService {
     }
   }
 
-  //-----------------
-  //OTHERS
-  Future<List> getUsers() async {
-    try {
-      List<User> users = List<User>();
-
-      connection
-          .collection('user')
-          .snapshots()
-          .listen((data) => data.documents.forEach((user) {
-                users.add(User(
-                  id: user.documentID,
-                  username: user["username"],
-                  imgUrl: user["imgUrl"],
-                  uid: user["uId"],
-                  proUser: user["proUser"],
-                ));
-              }));
-
-      for (var user in users) {
-        print(user.username);
-      }
-      return users;
-    } catch (e) {
-      return null;
-    }
+  Stream<List<User>> getAllUsersStream(String param, String value) {
+    return connection
+        .collection('user')
+        .where(param, isEqualTo: value)
+        .orderBy("followers", descending: true)
+        .orderBy("name")
+        .snapshots()
+        .map(_userListFromSnapshot);
   }
 
-  List<DocumentSnapshot> userList;
-  DocumentSnapshot _lastDocument;
-
-  Future getAllUserStartPag(int objNum) async {
-    userList = (await connection
-            .collection("user")
-            .orderBy('username')
-            .limit(objNum)
-            .getDocuments())
-        .documents;
-    for (var item in userList) {
-      print(item["username"]);
-    }
-    _lastDocument = userList[userList.length - 1];
-  }
-
-  Future getMoreUsers(int objNum) async {
-    List<DocumentSnapshot> newList = (await connection
-            .collection('user')
-            .orderBy('username')
-            .startAfterDocument(_lastDocument)
-            .limit(objNum)
-            .getDocuments())
-        .documents;
-
-    userList += newList;
-
-    for (var item in userList) {
-      print(item["username"]);
-    }
+  // User List of snapshot
+  List<User> _userListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      return User(
+          email: doc.data["email"],
+          id: doc.documentID,
+          uid: doc.data["uid"],
+          username: doc.data["username"],
+          imgUrl: doc.data["imgUrl"],
+          follow: doc.data["follow"],
+          followers: doc.data["followers"],
+          proUser: doc.data["proUser"],
+          recipesBook: doc.data["recipesBook"]);
+    }).toList();
   }
 }

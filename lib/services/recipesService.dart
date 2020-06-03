@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/Recipe.dart';
+import 'package:instacook/models/User.dart';
 import 'package:instacook/services/imageService.dart';
 import 'package:instacook/services/userService.dart';
 
@@ -213,15 +214,21 @@ class RecipeService {
 
   // get recipes stream
   Stream<List<Recipe>> get recipes {
-    return recipesCollection.orderBy("date", descending: true ).snapshots().map(_recipeListFromSnapshot);
+    return recipesCollection
+        .orderBy("date", descending: true)
+        .snapshots()
+        .map(_recipeListFromSnapshot);
   }
 
   Stream<List<Recipe>> getRecipes(String param, String value) {
-    print("banana");
-    return recipesCollection.where(param, isEqualTo: value).orderBy("date", descending: true ).snapshots().map(_recipeListFromSnapshot);
+    return recipesCollection
+        .where(param, isEqualTo: value)
+        .orderBy("date", descending: true)
+        .snapshots()
+        .map(_recipeListFromSnapshot);
   }
 
-  // Brew List of snapshot
+  // Recipe List of snapshot
   List<Recipe> _recipeListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
       return Recipe(
@@ -238,7 +245,50 @@ class RecipeService {
           prods: doc.data["prods"],
           steps: doc.data["steps"],
           userId: doc.data["userId"],
+          time: doc.data["time"],
           date: doc.data["date"]);
+    }).toList();
+  }
+
+  // Stream  List<Map> user + recipe
+  Stream<List<Map>> getRecipesAndUser(/* String param, String value */) {
+    return recipesCollection
+        //.where(param, isEqualTo: value)
+        .orderBy("date", descending: true)
+        .snapshots()
+        .map(_recipeAndUserListFromSnapshot);
+  }
+
+  // Recipe List of snapshot
+  List<Map> _recipeAndUserListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      connection
+          .collection('user')
+          .document(doc.data["userId"])
+          .snapshots()
+          .listen((user) {
+        Map _map = {
+          "recipe": Recipe(
+              id: doc.documentID,
+              name: doc.data["name"],
+              type: doc.data["type"],
+              props: doc.data["props"],
+              likes: doc.data["likes"],
+              saved: doc.data["saved"],
+              difficulty: doc.data["difficulty"],
+              description: doc.data["description"],
+              imgUrl: doc.data["imgUrl"],
+              privacy: doc.data["privacy"],
+              prods: doc.data["prods"],
+              steps: doc.data["steps"],
+              userId: doc.data["userId"],
+              time: doc.data["time"],
+              date: doc.data["date"]),
+          "user": user.data
+        };
+        print(_map);
+        return _map;
+      });
     }).toList();
   }
 

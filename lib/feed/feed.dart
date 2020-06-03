@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/receitas/create/create_recipe.dart';
 import 'package:instacook/receitas/save_recipe.dart';
 import 'package:instacook/receitas/see_recipe.dart';
+import 'package:instacook/services/recipesService.dart';
+import 'package:provider/provider.dart';
 import '../main.dart';
 import '../router.dart';
 
@@ -19,114 +22,8 @@ class MainReceita extends StatefulWidget {
 }
 
 class _MainReceitalState extends State<MainReceita> {
-  static List onSomeEvent() {
-    List<Map> litems = [
-      {
-        "id": 1,
-        "name": "Bife de vaca",
-        "likes": 1020,
-        "image":
-            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg",
-        "user": {
-          "id": 1,
-          "username": "Ricardo Lucas",
-          "pro": true,
-          "image":
-              "https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg",
-        },
-        "me": {"liked": true, "saved": false}
-      },
-      {
-        "id": 2,
-        "name": "Bife de vaca",
-        "likes": 1020,
-        "image":
-            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg",
-        "user": {
-          "id": 2,
-          "username": "Ricardo Lucas",
-          "pro": true,
-          "image":
-              "https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg",
-        },
-        "me": {"liked": true, "saved": false}
-      },
-      {
-        "id": 3,
-        "name": "Bife de vaca",
-        "likes": 1020,
-        "image":
-            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg",
-        "user": {
-          "id": 3,
-          "username": "Ricardo Lucas",
-          "pro": true,
-          "image":
-              "https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg",
-        },
-        "me": {"liked": true, "saved": false}
-      },
-    ];
-    return litems;
-  }
+  final _recipeService = RecipeService();
 
-  void fetchNewList() {
-    List<Map> items = [
-      {
-        "id": 1,
-        "name": "Bife de AZEITE",
-        "props": 2,
-        "likes": 1050,
-        "image":
-            "https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg",
-        "user": {
-          "id": 1,
-          "username": "Ricardo Lucas",
-          "pro": true,
-          "image":
-              "https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg",
-        },
-        "me": {"liked": true, "saved": false}
-      },
-      {
-        "id": 2,
-        "name": "Bife de vaca",
-        "props": 2,
-        "likes": 1020,
-        "image":
-            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg",
-        "user": {
-          "id": 2,
-          "username": "Ricardo Lucas",
-          "pro": true,
-          "image":
-              "https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg",
-        },
-        "me": {"liked": true, "saved": false}
-      },
-      {
-        "id": 3,
-        "name": "Bife de vaca",
-        "props": 2,
-        "likes": 1020,
-        "image":
-            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/20190503-delish-pineapple-baked-salmon-horizontal-ehg-450-1557771120.jpg",
-        "user": {
-          "id": 3,
-          "username": "Ricardo Lucas",
-          "pro": true,
-          "image":
-              "https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg",
-        },
-        "me": {"liked": true, "saved": false}
-      },
-    ];
-    setState(() {
-      litems = items;
-    });
-  }
-
-  static List<Map> litems = onSomeEvent();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,12 +70,19 @@ class _MainReceitalState extends State<MainReceita> {
           ],
         ),
         body: Center(
-            child: SwipeList(
-          key: globalKey,
-          litems: litems,
-          fetch: fetchNewList,
-          goPeople: (data) => widget.onPush(data),
-        )));
+            /* child: StreamProvider<List<Map>>.value(
+                value: _recipeService.getRecipesAndUser(),
+                builder: (context, snapshot) {
+                  return SwipeList(
+                    key: globalKey,
+                    litems: Provider.of<List<Map>>(context) ?? [],
+                    fetch: () {
+                      return [];
+                    },
+                    goPeople: (data) => widget.onPush(data),
+                  );
+                }) */
+            ));
   }
 }
 
@@ -216,6 +120,7 @@ class ListItemWidget extends State<SwipeList> {
   @override
   Widget build(BuildContext context) {
     if (widget.litems.length != 0) {
+      print(widget.litems.toString());
       return RefreshIndicator(
         onRefresh: () async {
           return await Future.delayed(Duration(seconds: 1), widget.fetch());
@@ -247,15 +152,16 @@ class ListItemWidget extends State<SwipeList> {
                                         new Map<String, dynamic>();
 
                                     data["route"] = TabRouterFeed.people;
-                                    data["id"] = "yUPKDm8IwnvgNKeAOSYG";
+                                    data["id"] =
+                                        widget.litems[index]["user"].id;
 
                                     widget.goPeople(data);
                                   },
                                   child: CircleAvatar(
                                       radius: 22,
                                       backgroundImage: NetworkImage(widget
-                                          .litems[index]["user"]["image"]))),
-                              widget.litems[index]["user"]["pro"]
+                                          .litems[index]["user"].imgUrl))),
+                              widget.litems[index]["user"].proUser
                                   ? Positioned(
                                       right: -3,
                                       bottom: -3,
@@ -268,8 +174,8 @@ class ListItemWidget extends State<SwipeList> {
 
                                             data["route"] =
                                                 TabRouterFeed.people;
-                                            data["id"] = widget.litems[index]
-                                                ["user"]["id"];
+                                            data["id"] =
+                                                widget.litems[index]["user"].id;
                                             widget.goPeople(data);
                                           },
                                           child: Icon(
@@ -286,7 +192,7 @@ class ListItemWidget extends State<SwipeList> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    widget.litems[index]["user"]["username"],
+                                    widget.litems[index]["user"].username,
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700),

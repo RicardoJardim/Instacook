@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/models/User.dart';
 import 'package:instacook/perfil/change_perfil.dart';
 import 'package:instacook/receitas/see_recipe.dart';
 import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/recipesService.dart';
 import 'package:instacook/services/userService.dart';
+import 'package:provider/provider.dart';
 import '../router.dart';
 import '../main.dart';
 
@@ -16,6 +19,7 @@ class MainPerfil extends StatefulWidget {
 class _MainPerfilState extends State<MainPerfil> {
   final _auth = AuthService();
   final _userService = UserService();
+  final _recipeService = RecipeService();
 
   Future<User> getUser() async {
     var id = await _auth.getCurrentUser();
@@ -163,8 +167,13 @@ class _MainPerfilState extends State<MainPerfil> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 25),
-                              child: GridList(
-                                litems: snapshot.data.recipesBook,
+                              child: StreamProvider<List<Recipe>>.value(
+                                value: _recipeService.getRecipes("userId",  snapshot.data.id ),
+                                builder: (context, snapshot){ 
+                                  return GridList(
+                                  litems: Provider.of<List<Recipe>>(context) ?? [],
+                                );
+                                }
                               ),
                             ),
                           ],
@@ -212,6 +221,7 @@ class GridItemWidget extends State<GridList> {
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, childAspectRatio: 0.88),
           itemBuilder: (context, index) {
+            print("${widget.litems[index].id} -> ${widget.litems[index].privacy}");
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
@@ -229,7 +239,7 @@ class GridItemWidget extends State<GridList> {
                     child: InkWell(
                         onTap: () {
                           seeRecipe(
-                            widget.litems[index]["id"],
+                            widget.litems[index].id,
                           );
                         },
                         child: Column(
@@ -242,7 +252,7 @@ class GridItemWidget extends State<GridList> {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
                                       child: Image.network(
-                                        widget.litems[index]["imgUrl"],
+                                        widget.litems[index].imgUrl,
                                         fit: BoxFit.cover,
                                         filterQuality: FilterQuality.high,
                                         loadingBuilder:
@@ -263,7 +273,7 @@ class GridItemWidget extends State<GridList> {
                                         },
                                       ),
                                     ),
-                                    widget.litems[index]["privacy"]
+                                    widget.litems[index].privacy
                                         ? Positioned(
                                             right: 0,
                                             bottom: 0,
@@ -285,7 +295,7 @@ class GridItemWidget extends State<GridList> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 5, left: 2),
                                 child: Text(
-                                  widget.litems[index]["name"],
+                                  widget.litems[index].name,
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600),
@@ -296,9 +306,9 @@ class GridItemWidget extends State<GridList> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 5, left: 2),
                                 child: Text(
-                                  widget.litems[index]["time"] +
+                                  widget.litems[index].time.toString() +
                                       " - " +
-                                      widget.litems[index]["difficulty"],
+                                      widget.litems[index].difficulty.toString(),
                                   style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w500,
