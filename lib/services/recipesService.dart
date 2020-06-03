@@ -12,12 +12,12 @@ class RecipeService {
 
   // get recipes stream
   Stream<List<Recipe>> get recipes {
-    return recipesCollection.snapshots().map(_recipeListFromSnapshot);
+    return recipesCollection.orderBy("date", descending: true ).snapshots().map(_recipeListFromSnapshot);
   }
 
   Stream<List<Recipe>> getRecipes(String param, String value) {
     print("banana");
-    return recipesCollection.orderBy("date", descending: true ).snapshots().map(_recipeListFromSnapshot);
+    return recipesCollection.where(param, isEqualTo: value).orderBy("date", descending: true ).snapshots().map(_recipeListFromSnapshot);
   }
 
   // Brew List of snapshot
