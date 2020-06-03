@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/services/userService.dart';
 
 class SavedService {
@@ -19,27 +20,6 @@ class SavedService {
           list = data["recipesBook"];
         }
       }).catchError((e) => print("error fetching data: $e"));
-      return list;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  //RECEITAS PELO MAIS RECENTE LIMIT 10
-  Future<List> getMyNews(String id) async {
-    try {
-      List list;
-      await connection
-          .collection('user')
-          .where("uid", isEqualTo: id)
-          .getDocuments()
-          .then((event) {
-        if (event.documents.isNotEmpty) {
-          var data = event.documents.single.data;
-          list = data["recipesBook"];
-        }
-      }).catchError((e) => print("error fetching data: $e"));
-
       return list;
     } catch (e) {
       return null;
@@ -210,4 +190,38 @@ class SavedService {
       return false;
     }
   }
+
+  Stream<List<Recipe>> getSavedRecipes(String id) {
+    return connection
+        .collection('recipe')
+        .where("saved", arrayContains: id)
+        .snapshots()
+        .map(_recipeListFromSnapshot);
+  }
+
+  // Recipe List of snapshot
+  List<Recipe> _recipeListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      return Recipe(
+          id: doc.documentID,
+          name: doc.data["name"],
+          type: doc.data["type"],
+          props: doc.data["props"],
+          likes: doc.data["likes"],
+          saved: doc.data["saved"],
+          difficulty: doc.data["difficulty"],
+          description: doc.data["description"],
+          imgUrl: doc.data["imgUrl"],
+          privacy: doc.data["privacy"],
+          prods: doc.data["prods"],
+          steps: doc.data["steps"],
+          userId: doc.data["userId"],
+          time: doc.data["time"],
+          date: doc.data["date"]);
+    }).toList();
+  }
 }
+
+/*
+
+*/

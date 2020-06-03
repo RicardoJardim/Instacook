@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/receitas/see_recipe.dart';
 import 'package:instacook/services/auth.dart';
 import 'package:instacook/services/savedService.dart';
+import 'package:instacook/services/userService.dart';
+import 'package:provider/provider.dart';
 
 import '../main.dart';
 import '../router.dart';
@@ -20,12 +24,17 @@ class MainGuardado extends StatefulWidget {
 class _MainGuardadoState extends State<MainGuardado> {
   final _auth = AuthService();
   final _savedService = SavedService();
+  final _userService = UserService();
 
-  Future<List> getColletions() async {
+  Future<Map> getColletions() async {
     String _id = await _auth.getCurrentUser();
     var litems = await _savedService.getMyColletions(_id);
     litems.insert(0, {"name": "Novo livro"});
-    return litems;
+    Map _map = {
+      "id": await _userService.getMyID(_id),
+      "litems": litems,
+    };
+    return _map;
   }
 
   @override
@@ -90,7 +99,7 @@ class _MainGuardadoState extends State<MainGuardado> {
                             Padding(
                               padding: const EdgeInsets.only(top: 25),
                               child: SwipeList(
-                                litems: snapshot.data,
+                                litems: snapshot.data["litems"],
                                 onPush: widget.onPush,
                                 callback: () {
                                   setState(() {});
@@ -99,10 +108,16 @@ class _MainGuardadoState extends State<MainGuardado> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 25),
-                              child: GridList(
-                                auth: _auth,
-                                savedService: _savedService,
-                              ),
+                              child: StreamProvider<List<Recipe>>.value(
+                                  value: _savedService
+                                      .getSavedRecipes(snapshot.data["id"]),
+                                  builder: (context, snapshot) {
+                                    return GridList(
+                                      savedService:
+                                          Provider.of<List<Recipe>>(context) ??
+                                              [],
+                                    );
+                                  }),
                             )
                           ],
                         )));
@@ -240,12 +255,10 @@ class ListItemWidget extends State<SwipeList> {
 class GridList extends StatefulWidget {
   GridList({
     Key key,
-    this.auth,
     this.savedService,
   }) : super(key: key);
 
-  final AuthService auth;
-  final SavedService savedService;
+  final List<Recipe> savedService;
   @override
   State<StatefulWidget> createState() {
     return GridItemWidget();
@@ -253,12 +266,6 @@ class GridList extends StatefulWidget {
 }
 
 class GridItemWidget extends State<GridList> {
-  Future<List> getNewest() async {
-    String _id = await widget.auth.getCurrentUser();
-    var litems = [];
-    return litems;
-  }
-
   void seeRecipe(String id) {
     main_key.currentState.push(MaterialPageRoute(
         builder: (context) => SeeRecipe(
@@ -268,119 +275,98 @@ class GridItemWidget extends State<GridList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getNewest(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.length != 0) {
-              return GridView.builder(
-                  shrinkWrap: true,
-                  primary: false,
-                  itemCount: snapshot.data.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, childAspectRatio: 0.88),
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15.0),
-                      child: Column(
-                        children: <Widget>[
-                          index % 2 != 1
-                              ? SizedBox(
-                                  height: 0,
-                                )
-                              : SizedBox(
-                                  height: 35,
+    if (widget.savedService != null || widget.savedService.length != 0) {
+      return GridView.builder(
+          shrinkWrap: true,
+          primary: false,
+          itemCount: widget.savedService.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, childAspectRatio: 0.88),
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
+              child: Column(
+                children: <Widget>[
+                  index % 2 != 1
+                      ? SizedBox(
+                          height: 0,
+                        )
+                      : SizedBox(
+                          height: 35,
+                        ),
+                  Container(
+                    height: 190,
+                    width: 300,
+                    child: InkWell(
+                        borderRadius: BorderRadius.circular(25),
+                        onTap: () {
+                          seeRecipe(widget.savedService[index].id);
+                        },
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                height: 140,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.network(
+                                    widget.savedService[index].imgUrl,
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.expectedTotalBytes !=
+                                                  null
+                                              ? progress.cumulativeBytesLoaded /
+                                                  progress.expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
-                          Container(
-                            height: 190,
-                            width: 300,
-                            child: InkWell(
-                                borderRadius: BorderRadius.circular(25),
-                                onTap: () {
-                                  seeRecipe(snapshot.data[index]["id"]);
-                                },
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Container(
-                                        height: 140,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          child: Image.network(
-                                            snapshot.data[index]["image"],
-                                            fit: BoxFit.cover,
-                                            filterQuality: FilterQuality.high,
-                                            loadingBuilder:
-                                                (context, child, progress) {
-                                              if (progress == null)
-                                                return child;
-                                              return Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  value: progress
-                                                              .expectedTotalBytes !=
-                                                          null
-                                                      ? progress
-                                                              .cumulativeBytesLoaded /
-                                                          progress
-                                                              .expectedTotalBytes
-                                                      : null,
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 5, left: 2),
-                                        child: Text(
-                                          snapshot.data["name"],
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 5, left: 2),
-                                        child: Text(
-                                          snapshot.data[index]["time"] +
-                                              " - " +
-                                              snapshot.data[index]
-                                                  ["difficulty"],
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.grey[700]),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                    ])),
-                          ),
-                        ],
-                      ),
-                    );
-                  });
-            } else {
-              return Center(
-                  heightFactor: 15,
-                  child: Text(
-                    "Não tem neste momento receitas criadas",
-                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
-                  ));
-            }
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5, left: 2),
+                                child: Text(
+                                  widget.savedService[index].name,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5, left: 2),
+                                child: Text(
+                                  widget.savedService[index].time +
+                                      " - " +
+                                      widget.savedService[index].difficulty,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey[700]),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ])),
+                  ),
+                ],
+              ),
             );
-          }
-        });
+          });
+    } else {
+      return Center(
+          heightFactor: 15,
+          child: Text(
+            "Não tem neste momento receitas criadas",
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+          ));
+    }
   }
 }

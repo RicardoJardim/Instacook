@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/models/User.dart';
+import 'package:instacook/services/auth.dart';
+import 'package:instacook/services/recipesService.dart';
+import 'package:instacook/services/userService.dart';
+import 'package:provider/provider.dart';
 import '../router.dart';
 
-GlobalKey<GrodListFoodItemWidget> globalKey = GlobalKey();
-GlobalKey<GrodListPeopleItemWidget> globalKey2 = GlobalKey();
+/* GlobalKey<GrodListFoodItemWidget> globalKey = GlobalKey();
+GlobalKey<GrodListPeopleItemWidget> globalKey2 = GlobalKey(); */
 
 class Search extends StatefulWidget {
   Search({
@@ -18,6 +23,10 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
+  final _userService = UserService();
+  final _recipeService = RecipeService();
+  final _auth = AuthService();
+
   static List onSomeEvent() {
     List<Map> litems = [
       {
@@ -69,11 +78,11 @@ class _SearchState extends State<Search> {
   void setNewState(bool food, bool isFoods) {
     var colors1, colors2;
     if (food) {
-      globalKey.currentState.goUp();
+      //globalKey.currentState.goUp();
       colors1 = Colors.amber[800];
       colors2 = Colors.grey[900];
     } else {
-      newItems = event();
+      //globalKey2.currentState.goUp();
       colors2 = Colors.amber[800];
       colors1 = Colors.grey[900];
     }
@@ -87,9 +96,15 @@ class _SearchState extends State<Search> {
   Color color2 = Colors.grey[900];
   Color color1 = Colors.amber[800];
   bool isFood = true;
+  String myId;
+
+  void getId() async {
+    myId = await _userService.getMyID(await _auth.getCurrentUser());
+  }
 
   @override
   Widget build(BuildContext context) {
+    getId();
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -189,13 +204,19 @@ class _SearchState extends State<Search> {
                     Padding(
                       padding: const EdgeInsets.only(top: 30),
                       child: !isFood
-                          ? GridListPeople(
-                              key: globalKey2,
-                              litems: [],
-                              onPush: widget.onPush,
-                            )
+                          ? StreamProvider<List<User>>.value(
+                              value: _userService.getAllUsersStream(),
+                              builder: (context, snapshot) {
+                                return GridListPeople(
+                                  //key: globalKey2,
+                                  litems:
+                                      Provider.of<List<User>>(context) ?? [],
+                                  onPush: widget.onPush,
+                                  myId: myId,
+                                );
+                              })
                           : GrodListFood(
-                              key: globalKey,
+                              //key: globalKey,
                               litems: onSomeEvent(),
                               onPush: widget.onPush,
                             ),
@@ -321,10 +342,12 @@ class GridListPeople extends StatefulWidget {
     Key key,
     this.litems,
     this.onPush,
+    this.myId,
   }) : super(key: key);
 
   final List litems;
   final ValueChanged<Map<String, dynamic>> onPush;
+  final String myId;
   @override
   State<StatefulWidget> createState() {
     return GrodListPeopleItemWidget();
@@ -333,7 +356,6 @@ class GridListPeople extends StatefulWidget {
 
 class GrodListPeopleItemWidget extends State<GridListPeople> {
   ScrollController _scrollController = new ScrollController();
-
   void goUp() {
     _scrollController.animateTo(
       0.0,
@@ -352,74 +374,84 @@ class GrodListPeopleItemWidget extends State<GridListPeople> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, childAspectRatio: 0.88),
         itemBuilder: (context, index) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
-            child: Column(
-              children: <Widget>[
-                index % 2 != 1
-                    ? SizedBox(
-                        height: 0,
-                      )
-                    : SizedBox(
-                        height: 45,
-                      ),
-                Container(
-                  height: 175,
-                  width: 300,
-                  child: InkWell(
-                      borderRadius: BorderRadius.circular(25),
-                      onTap: () {
-                        Map<String, dynamic> data = new Map<String, dynamic>();
+          print(widget.litems[index].id);
+          print(widget.myId);
+          return widget.litems[index].id == widget.myId
+              ? Text("")
+              : Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Column(
+                    children: <Widget>[
+                      index % 2 != 1
+                          ? SizedBox(
+                              height: 0,
+                            )
+                          : SizedBox(
+                              height: 45,
+                            ),
+                      Container(
+                        height: 175,
+                        width: 300,
+                        child: InkWell(
+                            borderRadius: BorderRadius.circular(25),
+                            onTap: () {
+                              Map<String, dynamic> data =
+                                  new Map<String, dynamic>();
 
-                        data["route"] = TabRouterFeed.people;
-                        data["id"] = widget.litems[index]["id"];
-                        widget.onPush(data);
-                      },
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              height: 140,
-                              width: 140,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(200),
-                                child: Image.network(
-                                  widget.litems[index]["image"],
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.high,
-                                  loadingBuilder: (context, child, progress) {
-                                    if (progress == null) return child;
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value: progress.expectedTotalBytes !=
-                                                null
-                                            ? progress.cumulativeBytesLoaded /
-                                                progress.expectedTotalBytes
-                                            : null,
+                              data["route"] = TabRouterFeed.people;
+                              data["id"] = widget.litems[index].id;
+                              widget.onPush(data);
+                            },
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Container(
+                                    height: 140,
+                                    width: 140,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(200),
+                                      child: Image.network(
+                                        widget.litems[index].imgUrl,
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.high,
+                                        loadingBuilder:
+                                            (context, child, progress) {
+                                          if (progress == null) return child;
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: progress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? progress
+                                                          .cumulativeBytesLoaded /
+                                                      progress
+                                                          .expectedTotalBytes
+                                                  : null,
+                                            ),
+                                          );
+                                        },
                                       ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 5, left: 2),
-                              child: Text(
-                                widget.litems[index]["username"],
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey[800]),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                          ])),
-                ),
-              ],
-            ),
-          );
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.only(top: 5, left: 2),
+                                    child: Text(
+                                      widget.litems[index].username,
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.grey[800]),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ])),
+                      ),
+                    ],
+                  ),
+                );
         });
   }
 }

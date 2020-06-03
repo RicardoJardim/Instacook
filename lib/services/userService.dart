@@ -200,12 +200,10 @@ class UserService {
     }
   }
 
-  Stream<List<User>> getAllUsersStream(String param, String value) {
+  Stream<List<User>> getAllUsersStream() {
     return connection
         .collection('user')
-        .where(param, isEqualTo: value)
         .orderBy("followers", descending: true)
-        .orderBy("name")
         .snapshots()
         .map(_userListFromSnapshot);
   }
