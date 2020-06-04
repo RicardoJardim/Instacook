@@ -38,17 +38,8 @@ class _SeeRecipelState extends State<SeeRecipe> {
 
     nameRecipe = recipe.name;
 
-    for (var i = 0; i < recipe.likes.length; i++) {
-      if (recipe.likes[i] == uId) {
-        liked = true;
-      }
-    }
-
-    for (var i = 0; i < recipe.saved.length; i++) {
-      if (recipe.saved[i] == uId) {
-        saved = true;
-      }
-    }
+    liked = recipe.likes.contains(uId);
+    saved = recipe.saved.contains(uId);
 
     Map map = {"recipe": recipe, "user": user};
 

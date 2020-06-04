@@ -182,6 +182,9 @@ class UserService {
       await connection.collection('user').document(id).updateData({
         'followers': FieldValue.arrayUnion([uId])
       });
+      await connection.collection('user').document(uId).updateData({
+        'follow': FieldValue.arrayUnion([id])
+      });
       return true;
     } catch (e) {
       return false;
@@ -193,6 +196,9 @@ class UserService {
     try {
       await connection.collection('user').document(id).updateData({
         'followers': FieldValue.arrayRemove([uId])
+      });
+      await connection.collection('user').document(uId).updateData({
+        'follow': FieldValue.arrayUnion([id])
       });
       return true;
     } catch (e) {
