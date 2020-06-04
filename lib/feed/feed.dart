@@ -11,8 +11,6 @@ import 'package:provider/provider.dart';
 import '../main.dart';
 import '../router.dart';
 
-GlobalKey<ListItemWidget> globalKey = GlobalKey();
-
 class MainReceita extends StatefulWidget {
   MainReceita({
     Key key,
@@ -41,7 +39,7 @@ class _MainReceitalState extends State<MainReceita> {
           automaticallyImplyLeading: false,
           title: GestureDetector(
               onTap: () {
-                globalKey.currentState.goUp();
+                goUp();
               },
               child: Padding(
                 padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
@@ -88,8 +86,7 @@ class _MainReceitalState extends State<MainReceita> {
                         value: _recipeService
                             .getRecipesAndUser(snapshotF.data.follow),
                         builder: (context, snapshot) {
-                          return SwipeList(
-                            key: globalKey,
+                          return _swipeList(
                             litems: Provider.of<List<Recipe>>(context) ?? [],
                             fetch: () {
                               return [];
@@ -105,26 +102,8 @@ class _MainReceitalState extends State<MainReceita> {
               }
             }));
   }
-}
 
-class SwipeList extends StatefulWidget {
-  SwipeList({Key key, this.litems, this.fetch, this.goPeople, this.user})
-      : super(key: key);
-
-  final List litems;
-  final Function fetch;
-  final ValueChanged<Map> goPeople;
-  final User user;
-  @override
-  State<StatefulWidget> createState() {
-    return ListItemWidget();
-  }
-}
-
-class ListItemWidget extends State<SwipeList> {
   ScrollController _scrollController = new ScrollController();
-  final _userService = UserService();
-  final _recipeService = RecipeService();
 
   void goUp() {
     _scrollController.animateTo(
@@ -134,31 +113,33 @@ class ListItemWidget extends State<SwipeList> {
     );
   }
 
-  void seeRecipe(String id) {
-    main_key.currentState.push(MaterialPageRoute(
-        builder: (context) => SeeRecipe(
-              id: id,
-            )));
-  }
+  Widget _swipeList({litems, fetch, key, user, goPeople}) {
+    void seeRecipe(String id) {
+      main_key.currentState.push(MaterialPageRoute(
+          builder: (context) => SeeRecipe(
+                id: id,
+              )));
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    if (widget.litems.length != 0) {
+    Future<User> getUserForRecipe(String id) async {
+      return await _userService.getUserById(id);
+    }
+
+    if (litems.length != 0) {
       return RefreshIndicator(
         onRefresh: () async {
-          return await Future.delayed(Duration(seconds: 1), widget.fetch());
+          return await Future.delayed(Duration(seconds: 1), fetch());
         },
         child: ListView.builder(
           physics: const AlwaysScrollableScrollPhysics(),
           controller: _scrollController,
           padding: const EdgeInsets.all(10),
-          itemCount: widget.litems.length,
+          itemCount: litems.length,
           itemBuilder: (context, index) {
-            return !widget.user.follow.contains(widget.litems[index].userId)
+            return !user.follow.contains(litems[index].userId)
                 ? SizedBox()
                 : FutureBuilder(
-                    future:
-                        _userService.getUserById(widget.litems[index].userId),
+                    future: getUserForRecipe(litems[index].userId),
                     builder: (context, snapshotU) {
                       return !snapshotU.hasData
                           ? Center(child: CircularProgressIndicator())
@@ -191,7 +172,7 @@ class ListItemWidget extends State<SwipeList> {
                                                     data["id"] =
                                                         snapshotU.data.id;
 
-                                                    widget.goPeople(data);
+                                                    goPeople(data);
                                                   },
                                                   child: CircleAvatar(
                                                       radius: 22,
@@ -218,8 +199,7 @@ class ListItemWidget extends State<SwipeList> {
                                                             data["id"] =
                                                                 snapshotU
                                                                     .data.id;
-                                                            widget
-                                                                .goPeople(data);
+                                                            goPeople(data);
                                                           },
                                                           child: Icon(
                                                             Icons.brightness_5,
@@ -255,8 +235,7 @@ class ListItemWidget extends State<SwipeList> {
                                                                   .width -
                                                               100,
                                                       child: Text(
-                                                        widget
-                                                            .litems[index].name,
+                                                        litems[index].name,
                                                         style: TextStyle(
                                                             fontSize: 18,
                                                             fontWeight:
@@ -277,7 +256,7 @@ class ListItemWidget extends State<SwipeList> {
                                       InkWell(
                                         borderRadius: BorderRadius.circular(25),
                                         onTap: () {
-                                          seeRecipe(widget.litems[index].id);
+                                          seeRecipe(litems[index].id);
                                         },
                                         child: Padding(
                                             padding: const EdgeInsets.all(5.0),
@@ -293,8 +272,7 @@ class ListItemWidget extends State<SwipeList> {
                                                         BorderRadius.circular(
                                                             25),
                                                     child: Image.network(
-                                                      widget
-                                                          .litems[index].imgUrl,
+                                                      litems[index].imgUrl,
                                                       width:
                                                           MediaQuery.of(context)
                                                               .size
@@ -328,7 +306,9 @@ class ListItemWidget extends State<SwipeList> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              widget.litems[index].likes.length
+                                              litems[index]
+                                                  .likes
+                                                  .length
                                                   .toString(),
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w600,
@@ -345,26 +325,23 @@ class ListItemWidget extends State<SwipeList> {
                                                 borderRadius:
                                                     BorderRadius.circular(15),
                                                 onTap: () async {
-                                                  if (widget.litems[index].likes
-                                                      .contains(
-                                                          widget.user.id)) {
+                                                  if (litems[index]
+                                                      .likes
+                                                      .contains(user.id)) {
                                                     await _recipeService
                                                         .removeLikeRecipe(
-                                                            widget.litems[index]
-                                                                .id,
-                                                            widget.user.id);
+                                                            litems[index].id,
+                                                            user.id);
                                                   } else {
                                                     await _recipeService
                                                         .addLikeRecipe(
-                                                            widget.litems[index]
-                                                                .id,
-                                                            widget.user.id);
+                                                            litems[index].id,
+                                                            user.id);
                                                   }
                                                 },
-                                                child: widget
-                                                        .litems[index].likes
-                                                        .contains(
-                                                            widget.user.id)
+                                                child: litems[index]
+                                                        .likes
+                                                        .contains(user.id)
                                                     ? Icon(
                                                         Icons.favorite,
                                                         color:
@@ -384,39 +361,36 @@ class ListItemWidget extends State<SwipeList> {
                                                 borderRadius:
                                                     BorderRadius.circular(15),
                                                 onTap: () {
-                                                  if (widget.litems[index].saved
-                                                      .contains(
-                                                          widget.user.id)) {
+                                                  if (litems[index]
+                                                      .saved
+                                                      .contains(user.id)) {
                                                     //Tirar
                                                     _recipeService
                                                         .removeSavedRecipe(
-                                                            widget.litems[index]
-                                                                .id,
-                                                            widget.user.id);
+                                                            litems[index].id,
+                                                            user.id);
                                                   } else {
                                                     main_key.currentState.push(
                                                         MaterialPageRoute(
                                                             builder:
                                                                 (context) =>
                                                                     SaveRecipe(
-                                                                      recipeId: widget
-                                                                          .litems[
-                                                                              index]
-                                                                          .id,
+                                                                      recipeId:
+                                                                          litems[index]
+                                                                              .id,
                                                                       onSave:
                                                                           (saved) {
                                                                         if (saved) {
                                                                           print("GUARDAR DOS GUARDADOS " +
-                                                                              widget.litems[index].id.toString());
+                                                                              litems[index].id.toString());
                                                                         }
                                                                       },
                                                                     )));
                                                   }
                                                 },
-                                                child: widget
-                                                        .litems[index].saved
-                                                        .contains(
-                                                            widget.user.id)
+                                                child: litems[index]
+                                                        .saved
+                                                        .contains(user.id)
                                                     ? Icon(
                                                         Icons.bookmark,
                                                         color:

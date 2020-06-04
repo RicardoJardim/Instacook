@@ -1,10 +1,7 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/rendering.dart';
 import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/services/imageService.dart';
-import 'package:instacook/services/savedService.dart';
 import 'package:instacook/services/userService.dart';
 
 class RecipeService {
