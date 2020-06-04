@@ -28,7 +28,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
       prods = widget.editRecipe.prods;
       stepsRecipe = widget.editRecipe.steps;
       name.text = widget.editRecipe.name;
-      type.text = widget.editRecipe.type;
+      _type = widget.editRecipe.type;
       description.text = widget.editRecipe.description;
       time.text = widget.editRecipe.time;
       props.text = widget.editRecipe.props.toString();
@@ -58,12 +58,13 @@ class _CreateRecipelState extends State<CreateRecipe> {
   List prods = [];
   List stepsRecipe = [];
   String imageUrl = "";
+  String _type = "Carne";
   //Files
   File _selectedFile;
 
   //text controllers
   final name = TextEditingController();
-  final type = TextEditingController();
+
   final description = TextEditingController();
   final time = TextEditingController();
   final props = TextEditingController();
@@ -225,9 +226,9 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                         break;
                                       case 1:
                                         if (_formKey2.currentState.validate()) {
-                                          if (type.text != "" &&
+                                          if (_type != "" &&
                                               description.text != "") {
-                                            receita.type = type.text;
+                                            receita.type = _type;
                                             receita.description =
                                                 description.text;
                                             receita.privacy = privacy;
@@ -352,24 +353,56 @@ class _CreateRecipelState extends State<CreateRecipe> {
   }
 
   Widget _page2() {
+    List<String> _locations = [
+      'Carne',
+      'Peixe',
+      'Pizza',
+      'Massas',
+      'Bebidas',
+      'Sobremesa',
+      'Vegetariano',
+      'Entrada',
+      'Sopas',
+      'Saladas'
+    ]; // Option 2
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Form(
-            autovalidate: true,
-            key: _formKey2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                _entryField(
-                    "Tipo de Receita *", "Carne", type, errorHandlerValue),
-                _entryField("Descrição *", "Esta receita ....", description,
-                    errorHandlerValue),
-              ],
-            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Tipo de receita *",
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w800),
+                  ),
+                  DropdownButton(
+                    value: _type,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _type = newValue;
+                      });
+                    },
+                    items: _locations.map((location) {
+                      return DropdownMenuItem(
+                        child: new Text(location),
+                        value: location,
+                      );
+                    }).toList(),
+                  )
+                ]),
           ),
+          Form(
+              autovalidate: true,
+              key: _formKey2,
+              child: _entryField("Descrição *", "Esta receita ....",
+                  description, errorHandlerValue)),
           Padding(
             padding: const EdgeInsets.only(left: 10.0, top: 15),
             child: Row(

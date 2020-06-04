@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/receitas/see_recipe.dart';
@@ -101,9 +100,6 @@ class _MainGuardadoState extends State<MainGuardado> {
                               child: SwipeList(
                                 litems: snapshot.data["litems"],
                                 onPush: widget.onPush,
-                                callback: () {
-                                  setState(() {});
-                                },
                               ),
                             ),
                             Padding(
@@ -132,13 +128,11 @@ class _MainGuardadoState extends State<MainGuardado> {
 
 //ESCOLHER LIVRO DE RECEITAS
 class SwipeList extends StatefulWidget {
-  SwipeList({Key key, this.litems, this.onPush, this.callback})
-      : super(key: key);
+  SwipeList({Key key, this.litems, this.onPush}) : super(key: key);
 
   final List litems;
 
   final ValueChanged<Map<String, dynamic>> onPush;
-  final Function callback;
   @override
   State<StatefulWidget> createState() {
     return ListItemWidget();
@@ -146,11 +140,6 @@ class SwipeList extends StatefulWidget {
 }
 
 class ListItemWidget extends State<SwipeList> {
-  void update() {
-    print("sdasd");
-    widget.callback();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -223,7 +212,6 @@ class ListItemWidget extends State<SwipeList> {
                       onTap: () {
                         Map<String, dynamic> data = ({
                           "route": TabRouterSaved.saved,
-                          "title": widget.litems[index]["name"],
                           "id": widget.litems[index]["id"],
                         });
 

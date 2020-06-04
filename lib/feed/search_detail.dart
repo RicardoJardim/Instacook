@@ -11,7 +11,7 @@ class Details extends StatefulWidget {
   }) : super(key: key);
 
   final ValueChanged<BuildContext> onPop;
-  final int id;
+  final String id;
   _DetailsState createState() => _DetailsState();
 }
 
@@ -22,8 +22,6 @@ class _DetailsState extends State<Details> {
     var searchDetail = new Map<String, dynamic>();
 
     searchDetail = {
-      "id": 1,
-      "name": "Carne",
       "recipes": [
         {
           "id": 1,
@@ -85,7 +83,7 @@ class _DetailsState extends State<Details> {
               Container(
                   height: 100.0,
                   child: DrawerHeader(
-                    child: Text(searchDetail["name"],
+                    child: Text(widget.id,
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w500)),
                     decoration: BoxDecoration(
@@ -172,7 +170,7 @@ class _DetailsState extends State<Details> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 60, left: 15),
                           child: Text(
-                            searchDetail["name"],
+                            widget.id,
                             textAlign: TextAlign.left,
                             style: TextStyle(
                                 fontSize: 40, fontWeight: FontWeight.w700),

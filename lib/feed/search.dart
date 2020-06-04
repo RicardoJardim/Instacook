@@ -30,44 +30,52 @@ class _SearchState extends State<Search> {
   static List onSomeEvent() {
     List<Map> litems = [
       {
-        "id": 1,
         "category": "Carne",
         "image":
             "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
       },
       {
-        "id": 2,
         "category": "Peixe",
         "image":
             "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
       },
       {
-        "id": 3,
         "category": "Pizza",
         "image":
             "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
       },
       {
-        "id": 4,
         "category": "Massas",
         "image":
             "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
       },
       {
-        "id": 5,
         "category": "Bebidas",
         "image":
             "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
       },
       {
-        "id": 6,
         "category": "Sobremesa",
         "image":
             "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
       },
       {
-        "id": 7,
         "category": "Vegetariano",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
+      {
+        "category": "Entrada",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
+      {
+        "category": "Sopas",
+        "image":
+            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+      },
+      {
+        "category": "Saladas",
         "image":
             "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
       },
@@ -284,7 +292,7 @@ class GrodListFoodItemWidget extends State<GrodListFood> {
                         Map<String, dynamic> data = new Map<String, dynamic>();
 
                         data["route"] = TabRouterFeed.details;
-                        data["id"] = widget.litems[index]["id"];
+                        data["id"] = widget.litems[index]["category"];
                         widget.onPush(data);
                       },
                       child: Column(

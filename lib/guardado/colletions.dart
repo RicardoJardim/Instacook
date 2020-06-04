@@ -6,11 +6,9 @@ import '../main.dart';
 import 'edit_collection.dart';
 
 class Colletions extends StatefulWidget {
-  Colletions({Key key, this.onPop, this.colletionName, this.id})
-      : super(key: key);
+  Colletions({Key key, this.onPop, this.id}) : super(key: key);
 
   final ValueChanged<BuildContext> onPop;
-  final String colletionName;
   final int id;
   _ColletionsState createState() => _ColletionsState();
 }
@@ -19,48 +17,10 @@ class _ColletionsState extends State<Colletions> {
   final _auth = AuthService();
   final _savedService = SavedService();
 
-  Future<List> createaColletion() async {
+  Future<List> getColletionWithRecipes() async {
     String _id = await _auth.getCurrentUser();
     var result = await _savedService.getMyRecipesFromColletion(_id, widget.id);
     return result;
-  }
-
-  static List onSomeEvent2() {
-    List<Map> litems = [
-      {
-        "id": 1,
-        "name": "Bife de vaca",
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        "time": "5-10 minutos",
-        "difficulty": "Difícil"
-      },
-      {
-        "id": 2,
-        "name": "Hamburguer de porco",
-        "image":
-            "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
-        "time": "5-10 minutos",
-        "difficulty": "Fácil"
-      },
-      {
-        "id": 3,
-        "name": "Bife de vaca",
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        "time": "5-10 minutos",
-        "difficulty": "Médio"
-      },
-      {
-        "id": 4,
-        "name": "Bife de vaca",
-        "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
-        "time": "5-10 minutos",
-        "difficulty": "Difícil"
-      },
-    ];
-    return litems;
   }
 
   @override
@@ -92,7 +52,7 @@ class _ColletionsState extends State<Colletions> {
           ],
         ),
         body: FutureBuilder(
-            future: createaColletion(),
+            future: getColletionWithRecipes(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return SafeArea(
@@ -107,7 +67,7 @@ class _ColletionsState extends State<Colletions> {
                                   padding: const EdgeInsets.only(
                                       right: 60, left: 15),
                                   child: Text(
-                                    widget.colletionName,
+                                    widget.id.toString(),
                                     textAlign: TextAlign.left,
                                     style: TextStyle(
                                         fontSize: 40,
