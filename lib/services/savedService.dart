@@ -28,28 +28,6 @@ class SavedService {
     }
   }
 
-  Future<bool> removeRecipeFromColletion(String id, String recipeId) async {
-    try {
-      var result = await connection.collection("user").document(id).get();
-      List list = result.data["recipesBook"];
-
-      for (var i = 0; i < list.length; i++) {
-        if (list[0]["recipes"].contains(recipeId)) {
-          list[0]["recipes"].remove(recipeId);
-        }
-      }
-
-      await connection
-          .collection('user')
-          .document(id)
-          .updateData({"recipesBook": list});
-
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   //LIVRO id:colletionId
   Future<Map> getMyBook(String id, int colletionId) async {
     try {

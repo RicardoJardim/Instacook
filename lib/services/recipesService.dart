@@ -14,7 +14,6 @@ class RecipeService {
   final Firestore connection = Firestore.instance;
   final _imageService = ImageService();
   final _userService = UserService();
-  final _savedService = SavedService();
 
   Future<bool> insertRecipe(String uId, Recipe data) async {
     try {
@@ -174,7 +173,6 @@ class RecipeService {
       await connection.collection('recipe').document(id).updateData({
         'likes': FieldValue.arrayRemove([uId])
       });
-      _savedService.removeRecipeFromColletion(uId, id);
       return true;
     } catch (e) {
       return false;
@@ -197,6 +195,28 @@ class RecipeService {
       await connection.collection('recipe').document(id).updateData({
         'saved': FieldValue.arrayRemove([uId])
       });
+      removeRecipeFromColletion(uId, id);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> removeRecipeFromColletion(String id, String recipeId) async {
+    try {
+      var result = await connection.collection("user").document(id).get();
+      List list = result.data["recipesBook"];
+
+      for (var i = 0; i < list.length; i++) {
+        if (list[0]["recipes"].contains(recipeId)) {
+          list[0]["recipes"].remove(recipeId);
+        }
+      }
+
+      await connection
+          .collection('user')
+          .document(id)
+          .updateData({"recipesBook": list});
 
       return true;
     } catch (e) {
