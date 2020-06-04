@@ -191,9 +191,10 @@ class SavedService {
     }
   }
 
-  Stream<List<Recipe>> getSavedRecipes(String id) {
+  Stream<List<Recipe>> getSavedRecipes(String id, int limit) {
     return connection
         .collection('recipe')
+        .limit(limit)
         .where("saved", arrayContains: id)
         .snapshots()
         .map(_recipeListFromSnapshot);

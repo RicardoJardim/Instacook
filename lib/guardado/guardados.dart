@@ -109,8 +109,8 @@ class _MainGuardadoState extends State<MainGuardado> {
                             Padding(
                               padding: const EdgeInsets.only(top: 25),
                               child: StreamProvider<List<Recipe>>.value(
-                                  value: _savedService
-                                      .getSavedRecipes(snapshot.data["id"]),
+                                  value: _savedService.getSavedRecipes(
+                                      snapshot.data["id"], 10),
                                   builder: (context, snapshot) {
                                     return GridList(
                                       savedService:
