@@ -11,6 +11,8 @@ import 'package:provider/provider.dart';
 import '../main.dart';
 import '../router.dart';
 
+GlobalKey<ListItemWidget> globalKey = GlobalKey();
+
 class MainReceita extends StatefulWidget {
   MainReceita({
     Key key,
@@ -39,7 +41,7 @@ class _MainReceitalState extends State<MainReceita> {
           automaticallyImplyLeading: false,
           title: GestureDetector(
               onTap: () {
-                goUp();
+                globalKey.currentState.goUp();
               },
               child: Padding(
                 padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
@@ -86,10 +88,12 @@ class _MainReceitalState extends State<MainReceita> {
                         value: _recipeService
                             .getRecipesAndUser(snapshotF.data.follow),
                         builder: (context, snapshot) {
-                          return _swipeList(
+                          return SwipeList(
+                            key: globalKey,
                             litems: Provider.of<List<Recipe>>(context) ?? [],
                             fetch: () {
-                              return [];
+                              setState(() {});
+                              ;
                             },
                             user: snapshotF.data,
                             goPeople: (data) => widget.onPush(data),
@@ -102,8 +106,30 @@ class _MainReceitalState extends State<MainReceita> {
               }
             }));
   }
+}
 
+class SwipeList extends StatefulWidget {
+  SwipeList({Key key, this.litems, this.fetch, this.goPeople, this.user})
+      : super(key: key);
+
+  final List litems;
+  final Function fetch;
+  final ValueChanged<Map> goPeople;
+  final User user;
+  @override
+  State<StatefulWidget> createState() {
+    return ListItemWidget();
+  }
+}
+
+class ListItemWidget extends State<SwipeList>
+    with AutomaticKeepAliveClientMixin {
   ScrollController _scrollController = new ScrollController();
+  final _userService = UserService();
+  final _recipeService = RecipeService();
+
+  @override
+  bool get wantKeepAlive => true;
 
   void goUp() {
     _scrollController.animateTo(
@@ -113,33 +139,34 @@ class _MainReceitalState extends State<MainReceita> {
     );
   }
 
-  Widget _swipeList({litems, fetch, key, user, goPeople}) {
-    void seeRecipe(String id) {
-      main_key.currentState.push(MaterialPageRoute(
-          builder: (context) => SeeRecipe(
-                id: id,
-              )));
-    }
+  void seeRecipe(String id) {
+    main_key.currentState.push(MaterialPageRoute(
+        builder: (context) => SeeRecipe(
+              id: id,
+            )));
+  }
 
-    Future<User> getUserForRecipe(String id) async {
-      return await _userService.getUserById(id);
-    }
+  Future<User> getUserForRecipe(String id) async {
+    return await _userService.getUserById(id);
+  }
 
-    if (litems.length != 0) {
+  @override
+  Widget build(BuildContext context) {
+    if (widget.litems.length != 0) {
       return RefreshIndicator(
         onRefresh: () async {
-          return await Future.delayed(Duration(seconds: 1), fetch());
+          return await Future.delayed(Duration(seconds: 1), widget.fetch());
         },
         child: ListView.builder(
           physics: const AlwaysScrollableScrollPhysics(),
           controller: _scrollController,
           padding: const EdgeInsets.all(10),
-          itemCount: litems.length,
+          itemCount: widget.litems.length,
           itemBuilder: (context, index) {
-            return !user.follow.contains(litems[index].userId)
+            return !widget.user.follow.contains(widget.litems[index].userId)
                 ? SizedBox()
                 : FutureBuilder(
-                    future: getUserForRecipe(litems[index].userId),
+                    future: getUserForRecipe(widget.litems[index].userId),
                     builder: (context, snapshotU) {
                       return !snapshotU.hasData
                           ? Center(child: CircularProgressIndicator())
@@ -172,7 +199,7 @@ class _MainReceitalState extends State<MainReceita> {
                                                     data["id"] =
                                                         snapshotU.data.id;
 
-                                                    goPeople(data);
+                                                    widget.goPeople(data);
                                                   },
                                                   child: CircleAvatar(
                                                       radius: 22,
@@ -199,7 +226,8 @@ class _MainReceitalState extends State<MainReceita> {
                                                             data["id"] =
                                                                 snapshotU
                                                                     .data.id;
-                                                            goPeople(data);
+                                                            widget
+                                                                .goPeople(data);
                                                           },
                                                           child: Icon(
                                                             Icons.brightness_5,
@@ -235,7 +263,8 @@ class _MainReceitalState extends State<MainReceita> {
                                                                   .width -
                                                               100,
                                                       child: Text(
-                                                        litems[index].name,
+                                                        widget
+                                                            .litems[index].name,
                                                         style: TextStyle(
                                                             fontSize: 18,
                                                             fontWeight:
@@ -256,7 +285,7 @@ class _MainReceitalState extends State<MainReceita> {
                                       InkWell(
                                         borderRadius: BorderRadius.circular(25),
                                         onTap: () {
-                                          seeRecipe(litems[index].id);
+                                          seeRecipe(widget.litems[index].id);
                                         },
                                         child: Padding(
                                             padding: const EdgeInsets.all(5.0),
@@ -272,7 +301,8 @@ class _MainReceitalState extends State<MainReceita> {
                                                         BorderRadius.circular(
                                                             25),
                                                     child: Image.network(
-                                                      litems[index].imgUrl,
+                                                      widget
+                                                          .litems[index].imgUrl,
                                                       width:
                                                           MediaQuery.of(context)
                                                               .size
@@ -306,9 +336,7 @@ class _MainReceitalState extends State<MainReceita> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              litems[index]
-                                                  .likes
-                                                  .length
+                                              widget.litems[index].likes.length
                                                   .toString(),
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w600,
@@ -325,23 +353,26 @@ class _MainReceitalState extends State<MainReceita> {
                                                 borderRadius:
                                                     BorderRadius.circular(15),
                                                 onTap: () async {
-                                                  if (litems[index]
-                                                      .likes
-                                                      .contains(user.id)) {
+                                                  if (widget.litems[index].likes
+                                                      .contains(
+                                                          widget.user.id)) {
                                                     await _recipeService
                                                         .removeLikeRecipe(
-                                                            litems[index].id,
-                                                            user.id);
+                                                            widget.litems[index]
+                                                                .id,
+                                                            widget.user.id);
                                                   } else {
                                                     await _recipeService
                                                         .addLikeRecipe(
-                                                            litems[index].id,
-                                                            user.id);
+                                                            widget.litems[index]
+                                                                .id,
+                                                            widget.user.id);
                                                   }
                                                 },
-                                                child: litems[index]
-                                                        .likes
-                                                        .contains(user.id)
+                                                child: widget
+                                                        .litems[index].likes
+                                                        .contains(
+                                                            widget.user.id)
                                                     ? Icon(
                                                         Icons.favorite,
                                                         color:
@@ -361,36 +392,39 @@ class _MainReceitalState extends State<MainReceita> {
                                                 borderRadius:
                                                     BorderRadius.circular(15),
                                                 onTap: () {
-                                                  if (litems[index]
-                                                      .saved
-                                                      .contains(user.id)) {
+                                                  if (widget.litems[index].saved
+                                                      .contains(
+                                                          widget.user.id)) {
                                                     //Tirar
                                                     _recipeService
                                                         .removeSavedRecipe(
-                                                            litems[index].id,
-                                                            user.id);
+                                                            widget.litems[index]
+                                                                .id,
+                                                            widget.user.id);
                                                   } else {
                                                     main_key.currentState.push(
                                                         MaterialPageRoute(
                                                             builder:
                                                                 (context) =>
                                                                     SaveRecipe(
-                                                                      recipeId:
-                                                                          litems[index]
-                                                                              .id,
+                                                                      recipeId: widget
+                                                                          .litems[
+                                                                              index]
+                                                                          .id,
                                                                       onSave:
                                                                           (saved) {
                                                                         if (saved) {
                                                                           print("GUARDAR DOS GUARDADOS " +
-                                                                              litems[index].id.toString());
+                                                                              widget.litems[index].id.toString());
                                                                         }
                                                                       },
                                                                     )));
                                                   }
                                                 },
-                                                child: litems[index]
-                                                        .saved
-                                                        .contains(user.id)
+                                                child: widget
+                                                        .litems[index].saved
+                                                        .contains(
+                                                            widget.user.id)
                                                     ? Icon(
                                                         Icons.bookmark,
                                                         color:
