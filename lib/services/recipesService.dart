@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/services/imageService.dart';
+import 'package:instacook/services/savedService.dart';
 import 'package:instacook/services/userService.dart';
 
 class RecipeService {
@@ -12,6 +13,7 @@ class RecipeService {
   final Firestore connection = Firestore.instance;
   final _imageService = ImageService();
   final _userService = UserService();
+  final _savedService = SavedService();
 
   Future<bool> insertRecipe(String uId, Recipe data) async {
     try {
@@ -171,6 +173,7 @@ class RecipeService {
       await connection.collection('recipe').document(id).updateData({
         'likes': FieldValue.arrayRemove([uId])
       });
+      _savedService.removeRecipeFromColletion(uId, id);
       return true;
     } catch (e) {
       return false;
@@ -193,6 +196,7 @@ class RecipeService {
       await connection.collection('recipe').document(id).updateData({
         'saved': FieldValue.arrayRemove([uId])
       });
+
       return true;
     } catch (e) {
       return false;
