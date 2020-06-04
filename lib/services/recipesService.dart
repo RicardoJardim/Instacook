@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/rendering.dart';
 import 'package:instacook/models/Recipe.dart';
 import 'package:instacook/services/imageService.dart';
 import 'package:instacook/services/userService.dart';
@@ -276,88 +277,26 @@ class RecipeService {
   //FEED
 
   // Stream  List<Map> user + recipe
-  Stream<List<Map>> getRecipesAndUser(/* String param, String value */) {
+  Stream<List<Recipe>> getRecipesAndUser(List follow) {
     return recipesCollection
-        //.where(param, isEqualTo: value)
+        .where("privacy", isEqualTo: false)
         .orderBy("date", descending: true)
         .snapshots()
-        .map(_recipeAndUserListFromSnapshot);
+        .map((snap) => _recipeAndUserListFromSnapshot(snap, follow));
   }
 
   // Recipe List of snapshot
-  List<Map> _recipeAndUserListFromSnapshot(QuerySnapshot snapshot) {
+  List<Recipe> _recipeAndUserListFromSnapshot(
+      QuerySnapshot snapshot, List follow) {
     return snapshot.documents.map((doc) {
-      connection
-          .collection('user')
-          .document(doc.data["userId"])
-          .snapshots()
-          .listen((user) {
-        Map _map = {
-          "recipe": Recipe(
-              id: doc.documentID,
-              name: doc.data["name"],
-              type: doc.data["type"],
-              props: doc.data["props"],
-              likes: doc.data["likes"],
-              saved: doc.data["saved"],
-              difficulty: doc.data["difficulty"],
-              description: doc.data["description"],
-              imgUrl: doc.data["imgUrl"],
-              privacy: doc.data["privacy"],
-              prods: doc.data["prods"],
-              steps: doc.data["steps"],
-              userId: doc.data["userId"],
-              time: doc.data["time"],
-              date: doc.data["date"]),
-          "user": user.data
-        };
-        print(_map);
-        return _map;
-      });
+      return Recipe(
+        id: doc.documentID,
+        name: doc.data["name"],
+        likes: doc.data["likes"],
+        saved: doc.data["saved"],
+        imgUrl: doc.data["imgUrl"],
+        userId: doc.data["userId"],
+      );
     }).toList();
   }
-
-  /*  _listRecipes(List<DocumentSnapshot> list) =>
-      list.map((snapshot) => recipesList.add(Recipe(
-          id: snapshot.documentID,
-          name: snapshot.data["name"],
-          type: snapshot.data["type"],
-          props: snapshot.data["props"],
-          likes: snapshot.data["likes"],
-          difficulty: snapshot.data["difficulty"],
-          description: snapshot.data["description"],
-          imgUrl: snapshot.data["imgUrl"],
-          privacy: snapshot.data["privacy"],
-          prods: snapshot.data["prods"],
-          steps: snapshot.data["steps"],
-          userId: snapshot.data["userId"],
-          date: snapshot.data["date"]))); */
-
-  /* Future getAllUserStartPag(int objNum) async {
-    List<DocumentSnapshot> recipesListQ = (await connection
-            .orderBy('username')
-            .limit(objNum)
-            .getDocuments())
-        .documents;
-    _listRecipes(recipesListQ);
-    _lastDocument = recipesListQ[recipesListQ.length - 1];
-  } */
-
-  /*  Future getMoreUsers( int objNum)async {
-    List<DocumentSnapshot> newList = (await connection
-    .collection('user')
-    .orderBy('username')
-    .startAfterDocument(_lastDocument)
-    .limit(objNum)
-    .getDocuments())
-    .documents;
-
-    userList += newList;
-
-    for (var item in userList) {
-        print(item["username"]);
-      }
-
-  } */
-
 }
