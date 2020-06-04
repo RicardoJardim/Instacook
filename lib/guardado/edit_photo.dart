@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/models/Recipe.dart';
+import 'package:instacook/services/recipesService.dart';
 import '../main.dart';
 
 class EditPhoto extends StatefulWidget {
@@ -115,6 +117,12 @@ class GridList extends StatefulWidget {
 }
 
 class GridItemWidget extends State<GridList> {
+  final _recipeService = RecipeService();
+  Future<Recipe> getRecipe(String id) async {
+    var reci = await _recipeService.getSingleRecipeSmall(id);
+    return reci;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.litems.length != 0) {
@@ -124,34 +132,44 @@ class GridItemWidget extends State<GridList> {
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, childAspectRatio: 1.2),
           itemBuilder: (context, index) {
-            return Padding(
-              padding: EdgeInsets.all(15.0),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(25),
-                onTap: () {
-                  widget.onClickImage(widget.litems[index]["image"]);
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.network(
-                    widget.litems[index]["image"],
-                    fit: BoxFit.cover,
-                    filterQuality: FilterQuality.high,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: progress.expectedTotalBytes != null
-                              ? progress.cumulativeBytesLoaded /
-                                  progress.expectedTotalBytes
-                              : null,
+            return FutureBuilder(
+                future: getRecipe(widget.litems[index]),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Padding(
+                      padding: EdgeInsets.all(15.0),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(25),
+                        onTap: () {
+                          widget.onClickImage(snapshot.data.imgUrl);
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(
+                            snapshot.data.imgUrl,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                            loadingBuilder: (context, child, progress) {
+                              if (progress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: progress.expectedTotalBytes != null
+                                      ? progress.cumulativeBytesLoaded /
+                                          progress.expectedTotalBytes
+                                      : null,
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            );
+                      ),
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                });
           });
     } else {
       return Center(

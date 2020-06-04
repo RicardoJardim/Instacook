@@ -161,7 +161,8 @@ class _EditCollectionState extends State<EditCollection> {
                                       recipes: snapshot.data["recipes"],
                                       callback: (list) {
                                         deleteRecipe = list;
-                                        print(deleteRecipe);
+                                        print("delete recipes: " +
+                                            deleteRecipe.toString());
                                       })));
                             }),
                             _divider(),

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/Recipe.dart';
-import 'package:instacook/models/User.dart';
 import 'package:instacook/services/imageService.dart';
 import 'package:instacook/services/userService.dart';
 
@@ -105,12 +104,10 @@ class RecipeService {
     }
   }
 
-//pqbdR1eCNIm9hN3fzvrU
   Future<Recipe> getSingleRecipe(String id) async {
     try {
       var result = await connection.collection('recipe').document(id).get();
       var data = result.data;
-
       return Recipe(
           id: result.documentID,
           name: data["name"],
@@ -126,6 +123,22 @@ class RecipeService {
           prods: data["prods"],
           userId: data["userId"],
           date: data["date"]);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Recipe> getSingleRecipeSmall(String id) async {
+    try {
+      var result = await connection.collection('recipe').document(id).get();
+      var data = result.data;
+      return Recipe(
+        id: result.documentID,
+        name: data["name"],
+        difficulty: data["difficulty"],
+        imgUrl: data["imgUrl"],
+        time: data["time"],
+      );
     } catch (e) {
       return null;
     }
@@ -193,6 +206,7 @@ class RecipeService {
       await connection
           .collection('recipe')
           .where("userId", isEqualTo: id)
+          .where("privacy", isEqualTo: false)
           .orderBy("date", descending: true)
           .getDocuments()
           .then((QuerySnapshot snapshot) {
@@ -212,7 +226,7 @@ class RecipeService {
     }
   }
 
-  // get recipes stream
+  // STREAMS
   Stream<List<Recipe>> get recipes {
     return recipesCollection
         .orderBy("date", descending: true)
@@ -221,6 +235,15 @@ class RecipeService {
   }
 
   Stream<List<Recipe>> getRecipes(String param, String value) {
+    return recipesCollection
+        .where(param, isEqualTo: value)
+        .where("privacy", isEqualTo: false)
+        .orderBy("date", descending: true)
+        .snapshots()
+        .map(_recipeListFromSnapshot);
+  }
+
+  Stream<List<Recipe>> getMyRecipes(String param, String value) {
     return recipesCollection
         .where(param, isEqualTo: value)
         .orderBy("date", descending: true)
@@ -249,6 +272,8 @@ class RecipeService {
           date: doc.data["date"]);
     }).toList();
   }
+
+  //FEED
 
   // Stream  List<Map> user + recipe
   Stream<List<Map>> getRecipesAndUser(/* String param, String value */) {

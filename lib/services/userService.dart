@@ -200,6 +200,7 @@ class UserService {
     }
   }
 
+  //STREAMS
   Stream<List<User>> getAllUsersStream() {
     return connection
         .collection('user')
@@ -212,15 +213,10 @@ class UserService {
   List<User> _userListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
       return User(
-          email: doc.data["email"],
           id: doc.documentID,
-          uid: doc.data["uid"],
           username: doc.data["username"],
           imgUrl: doc.data["imgUrl"],
-          follow: doc.data["follow"],
-          followers: doc.data["followers"],
-          proUser: doc.data["proUser"],
-          recipesBook: doc.data["recipesBook"]);
+          proUser: doc.data["proUser"]);
     }).toList();
   }
 }

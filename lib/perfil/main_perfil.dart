@@ -168,13 +168,15 @@ class _MainPerfilState extends State<MainPerfil> {
                             Padding(
                               padding: const EdgeInsets.only(top: 25),
                               child: StreamProvider<List<Recipe>>.value(
-                                value: _recipeService.getRecipes("userId",  snapshot.data.id ),
-                                builder: (context, snapshot){ 
-                                  return GridList(
-                                  litems: Provider.of<List<Recipe>>(context) ?? [],
-                                );
-                                }
-                              ),
+                                  value: _recipeService.getMyRecipes(
+                                      "userId", snapshot.data.id),
+                                  builder: (context, snapshot) {
+                                    return GridList(
+                                      litems:
+                                          Provider.of<List<Recipe>>(context) ??
+                                              [],
+                                    );
+                                  }),
                             ),
                           ],
                         )));
@@ -221,7 +223,6 @@ class GridItemWidget extends State<GridList> {
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, childAspectRatio: 0.88),
           itemBuilder: (context, index) {
-            print("${widget.litems[index].id} -> ${widget.litems[index].privacy}");
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
@@ -248,6 +249,7 @@ class GridItemWidget extends State<GridList> {
                             children: <Widget>[
                               Container(
                                   height: 140,
+                                  width: 300,
                                   child: Stack(fit: StackFit.expand, children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
@@ -308,7 +310,8 @@ class GridItemWidget extends State<GridList> {
                                 child: Text(
                                   widget.litems[index].time.toString() +
                                       " - " +
-                                      widget.litems[index].difficulty.toString(),
+                                      widget.litems[index].difficulty
+                                          .toString(),
                                   style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w500,

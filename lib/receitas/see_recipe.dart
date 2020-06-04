@@ -51,6 +51,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
     }
 
     Map map = {"recipe": recipe, "user": user};
+
     return map;
   }
 

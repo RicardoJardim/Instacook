@@ -24,7 +24,6 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
   final _userService = UserService();
-  final _recipeService = RecipeService();
   final _auth = AuthService();
 
   static List onSomeEvent() {
@@ -37,47 +36,47 @@ class _SearchState extends State<Search> {
       {
         "category": "Peixe",
         "image":
-            "https://s1.1zoom.me/b5446/532/Fast_food_Hamburger_French_fries_Buns_Wood_planks_515109_1920x1080.jpg",
+            "https://cdn.tasteatlas.com/images/dishes/7972bd53485e4091822b9ada99786867.jpg?w=600&h=450",
       },
       {
         "category": "Pizza",
         "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+            "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_HCA20_376_E07_09_2b.jpg",
       },
       {
         "category": "Massas",
         "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+            "https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2013/05/spaghetti-puttanesca_1.jpg",
       },
       {
         "category": "Bebidas",
         "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+            "https://i0.wp.com/www.foodrepublic.com/wp-content/uploads/2015/12/Zonso-de-yuca-Photo-Restaurant-Gustu-e1449509832700.jpg?fit=2050%2C1789&ssl=1",
       },
       {
         "category": "Sobremesa",
         "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+            "https://c.pxhere.com/photos/74/ba/cheesecake_pastry_cake_grout_eat_sweet_desert_slice_of_cake-791966.jpg!d",
       },
       {
         "category": "Vegetariano",
         "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+            "https://images.immediate.co.uk/production/volatile/sites/2/2017/04/carot-falafel_charlie-richards.cropped.jpg?quality=45&resize=768,574",
       },
       {
         "category": "Entrada",
         "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+            "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/delish-cranberry-brie-bites-vertical-2-1540486092.jpg",
       },
       {
         "category": "Sopas",
         "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+            "https://imagesvc.meredithcorp.io/v3/mm/image?q=85&c=sc&poi=face&url=https%3A%2F%2Fcdn-image.myrecipes.com%2Fsites%2Fdefault%2Ffiles%2Fstyles%2F4_3_horizontal_-_1200x900%2Fpublic%2Froasted-carrot-and-coconut-soup-1811-p38.jpg%3Fitok%3DSqJ9ZPK2",
       },
       {
         "category": "Saladas",
         "image":
-            "https://img.itdg.com.br/tdg/images/blog/uploads/2018/04/bife-de-carne-vermelha.jpg?w=1200",
+            "https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2017/06/beetroot_halloumi_salad.jpg",
       },
     ];
     return litems;
@@ -104,15 +103,14 @@ class _SearchState extends State<Search> {
   Color color2 = Colors.grey[900];
   Color color1 = Colors.amber[800];
   bool isFood = true;
-  String myId;
+  Future<String> getUserId() async {
+    var myId = await _userService.getMyID(await _auth.getCurrentUser());
 
-  void getId() async {
-    myId = await _userService.getMyID(await _auth.getCurrentUser());
+    return myId;
   }
 
   @override
   Widget build(BuildContext context) {
-    getId();
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -126,111 +124,126 @@ class _SearchState extends State<Search> {
             onPressed: () => widget.onPop(context),
           ),
         ),
-        body: SafeArea(
-            top: true,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(30),
-                              bottomRight: Radius.circular(30)),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(0.0, 1.0), //(x,y)
-                              blurRadius: 6.0,
-                            ),
-                          ],
-                        ),
-                        child: Column(children: [
-                          Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 10, left: 8.0, right: 8.0),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width - 20,
-                                child: TextField(
-                                  style: TextStyle(
-                                      fontSize: 16.0,
-                                      height: 0.7,
-                                      color: Colors.black),
-                                  onChanged: (text) {
-                                    print("Pesquisa: $text");
-                                  },
-                                  decoration: InputDecoration(
-                                    prefixIcon: Icon(
-                                      Icons.search,
-                                      color: Colors.black,
+        body: FutureBuilder(
+            future: getUserId(),
+            builder: (context, snapshots) {
+              if (snapshots.hasData) {
+                return SafeArea(
+                    top: true,
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: [
+                            Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(30),
+                                      bottomRight: Radius.circular(30)),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      offset: Offset(0.0, 1.0), //(x,y)
+                                      blurRadius: 6.0,
                                     ),
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide: const BorderSide(
-                                          color: Colors.black, width: 1.5),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(30.0)),
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 2),
-                                    ),
-                                    hintText: 'Enter a search term',
-                                  ),
+                                  ],
                                 ),
-                              )),
-                          Padding(
-                            padding: const EdgeInsets.all(25.0),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  InkWell(
-                                      onTap: () {
-                                        if (!isFood) {
-                                          setNewState(true, true);
-                                        }
-                                      },
-                                      child: Icon(
-                                        Icons.local_dining,
-                                        size: 35,
-                                        color: color1,
+                                child: Column(children: [
+                                  Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 10, left: 8.0, right: 8.0),
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                20,
+                                        child: TextField(
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              height: 0.7,
+                                              color: Colors.black),
+                                          onChanged: (text) {
+                                            print("Pesquisa: $text");
+                                          },
+                                          decoration: InputDecoration(
+                                            prefixIcon: Icon(
+                                              Icons.search,
+                                              color: Colors.black,
+                                            ),
+                                            enabledBorder:
+                                                const OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50.0)),
+                                              borderSide: const BorderSide(
+                                                  color: Colors.black,
+                                                  width: 1.5),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(30.0)),
+                                              borderSide: BorderSide(
+                                                  color: Colors.blue, width: 2),
+                                            ),
+                                            hintText: 'Enter a search term',
+                                          ),
+                                        ),
                                       )),
-                                  InkWell(
-                                      onTap: () {
-                                        if (isFood) {
-                                          setNewState(false, false);
-                                        }
-                                      },
-                                      child: Icon(Icons.account_circle,
-                                          size: 35, color: color2)),
-                                ]),
-                          )
-                        ])),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 30),
-                      child: !isFood
-                          ? StreamProvider<List<User>>.value(
-                              value: _userService.getAllUsersStream(),
-                              builder: (context, snapshot) {
-                                return GridListPeople(
-                                  //key: globalKey2,
-                                  litems:
-                                      Provider.of<List<User>>(context) ?? [],
-                                  onPush: widget.onPush,
-                                  myId: myId,
-                                );
-                              })
-                          : GrodListFood(
-                              //key: globalKey,
-                              litems: onSomeEvent(),
-                              onPush: widget.onPush,
-                            ),
-                    )
-                  ],
-                ))));
+                                  Padding(
+                                    padding: const EdgeInsets.all(25.0),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          InkWell(
+                                              onTap: () {
+                                                if (!isFood) {
+                                                  setNewState(true, true);
+                                                }
+                                              },
+                                              child: Icon(
+                                                Icons.local_dining,
+                                                size: 35,
+                                                color: color1,
+                                              )),
+                                          InkWell(
+                                              onTap: () {
+                                                if (isFood) {
+                                                  setNewState(false, false);
+                                                }
+                                              },
+                                              child: Icon(Icons.account_circle,
+                                                  size: 35, color: color2)),
+                                        ]),
+                                  )
+                                ])),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 30),
+                              child: !isFood
+                                  ? StreamProvider<List<User>>.value(
+                                      value: _userService.getAllUsersStream(),
+                                      builder: (context, snapshot) {
+                                        return GridListPeople(
+                                          //key: globalKey2,
+                                          litems: Provider.of<List<User>>(
+                                                  context) ??
+                                              [],
+                                          onPush: widget.onPush,
+                                          myId: snapshots.data,
+                                        );
+                                      })
+                                  : GrodListFood(
+                                      //key: globalKey,
+                                      litems: onSomeEvent(),
+                                      onPush: widget.onPush,
+                                    ),
+                            )
+                          ],
+                        )));
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }));
   }
 }
 
@@ -301,6 +314,7 @@ class GrodListFoodItemWidget extends State<GrodListFood> {
                           children: <Widget>[
                             Container(
                               height: 140,
+                              width: 300,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
                                 child: Image.network(
@@ -353,7 +367,7 @@ class GridListPeople extends StatefulWidget {
     this.myId,
   }) : super(key: key);
 
-  final List litems;
+  List litems;
   final ValueChanged<Map<String, dynamic>> onPush;
   final String myId;
   @override
@@ -374,6 +388,7 @@ class GrodListPeopleItemWidget extends State<GridListPeople> {
 
   @override
   Widget build(BuildContext context) {
+    widget.litems.removeWhere((element) => element.id == widget.myId);
     return GridView.builder(
         controller: _scrollController,
         shrinkWrap: true,
@@ -382,84 +397,74 @@ class GrodListPeopleItemWidget extends State<GridListPeople> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, childAspectRatio: 0.88),
         itemBuilder: (context, index) {
-          print(widget.litems[index].id);
-          print(widget.myId);
-          return widget.litems[index].id == widget.myId
-              ? Text("")
-              : Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Column(
-                    children: <Widget>[
-                      index % 2 != 1
-                          ? SizedBox(
-                              height: 0,
-                            )
-                          : SizedBox(
-                              height: 45,
-                            ),
-                      Container(
-                        height: 175,
-                        width: 300,
-                        child: InkWell(
-                            borderRadius: BorderRadius.circular(25),
-                            onTap: () {
-                              Map<String, dynamic> data =
-                                  new Map<String, dynamic>();
-
-                              data["route"] = TabRouterFeed.people;
-                              data["id"] = widget.litems[index].id;
-                              widget.onPush(data);
-                            },
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Container(
-                                    height: 140,
-                                    width: 140,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(200),
-                                      child: Image.network(
-                                        widget.litems[index].imgUrl,
-                                        fit: BoxFit.cover,
-                                        filterQuality: FilterQuality.high,
-                                        loadingBuilder:
-                                            (context, child, progress) {
-                                          if (progress == null) return child;
-                                          return Center(
-                                            child: CircularProgressIndicator(
-                                              value: progress
-                                                          .expectedTotalBytes !=
-                                                      null
-                                                  ? progress
-                                                          .cumulativeBytesLoaded /
-                                                      progress
-                                                          .expectedTotalBytes
-                                                  : null,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.only(top: 5, left: 2),
-                                    child: Text(
-                                      widget.litems[index].username,
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.grey[800]),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                  ),
-                                ])),
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            child: Column(
+              children: <Widget>[
+                index % 2 != 1
+                    ? SizedBox(
+                        height: 0,
+                      )
+                    : SizedBox(
+                        height: 45,
                       ),
-                    ],
-                  ),
-                );
+                Container(
+                  height: 175,
+                  width: 300,
+                  child: InkWell(
+                      borderRadius: BorderRadius.circular(25),
+                      onTap: () {
+                        Map<String, dynamic> data = new Map<String, dynamic>();
+
+                        data["route"] = TabRouterFeed.people;
+                        data["id"] = widget.litems[index].id;
+                        widget.onPush(data);
+                      },
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              height: 140,
+                              width: 140,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(200),
+                                child: Image.network(
+                                  widget.litems[index].imgUrl,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                  loadingBuilder: (context, child, progress) {
+                                    if (progress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: progress.expectedTotalBytes !=
+                                                null
+                                            ? progress.cumulativeBytesLoaded /
+                                                progress.expectedTotalBytes
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5, left: 2),
+                              child: Text(
+                                widget.litems[index].username,
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey[800]),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ])),
+                ),
+              ],
+            ),
+          );
         });
   }
 }

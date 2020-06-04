@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instacook/models/Recipe.dart';
+import 'package:instacook/services/recipesService.dart';
 import 'package:instacook/services/userService.dart';
 
 class SavedService {
   final Firestore connection = Firestore.instance;
   final _userService = UserService();
+  final _recipeService = RecipeService();
 
-  //LIVROS DE RECEITAS
+//LIVROS DE RECEITAS
   Future<List> getMyColletions(String id) async {
     try {
       List list;
@@ -67,7 +69,8 @@ class SavedService {
 
       if (data["delete"].length != 0) {
         for (var item in data["delete"]) {
-          list[minus]["recipes"].remove(item.toString());
+          list[minus]["recipes"].remove(item);
+          await _recipeService.removeSavedRecipe(item, _id);
         }
       }
 
@@ -111,29 +114,6 @@ class SavedService {
       return true;
     } catch (e) {
       return false;
-    }
-  }
-
-  //RECEITAS DO LIVRO id:colletionId
-  Future<List> getMyRecipesFromColletion(String id, int colletionId) async {
-    try {
-      List list;
-
-      await connection
-          .collection('user')
-          .where("uid", isEqualTo: id)
-          .getDocuments()
-          .then((event) {
-        if (event.documents.isNotEmpty) {
-          var data = event.documents.single.data;
-          var under = data["recipesBook"]
-              .firstWhere((el) => el["id"] == colletionId, orElse: () => null);
-          list = under["recipes"];
-        }
-      });
-      return list;
-    } catch (e) {
-      return null;
     }
   }
 
@@ -191,6 +171,18 @@ class SavedService {
     }
   }
 
+//STREAMS
+
+  //LIVROS DE RECEITAS
+  Stream<DocumentSnapshot> getBooks(String id) {
+    return connection.collection('user').document(id).snapshots();
+  }
+
+  Stream<DocumentSnapshot> getSingleBook(String id) {
+    return connection.collection('user').document(id).snapshots();
+  }
+
+  //Receitas
   Stream<List<Recipe>> getSavedRecipes(String id, int limit) {
     return connection
         .collection('recipe')
@@ -222,7 +214,3 @@ class SavedService {
     }).toList();
   }
 }
-
-/*
-
-*/

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:instacook/models/Recipe.dart';
+import 'package:instacook/services/recipesService.dart';
 import '../main.dart';
 
 class EditRecipes extends StatefulWidget {
@@ -16,8 +18,10 @@ class _EditRecipesState extends State<EditRecipes> {
       removeRecipes.forEach((el) {
         print("remove recipe with id " + el.toString());
       });
+      print(removeRecipes);
+      widget.callback(removeRecipes);
     }
-    widget.callback(removeRecipes);
+
     main_key.currentState.pop(context);
   }
 
@@ -82,6 +86,12 @@ class GridList extends StatefulWidget {
 }
 
 class GridItemWidget extends State<GridList> {
+  final _recipeService = RecipeService();
+  Future<Recipe> getRecipe(String id) async {
+    var reci = await _recipeService.getSingleRecipeSmall(id);
+    return reci;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.litems.length != 0) {
@@ -91,85 +101,102 @@ class GridItemWidget extends State<GridList> {
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, childAspectRatio: 0.92),
           itemBuilder: (context, index) {
-            return Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Container(
-                height: 190,
-                width: 300,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                          height: 140,
-                          child: Stack(
-                            fit: StackFit.expand,
+            return FutureBuilder(
+                future: getRecipe(widget.litems[index]),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Padding(
+                      padding: EdgeInsets.all(15.0),
+                      child: Container(
+                        height: 190,
+                        width: 300,
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.network(
-                                  widget.litems[index]["image"],
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.high,
-                                  loadingBuilder: (context, child, progress) {
-                                    if (progress == null) return child;
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value: progress.expectedTotalBytes !=
-                                                null
-                                            ? progress.cumulativeBytesLoaded /
-                                                progress.expectedTotalBytes
-                                            : null,
+                              Container(
+                                  height: 140,
+                                  width: 300,
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: <Widget>[
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Image.network(
+                                          snapshot.data.imgUrl,
+                                          fit: BoxFit.cover,
+                                          filterQuality: FilterQuality.high,
+                                          loadingBuilder:
+                                              (context, child, progress) {
+                                            if (progress == null) return child;
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: progress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? progress
+                                                            .cumulativeBytesLoaded /
+                                                        progress
+                                                            .expectedTotalBytes
+                                                    : null,
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       ),
-                                    );
-                                  },
+                                      Positioned(
+                                          right: -2,
+                                          bottom: -2,
+                                          child: Container(
+                                            padding: EdgeInsets.all(1),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.rectangle,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10.0)),
+                                            ),
+                                            child: CheckBoxWidget(
+                                              callback: () =>
+                                                  widget.onClickRecipe(
+                                                      snapshot.data.id),
+                                            ),
+                                          ))
+                                    ],
+                                  )),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5, left: 2),
+                                child: Text(
+                                  snapshot.data.name,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                 ),
                               ),
-                              Positioned(
-                                  right: -2,
-                                  bottom: -2,
-                                  child: Container(
-                                    padding: EdgeInsets.all(1),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.rectangle,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0)),
-                                    ),
-                                    child: CheckBoxWidget(
-                                      callback: () => widget.onClickRecipe(
-                                          widget.litems[index]["id"]),
-                                    ),
-                                  ))
-                            ],
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5, left: 2),
-                        child: Text(
-                          widget.litems[index]["name"],
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w600),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5, left: 2),
+                                child: Text(
+                                  snapshot.data.time +
+                                      " - " +
+                                      snapshot.data.difficulty,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey[700]),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ]),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5, left: 2),
-                        child: Text(
-                          widget.litems[index]["time"] +
-                              " - " +
-                              widget.litems[index]["difficulty"],
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[700]),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ),
-                    ]),
-              ),
-            );
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                });
           });
     } else {
       return Center(
