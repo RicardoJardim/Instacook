@@ -6,13 +6,15 @@ import 'package:instacook/photo_picker.dart';
 import 'package:instacook/receitas/create/add_ingre.dart';
 import 'package:instacook/receitas/create/add_step.dart';
 import 'package:instacook/receitas/create/preview_recipe.dart';
+import 'package:instacook/services/recipesService.dart';
 
 import '../../main.dart';
 
 class CreateRecipe extends StatefulWidget {
-  CreateRecipe({Key key, this.editRecipe}) : super(key: key);
+  CreateRecipe({Key key, this.editRecipe, this.steps: null}) : super(key: key);
 
   final Recipe editRecipe;
+  final List steps;
   _CreateRecipelState createState() => _CreateRecipelState();
 }
 
@@ -26,7 +28,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
       privacy = widget.editRecipe.privacy;
       dif = widget.editRecipe.difficulty;
       prods = widget.editRecipe.prods;
-      stepsRecipe = widget.editRecipe.steps;
+      stepsRecipe = widget.steps;
       name.text = widget.editRecipe.name;
       _type = widget.editRecipe.type;
       description.text = widget.editRecipe.description;
@@ -69,6 +71,8 @@ class _CreateRecipelState extends State<CreateRecipe> {
   final time = TextEditingController();
   final props = TextEditingController();
 
+  final _recipeService = RecipeService();
+
   void saveRecipe() {
     print(receita);
     main_key.currentState.push(MaterialPageRoute(
@@ -102,6 +106,22 @@ class _CreateRecipelState extends State<CreateRecipe> {
             ),
             onPressed: () => main_key.currentState.pop(context),
           ),
+          actions: <Widget>[
+            widget.editRecipe != null
+                ? IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.restore_from_trash,
+                      color: Colors.black,
+                      size: 30,
+                    ),
+                    onPressed: () async {
+                      await _recipeService.removeRecipe(widget.editRecipe.id);
+                      main_key.currentState.pop(context);
+                      main_key.currentState.pop(context);
+                    })
+                : Text(""),
+          ],
         ),
         body: SafeArea(
             top: true,
@@ -552,20 +572,6 @@ class _CreateRecipelState extends State<CreateRecipe> {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black,
-                                      blurRadius: 2.0,
-                                      spreadRadius: 0.0,
-                                      offset: Offset(2.0, 2.0),
-                                    ),
-                                  ],
-                                  color: Colors.grey[300],
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(15.0),
-                                  ),
-                                ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(5.0),
                                   child: Row(
@@ -678,13 +684,13 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black,
+                                      color: Colors.grey[400],
                                       blurRadius: 2.0,
                                       spreadRadius: 0.0,
-                                      offset: Offset(2.0, 2.0),
+                                      offset: Offset(1.0, 1.0),
                                     ),
                                   ],
-                                  color: Colors.grey[300],
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(15.0),
                                   ),
@@ -764,7 +770,7 @@ class _CreateRecipelState extends State<CreateRecipe> {
                                                     stepsRecipe[index]["prods"]
                                                             [indexs]["type"]
                                                         .toString(),
-                                                style: TextStyle(fontSize: 14),
+                                                style: TextStyle(fontSize: 16),
                                               );
                                             }),
                                       ),
