@@ -103,6 +103,15 @@ class RecipeService {
     }
   }
 
+  Future<bool> removeRecipe(String id) async {
+    try {
+      await connection.collection('recipe').document(id).delete();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<Recipe> getSingleRecipe(String id) async {
     try {
       var result = await connection.collection('recipe').document(id).get();

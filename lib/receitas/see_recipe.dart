@@ -48,7 +48,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
 
   @override
   void initState() {
-    backgroundColor = Colors.amber[600];
+    backgroundColor = Colors.white;
     super.initState();
   }
 
@@ -112,7 +112,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                     padding: EdgeInsets.zero,
                     icon: Icon(
                       Icons.keyboard_arrow_left,
-                      color: Colors.black,
+                      color: Colors.amber[800],
                       size: 50,
                     ),
                     onPressed: () => main_key.currentState.pop(context),
@@ -126,11 +126,13 @@ class _SeeRecipelState extends State<SeeRecipe> {
                               color: Colors.black,
                               size: 30,
                             ),
-                            onPressed: () {
+                            onPressed: () async {
+                              var stepss = await _recipeService
+                                  .getSingleSteps(snapshot.data["recipe"].id);
                               main_key.currentState.push(MaterialPageRoute(
                                   builder: (context) => CreateRecipe(
-                                        editRecipe: snapshot.data["recipe"],
-                                      )));
+                                      editRecipe: snapshot.data["recipe"],
+                                      steps: stepss.steps)));
                             })
                         : Text(""),
                   ],
@@ -306,7 +308,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                                   children: <Widget>[
                                     Icon(
                                       Icons.access_time,
-                                      color: Colors.black,
+                                      color: Colors.amber[800],
                                       size: 30,
                                     ),
                                     Text(
@@ -319,7 +321,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                                   children: <Widget>[
                                     Icon(
                                       Icons.local_offer,
-                                      color: Colors.black,
+                                      color: Colors.amber[800],
                                       size: 30,
                                     ),
                                     Text(
@@ -331,7 +333,7 @@ class _SeeRecipelState extends State<SeeRecipe> {
                                 Row(children: <Widget>[
                                   Icon(
                                     Icons.assessment,
-                                    color: Colors.black,
+                                    color: Colors.amber[800],
                                     size: 30,
                                   ),
                                   Text(
@@ -347,12 +349,12 @@ class _SeeRecipelState extends State<SeeRecipe> {
                             child: Center(
                                 child: FlatButton(
                               padding:
-                                  const EdgeInsets.only(top: 10, bottom: 10),
+                                  const EdgeInsets.only(top: 12, bottom: 12),
                               shape: RoundedRectangleBorder(
-                                side: BorderSide(color: Colors.black),
+                                side: BorderSide(color: Colors.white, width: 2),
                                 borderRadius: BorderRadius.circular(100),
                               ),
-                              color: backgroundColor,
+                              color: Colors.amber[800],
                               onPressed: () {
                                 addIngredients();
                               },
@@ -365,12 +367,13 @@ class _SeeRecipelState extends State<SeeRecipe> {
                                     Text(
                                       'Adicionar ',
                                       style: TextStyle(
+                                          color: Colors.white,
                                           fontSize: 20,
-                                          fontWeight: FontWeight.w400),
+                                          fontWeight: FontWeight.w600),
                                     ),
                                     Icon(
                                       Icons.event_available,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                       size: 24,
                                     ),
                                   ],
@@ -413,37 +416,38 @@ class _SeeRecipelState extends State<SeeRecipe> {
                                           ))); //        id: widget.id,
                                 }),
                                 InkWell(
-                                    onTap: () {
-                                      if (widget.mine) {
-                                        setState(() {
-                                          saved = true;
-                                        });
-                                      }
-                                      main_key.currentState.push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  PrepareRecipe(
-                                                    id: snapshot
-                                                        .data["recipe"].id,
-                                                    saved: saved,
-                                                  )));
-                                    },
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.local_dining,
-                                          size: 30,
-                                        ),
-                                        Text(
-                                          "Preparar",
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                      ],
-                                    ))
+                                  onTap: () {
+                                    if (widget.mine) {
+                                      setState(() {
+                                        saved = true;
+                                      });
+                                    }
+                                    main_key.currentState
+                                        .push(MaterialPageRoute(
+                                            builder: (context) => PrepareRecipe(
+                                                  id: snapshot
+                                                      .data["recipe"].id,
+                                                  saved: saved,
+                                                )));
+                                  },
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.local_dining,
+                                        size: 30,
+                                        color: Colors.white,
+                                      ),
+                                      Text(
+                                        "Preparar",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ],
+                                  ),
+                                )
                               ])
                         ]))));
           } else {

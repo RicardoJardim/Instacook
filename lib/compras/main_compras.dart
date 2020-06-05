@@ -89,8 +89,6 @@ class _ListRecepieState extends State<ListRecepie> {
   }
 
   void updateSingleList(String id, List list) async {
-    print(id);
-    print(list);
     widget.shopKey.updateMyShop(id, list);
   }
 
@@ -139,8 +137,15 @@ class _ListRecepieState extends State<ListRecepie> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500)),
+              Container(
+                width: MediaQuery.of(context).size.width - 100,
+                child: Text(
+                  title,
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ),
               InkWell(
                 borderRadius: BorderRadius.all(Radius.circular(100)),
                 splashColor: Colors.amber[800],

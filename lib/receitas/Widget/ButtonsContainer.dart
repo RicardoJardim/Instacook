@@ -24,8 +24,8 @@ class ButtonsContainer extends StatelessWidget {
               func();
             },
             child: Container(
-              color: Colors.white,
-              height: 140,
+              color: Colors.amber[800],
+              height: 120,
               width: MediaQuery.of(context).size.width,
             ),
           )),
