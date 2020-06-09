@@ -215,6 +215,17 @@ class UserService {
         .map(_userListFromSnapshot);
   }
 
+  //STREAMS
+  Stream<List<User>> getAllUsersStreamSearch(String param, String value) {
+    return connection
+        .collection('user')
+        .where(param, isGreaterThanOrEqualTo: value)
+        .where(param, isLessThanOrEqualTo: value + "\uF7FF")
+        .orderBy("username", descending: true)
+        .snapshots()
+        .map(_userListFromSnapshot);
+  }
+
   // User List of snapshot
   List<User> _userListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
