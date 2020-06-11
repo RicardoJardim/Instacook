@@ -286,6 +286,7 @@ class RecipeService {
 //Stream search
   Stream<List<Recipe>> getMyRecipesSearch(String param, String value) {
     return recipesCollection
+        .where("privacy", isEqualTo: false)
         .where(param, isGreaterThanOrEqualTo: value)
         .where(param, isLessThanOrEqualTo: value + "\uF7FF")
         .orderBy("name", descending: true)
