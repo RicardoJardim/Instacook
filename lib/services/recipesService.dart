@@ -274,10 +274,22 @@ class RecipeService {
         .map(_recipeListFromSnapshot);
   }
 
+  //Stream profile
   Stream<List<Recipe>> getMyRecipes(String param, String value) {
     return recipesCollection
         .where(param, isEqualTo: value)
         .orderBy("date", descending: true)
+        .snapshots()
+        .map(_recipeListFromSnapshot);
+  }
+
+//Stream search
+  Stream<List<Recipe>> getMyRecipesSearch(String param, String value) {
+    return recipesCollection
+        .where("privacy", isEqualTo: false)
+        .where(param, isGreaterThanOrEqualTo: value)
+        .where(param, isLessThanOrEqualTo: value + "\uF7FF")
+        .orderBy("name", descending: true)
         .snapshots()
         .map(_recipeListFromSnapshot);
   }
