@@ -1,16 +1,13 @@
-# instacook
+# Instacook application using Flutter framework
+Esta aplicação para smartphones iOS e Android tem  como objetivo permitir aos utilizadores pesquisarem receitas, criar o seu livro de receitas, seguir outros utilizadores que poderão ser mentores e fazer lista de compras com base nas receitas e porções escolhidas. 
 
-A new Flutter project.
+## Implementação
 
-## Getting Started
+A nivel de implementação, a aplicação tem uma construção de uma aplicação escalável, em que futuramente permite estender a aplicação para varias plataformas e novos módulos, em termos de segurança, todos os dados dos utilizadores se encontram encriptados pelo Firebase e com uma comunicação segura através de comunicação HTTPS entre servidor e cliente.
 
-This project is a starting point for a Flutter application.
+Toda a aplicação se encontra modular, com utilizações de padrões de desenho (Facades) e respeitando algumas das principais regras no desenvolvimento de software (separação de responsabilidade, entre outros), sendo que todos estes módulos passaram em testes unitários.
 
-A few resources to get you started if this is your first Flutter project:
+## Backend
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+No que toca ao back-end, é utilizado o Firebase, em que permite o desenvolvimento rápido de um servidor de back-end, possibilita autenticação com opções predefinidas, e um armazenamento em cloud para imagens e vídeos.
+Contem limitações como, baixo nível em realizar pesquisas na base de dados, apenas 100 conexões e armazenamento máximo até 1GB.
