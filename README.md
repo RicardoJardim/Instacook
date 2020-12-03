@@ -11,3 +11,5 @@ Toda a aplicação se encontra modular, com utilizações de padrões de desenho
 
 No que toca ao back-end, é utilizado o Firebase, em que permite o desenvolvimento rápido de um servidor de back-end, possibilita autenticação com opções predefinidas, e um armazenamento em cloud para imagens e vídeos.
 Contem limitações como, baixo nível em realizar pesquisas na base de dados, apenas 100 conexões e armazenamento máximo até 1GB.
+
+### [Artigo](https://github.com/RicardoJardim/Instacook/blob/master/SSUI_relatorio_Alex_Leonardo_Ricardo.pdf "Article")
